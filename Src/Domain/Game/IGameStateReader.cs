@@ -13,6 +13,6 @@ public interface IGameStateReader
     IEnumerable<IPlayer> Players { get; }
     IPlayer PlayerOnTurn { get; }
     ICard OpenCard { get; }
-    IDeck Deck { get; }
+    IDeckState Deck { get; }
     int AmountOfCoinsOnTable { get; }
 }

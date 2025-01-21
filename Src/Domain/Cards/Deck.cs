@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Cards;
 
-public class Deck : IDeck
+public class Deck : IDeckState, IDeckSetter
 {
     private readonly ICollection<ICard> Cards;
 

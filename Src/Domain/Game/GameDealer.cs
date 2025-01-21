@@ -8,6 +8,7 @@ public class GameDealer : IGameDealer
 
     public GameDealer()
     {
+        // TODO: DI
         this._state = new GameState();
     }
 
@@ -37,12 +38,22 @@ public class GameDealer : IGameDealer
         switch (choice)
         {
             case TurnAction.TAKECARD:
-                var card = _state.Deck.DrawCard();
-                player.AcceptCard(card);
+                player.AcceptCard(_state.Deck.DrawCard());
+                player.AcceptCoins(_state.TakeCoins());
                 break;
             case TurnAction.SKIPWITHCOIN:
-                var coin = player.GiveCoin();
-                _state.AddCoinToTable(coin);
+                if (player.CoinsAmount > 0)
+                {
+                    var coin = player.GiveCoin();
+                    _state.AddCoinToTable(coin);
+                }
+                else
+                {
+                    // FIXME: Dry from other case
+                    player.AcceptCard(_state.Deck.DrawCard());
+                    player.AcceptCoins(_state.TakeCoins());
+                }
+
                 break;
         }
 

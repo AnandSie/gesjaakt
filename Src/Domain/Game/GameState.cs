@@ -13,20 +13,21 @@ public class GameState : IGameState
     private IList<IPlayer> _players;
     private int _playerIndex;
     private ICollection<ICoin> _coinsOnTable;
-    private IDeck _deck;
+    private IDeckState _deck;
 
     public GameState()
     {
         _players = new List<IPlayer>();
         _playerIndex = 0;
         _coinsOnTable = new HashSet<ICoin>();
+        _deck = new Deck(3, 35); // TODO: extract to config
     }
 
     public IEnumerable<IPlayer> Players => _players;
 
     public ICard OpenCard => throw new NotImplementedException();
 
-    public IDeck Deck => _deck;
+    public IDeckState Deck => _deck;
 
     public int AmountOfCoinsOnTable => _coinsOnTable.Count();
 
@@ -52,5 +53,12 @@ public class GameState : IGameState
         {
             _playerIndex++;
         }
+    }
+
+    public IEnumerable<ICoin> TakeCoins()
+    {
+        var result = _coinsOnTable;
+        _coinsOnTable = new HashSet<ICoin>();
+        return result;
     }
 }

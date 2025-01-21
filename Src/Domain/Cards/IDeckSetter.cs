@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Cards;
 
-public interface IDeck
+public interface IDeckSetter
 {
-    // TODO: SPlit into IDeckState, IDeckSetter
     void TakeOut(int amount);
-    int AmountLeft();
-    ICard DrawCard();
-    bool IsEmpty();
 }

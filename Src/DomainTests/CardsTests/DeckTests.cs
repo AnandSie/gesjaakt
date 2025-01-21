@@ -9,7 +9,7 @@ public class DeckTests
 {
     readonly int min = 3;
     readonly int max = 35;
-    private IDeck sut;
+    private Deck sut;
 
     [TestInitialize]
     public void Setup()

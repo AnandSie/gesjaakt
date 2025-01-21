@@ -80,4 +80,35 @@ public class GameDealerTests
         sut.State.Players.First().CoinsAmount.Should().Be(coinsAmount / 2);
         sut.State.AmountOfCoinsOnTable.Should().Be(0);
     }
+
+    [TestMethod]
+    public void ScaredPlayerHasNoCoins_NeedsToTakeCardTest()
+    {
+        var player1 = new ScaredPlayer();
+        var player2 = new ScaredPlayer();
+        sut.AddPlayer(player1);
+        sut.AddPlayer(player2);
+        var coinsAmount = 2;
+        sut.DivideCoins(coinsAmount);
+        sut.NextPlayerPlays();
+        sut.NextPlayerPlays();
+
+        // All coins are now played and scared player should have taken a card
+        sut.NextPlayerPlays();
+
+        sut.State.Players.First().Cards.Should().HaveCount(1);
+        sut.State.Players.First().CoinsAmount.Should().Be(coinsAmount);
+        sut.State.AmountOfCoinsOnTable.Should().Be(0);
+    }
+
+    [TestMethod]
+    public void GameEnds()
+    {
+        var player1 = new ScaredPlayer();
+        var player2 = new ScaredPlayer();
+        sut.AddPlayer(player1);
+        sut.AddPlayer(player2);
+        var coinsAmount = 2;
+        sut.DivideCoins(coinsAmount);
+    }
 }

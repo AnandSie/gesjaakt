@@ -26,7 +26,7 @@ public abstract class Player : IPlayer
 
     public int CoinsAmount => _coins.Count();
 
-    public ICollection<ICard> Cards => throw new NotImplementedException();
+    public ICollection<ICard> Cards => _cards;
 
     public void AcceptCoins(IEnumerable<ICoin> coins)
     {
