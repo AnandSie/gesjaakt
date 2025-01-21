@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Model;
+namespace Domain.Cards;
 
-internal interface IPlayer
+public interface ICard
 {
-    int CoinsAmount { get; }
-    ICard[] Cards { get; }
+    int Value { get; }
 }

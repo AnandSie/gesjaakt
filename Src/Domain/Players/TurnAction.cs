@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Model;
+namespace Domain.Players;
 
-internal interface ICoin
+public enum TurnAction
 {
-
+    TAKECARD,
+    SKIPWITHCOIN
 }

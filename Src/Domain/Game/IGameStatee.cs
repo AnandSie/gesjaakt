@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Model;
+namespace Domain.Game;
 
-internal interface ICard
+public  interface IGameState: IGameStateWriter, IGameStateReader
 {
-    int Value { get; }
 }

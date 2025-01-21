@@ -1,6 +1,6 @@
-﻿using Domain.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,22 +9,41 @@ namespace Domain.Cards;
 
 public class Deck : IDeck
 {
-    public int Min => throw new NotImplementedException();
+    private readonly ICollection<ICard> Cards;
 
-    public int Max => throw new NotImplementedException();
-
-    public void DrawCard()
+    public Deck(int min, int max)
     {
-        throw new NotImplementedException();
+        var random = new Random();
+        int deckSize = max - min + 1;
+        Cards = Enumerable.Range(min, deckSize)
+                               .Select(value => new Card(value))
+                               .OrderBy(_ => random.Next())
+                               .ToHashSet<ICard>();
+    }
+
+    public int AmountLeft()
+    {
+        return Cards.Count;
+    }
+
+    public ICard DrawCard()
+    {
+        var card = Cards.First();
+        Cards.Remove(card);
+        return card;
     }
 
     public bool IsEmpty()
     {
-        throw new NotImplementedException();
+        return Cards.Count == 0;
     }
 
     public void TakeOut(int amount)
     {
-        throw new NotImplementedException();
+        for (int i = 0; i < amount; i++)
+        {
+            var cardToRemove = Cards.First();
+            Cards.Remove(cardToRemove);
+        }
     }
 }

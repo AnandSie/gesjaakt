@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Model;
+namespace Domain.Game;
 
-internal interface IActions
+public class Coin: ICoin
 {
-    void TakeCard();
-    void GiveCoin();
 }

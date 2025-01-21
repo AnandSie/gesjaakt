@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Model;
+namespace Domain.Cards;
 
 public interface IDeck
 {
-    int Min { get; }
-    int Max { get; }
+    // TODO: SPlit into IDeckState, IDeckSetter
     void TakeOut(int amount);
-    void DrawCard();
+    int AmountLeft();
+    ICard DrawCard();
     bool IsEmpty();
 }
