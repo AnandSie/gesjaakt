@@ -116,7 +116,7 @@ public class GameDealerTests
     }
 
     [TestMethod]
-    public void GameEnds()
+    public void GreedyPlayerGameEnds()
     {
         var greedyPlayer = new GreedyPlayer();
         sut.AddPlayer(greedyPlayer);
@@ -131,6 +131,7 @@ public class GameDealerTests
 
         winner.Should().Be(scaredPlayer);
     }
+
 
     private int DeckSize(int max, int min)
     {

@@ -12,5 +12,5 @@ public interface IPlayerState
 {
     int CoinsAmount { get; }
     ICollection<ICard> Cards { get; }
-    int CardPoints { get; }
+    public int CardPoints();
 }

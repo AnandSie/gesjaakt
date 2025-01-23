@@ -79,7 +79,7 @@ public class GameDealer : IGameDealer
     public IPlayer Winner()
     {
         return _state.Players
-            .ToDictionary(p => p, p => p.CardPoints - p.CoinsAmount)
+            .ToDictionary(p => p, p => p.CardPoints() - p.CoinsAmount)
             .OrderByDescending(kvp => kvp.Value).First().Key;
     }
 }
