@@ -13,13 +13,14 @@ public class GameState : IGameState
     private IList<IPlayer> _players;
     private int _playerIndex;
     private ICollection<ICoin> _coinsOnTable;
-    private IDeckState _deck;
+    private IDeck _deck;
 
     public GameState()
     {
         _players = new List<IPlayer>();
         _playerIndex = 0;
         _coinsOnTable = new HashSet<ICoin>();
+        // TODO: extract with DI
         _deck = new Deck(3, 35); // TODO: extract to config
     }
 
@@ -53,6 +54,11 @@ public class GameState : IGameState
         {
             _playerIndex++;
         }
+    }
+
+    public void TakeCardsFromDeck(int amount)
+    {
+        _deck.TakeOut(amount);
     }
 
     public IEnumerable<ICoin> TakeCoins()

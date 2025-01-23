@@ -9,7 +9,7 @@ namespace DomainTests.GameTests;
 [TestClass]
 public class GameDealerTests
 {
-    IGameDealer sut;
+    GameDealer sut;
 
     [TestInitialize]
     public void Setup()
@@ -46,6 +46,20 @@ public class GameDealerTests
         {
             player.CoinsAmount.Should().Be(coinsAmount/amountOfPlayers);
         }
+    }
+
+    [TestMethod]
+    public void CardsTakenOutOfDeck()
+    {
+        // TODO: Should this not be functionality for Deck?
+        var amountToRemove = 5;
+        var max = 35;
+        var min = 3;
+
+        sut.RemoveCardsFromDeck(amountToRemove);
+
+        var expectedResult = DeckSize(max,min) - amountToRemove;
+        sut.State.Deck.AmountOfCardsLeft().Should().Be(expectedResult);
     }
 
     [TestMethod]
@@ -104,11 +118,23 @@ public class GameDealerTests
     [TestMethod]
     public void GameEnds()
     {
-        var player1 = new ScaredPlayer();
-        var player2 = new ScaredPlayer();
-        sut.AddPlayer(player1);
-        sut.AddPlayer(player2);
-        var coinsAmount = 2;
+        var greedyPlayer = new GreedyPlayer();
+        sut.AddPlayer(greedyPlayer);
+
+        var scaredPlayer = new ScaredPlayer();
+        sut.AddPlayer(scaredPlayer);
+        var coinsAmount = 6;
         sut.DivideCoins(coinsAmount);
+        sut.Play();
+        
+        var winner = sut.Winner();
+
+        winner.Should().Be(scaredPlayer);
     }
+
+    private int DeckSize(int max, int min)
+    {
+        return max - min + 1;
+    }
+
 }

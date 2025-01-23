@@ -20,7 +20,7 @@ public class DeckTests
     [TestMethod]
     public void DeckSizeBasedOnMinMax()
     {
-        var result = sut.AmountLeft();
+        var result = sut.AmountOfCardsLeft();
         result.Should().Be(DeckSize());
     }
 
@@ -43,7 +43,7 @@ public class DeckTests
     {
         sut.DrawCard();
 
-        sut.AmountLeft().Should().Be(DeckSize() - 1);
+        sut.AmountOfCardsLeft().Should().Be(DeckSize() - 1);
     }
 
     [TestMethod]
@@ -80,7 +80,7 @@ public class DeckTests
 
         sut.TakeOut(amount);
 
-        sut.AmountLeft().Should().Be(DeckSize() - amount);
+        sut.AmountOfCardsLeft().Should().Be(DeckSize() - amount);
     }
 
     private int DeckSize()

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Cards;
 
-public class Deck : IDeckState, IDeckSetter
+public class Deck : IDeck
 {
     private readonly ICollection<ICard> Cards;
 
@@ -21,7 +21,7 @@ public class Deck : IDeckState, IDeckSetter
                                .ToHashSet<ICard>();
     }
 
-    public int AmountLeft()
+    public int AmountOfCardsLeft()
     {
         return Cards.Count;
     }

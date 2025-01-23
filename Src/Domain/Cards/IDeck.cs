@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace Domain.Cards;
 
-public interface IDeckState
+internal interface IDeck: IDeckSetter, IDeckState
 {
-    int AmountOfCardsLeft();
-    ICard DrawCard();
-    bool IsEmpty();
 }

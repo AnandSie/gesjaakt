@@ -19,6 +19,12 @@ public class GameDealer : IGameDealer
         this._state.AddPlayer(player);
     }
 
+    // TODO: moet deze functie er zijn? => Of moet dit niet onderdeel zijn van de constructor/init?
+    public void RemoveCardsFromDeck(int amount)
+    {
+        _state.TakeCardsFromDeck(amount);
+    }
+
     public void DivideCoins(int coinsAmount)
     {
         var coinsPerPlayer = (int)Math.Floor((decimal)coinsAmount / _state.Players.Count());
@@ -29,6 +35,15 @@ public class GameDealer : IGameDealer
         }
     }
 
+    public void Play()
+    {
+        while (!_state.Deck.IsEmpty())
+        {
+            this.NextPlayerPlays();
+        }
+    }
+
+    // FIXME: this method should be private (?), how do we still unittest? => simple end states
     public void NextPlayerPlays()
     {
         var player = _state.PlayerOnTurn;
@@ -41,6 +56,7 @@ public class GameDealer : IGameDealer
                 player.AcceptCard(_state.Deck.DrawCard());
                 player.AcceptCoins(_state.TakeCoins());
                 break;
+
             case TurnAction.SKIPWITHCOIN:
                 if (player.CoinsAmount > 0)
                 {
@@ -60,8 +76,10 @@ public class GameDealer : IGameDealer
         _state.NextPlayer();
     }
 
-    public void CalculateEndScore()
+    public IPlayer Winner()
     {
-        throw new NotImplementedException();
+        return _state.Players
+            .ToDictionary(p => p, p => p.CardPoints - p.CoinsAmount)
+            .OrderByDescending(kvp => kvp.Value).First().Key;
     }
 }

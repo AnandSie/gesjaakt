@@ -28,6 +28,8 @@ public abstract class Player : IPlayer
 
     public ICollection<ICard> Cards => _cards;
 
+    public int CardPoints => throw new NotImplementedException();
+
     public void AcceptCoins(IEnumerable<ICoin> coins)
     {
         _coins = coins.Concat(_coins).ToList();

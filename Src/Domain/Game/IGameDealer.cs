@@ -12,6 +12,12 @@ public interface IGameDealer
     IGameStateReader State { get; }
     void AddPlayer(IPlayer player);
     void DivideCoins(int coinsAmount);
+    void RemoveCardsFromDeck(int amount);
+
+    [Obsolete("Should be private and replaced by Play")]
     void NextPlayerPlays();
-    void CalculateEndScore();
+
+    void Play();
+
+    IPlayer Winner();
 }

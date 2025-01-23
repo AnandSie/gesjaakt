@@ -12,5 +12,6 @@ public interface IGameStateWriter
     public void AddPlayer(IPlayer player);
     public void AddCoinToTable(ICoin coin);
     public IEnumerable<ICoin> TakeCoins();
+    public void TakeCardsFromDeck(int amount);
     public void NextPlayer();
 }
