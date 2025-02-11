@@ -18,7 +18,7 @@ public class PlayerTests
     [TestInitialize]
     public void Setup()
     {
-        sut = new GreedyPlayer();
+        sut = new Player(new GreedyThinker());
     }
 
     [TestMethod]
@@ -83,7 +83,7 @@ public class PlayerTests
 
         var card1OfStreet2 = new Card(value + 5);
         var card2OfStreet2 = new Card(value + 6);
-        sut.AcceptCard(card1OfStreet2); 
+        sut.AcceptCard(card1OfStreet2);
         sut.AcceptCard(card2OfStreet2);
 
         var result = sut.CardPoints();

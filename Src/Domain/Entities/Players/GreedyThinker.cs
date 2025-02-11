@@ -7,14 +7,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.Players;
 
-public class GreedyPlayer : Player
+public class GreedyThinker : IThinker
 {
-    public GreedyPlayer() : base()
-    {
-
-    }
-
-    public override TurnAction Decide(IGameStateReader gameState)
+    public TurnAction Decide(IGameStateReader gameState)
     {
         return TurnAction.TAKECARD;
     }

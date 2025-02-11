@@ -8,7 +8,8 @@ namespace Domain.Interfaces;
 
 public interface IGameStateWriter
 {
-    public void AddPlayer(IPlayer player);
+    IEnumerable<IPlayerActions> Players { get; }
+    public void AddPlayer(IPlayerActions player);
     public void AddCoinToTable(ICoin coin);
     public IEnumerable<ICoin> TakeCoins();
     public void RemoveCardsFromDeck(int amount);

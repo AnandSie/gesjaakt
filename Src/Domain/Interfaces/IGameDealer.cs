@@ -10,5 +10,5 @@ public interface IGameDealer
 {
     IGameStateReader State { get; }
     void Play();
-    IPlayer Winner();
+    IPlayerState Winner();
 }

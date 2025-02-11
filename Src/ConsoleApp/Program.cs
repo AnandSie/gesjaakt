@@ -16,8 +16,8 @@ var players = new List<IPlayer>();
 switch (choice)
 {
     case 1:
-        players.Add(new GreedyPlayer());
-        players.Add(new ScaredPlayer());
+        players.Add(new Player(new GreedyThinker()));
+        players.Add(new Player(new GreedyThinker()));
         break;
     case 2:
 
@@ -26,10 +26,9 @@ switch (choice)
         foreach (var i in Enumerable.Range(3, playersToAdd))
         {
             var name = new ConsoleInputService().GetPlayerInput($"Player number {i - 2} what is your name?");
-            players.Add(new ManualPlayer(new ConsoleInputService(), name));
+            players.Add(new Player(new HomoSapiensThinker(new ConsoleInputService()), name));
         }
         break;
-
 }
 
 var dealer = new GameDealer(players);

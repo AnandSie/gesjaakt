@@ -7,14 +7,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.Players;
 
-public class ScaredPlayer : Player
+public class ScaredThinker : IThinker
 {
-    public ScaredPlayer() : base()
-    {
-        // TODO: Create a decider object and insert this into the player base
-    }
-
-    public override TurnAction Decide(IGameStateReader gameState)
+    public TurnAction Decide(IGameStateReader _)
     {
         return TurnAction.SKIPWITHCOIN;
     }

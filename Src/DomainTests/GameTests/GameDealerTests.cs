@@ -18,19 +18,21 @@ public class GameDealerTests
     [TestMethod]
     public void AddPlayerTest()
     {
-        var player = new ScaredPlayer();
-        var sut = new GameDealer(new[] { player });
+        var scaredPlayer = new Player(new ScaredThinker());
 
-        var expectedResult = new List<IPlayer> { player };
+        var sut = new GameDealer(new[] { scaredPlayer });
+
+        var expectedResult = new List<IPlayerActions> { scaredPlayer };
         sut.State.Players.Should().BeEquivalentTo(expectedResult);
     }
 
     [TestMethod]
     public void GreedyPlayerTakesAllCards_LosesGameTest()
     {
-        var greedyPlayer = new GreedyPlayer();
-        var scaredPlayer = new ScaredPlayer();
-        var sut = new GameDealer(new Player[] { greedyPlayer, scaredPlayer });
+        var greedyPlayer1 = new Player(new GreedyThinker());
+        var greedyPlayer2 = new Player(new GreedyThinker());
+        var scaredPlayer = new Player(new ScaredThinker());
+        var sut = new GameDealer(new Player[] { greedyPlayer1, greedyPlayer2, scaredPlayer });
 
         sut.Play();
 

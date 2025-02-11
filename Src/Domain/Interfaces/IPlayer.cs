@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces;
 
-public interface IPlayer : IPlayerState, IDecide
+public interface IPlayer: IPlayerActions, IPlayerState
 {
-    string Name { get; }
-    public void AcceptCoins(IEnumerable<ICoin> coins);
-    public void AcceptCard(ICard card);
-    public ICoin GiveCoin();
 }

@@ -27,15 +27,16 @@ public class GameDealer : IGameDealer
 
     private void DivideCoins()
     {
-        var coinsPerPlayer = _state.Players.Count() switch
+        // FIXME: COntinously casting is suboptimal
+        var coinsPerPlayer = ((IGameStateReader)_state).Players.Count() switch
         {
             3 or 4 or 5 => 11,
             6 => 9,
             7 => 7,
-            _ => throw new Exception("There are more players than the rules for dividing coins expected"),
+            _ => throw new Exception("The amoutn of players is not equal to the rules for dividing coins expected"),
         };
         Console.WriteLine($"Every player gets {coinsPerPlayer} coins");
-        foreach (var player in _state.Players)
+        foreach (var player in ((IGameStateWriter)_state).Players)
         {
             var coins = Enumerable.Range(1, coinsPerPlayer).Select(x => new Coin()).ToArray();
             player.AcceptCoins(coins);
@@ -52,9 +53,9 @@ public class GameDealer : IGameDealer
         }
     }
 
-    public IPlayer Winner()
+    public IPlayerState Winner()
     {
-        return _state.Players
+        return ((IGameStateReader)_state).Players
             .OrderBy(p => p.CardPoints() - p.CoinsAmount)
             .First();
     }
@@ -62,7 +63,7 @@ public class GameDealer : IGameDealer
     private void NextPlayerPlays()
     {
         // TODO: REPLACE BY DESIGN PATTERN - STATE PATTERN?
-        var player = _state.PlayerOnTurn;
+        var player = (IPlayer)((IGameStateReader)_state).PlayerOnTurn;
 
         if (player.CoinsAmount == 0)
         {
@@ -87,7 +88,7 @@ public class GameDealer : IGameDealer
         _state.NextPlayer();
     }
 
-    private void HandleTakeCard(IPlayer player)
+    private void HandleTakeCard(IPlayerActions player)
     {
         player.AcceptCard(_state.TakeOpenCard());
         player.AcceptCoins(_state.TakeCoins());

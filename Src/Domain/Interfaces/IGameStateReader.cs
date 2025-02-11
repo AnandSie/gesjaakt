@@ -8,8 +8,8 @@ namespace Domain.Interfaces;
 
 public interface IGameStateReader
 {
-    IEnumerable<IPlayer> Players { get; }
-    IPlayer PlayerOnTurn { get; }
+    IEnumerable<IPlayerState> Players { get; }
+    IPlayerState PlayerOnTurn { get; }
     int OpenCardValue { get; }
     IDeckState Deck { get; }
     int AmountOfCoinsOnTable { get; }

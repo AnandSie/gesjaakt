@@ -7,25 +7,23 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.Players;
 
-public class ManualPlayer : Player
+public class HomoSapiensThinker : IThinker
 {
-    string _name;
     IPlayerInputProvider _playerInputProvider;
 
-    public ManualPlayer(IPlayerInputProvider playerInputProvider, string name) : base(name)
+    public HomoSapiensThinker(IPlayerInputProvider playerInputProvider)
     {
-        _name = name;
         _playerInputProvider = playerInputProvider;
     }
 
-    public override TurnAction Decide(IGameStateReader gameState)
+    public TurnAction Decide(IGameStateReader gameState)
     {
         Console.Write("-----------\n");
         Console.WriteLine($"Game state is:");
         Console.WriteLine(gameState.ToString());
 
         Console.Write("");
-        Console.WriteLine($"Hai {_name}, what do you want to do?");
+        Console.WriteLine($"Hai , what do you want to do?");
         Console.WriteLine("1. Take Card 2. Play Coin");
 
         // TODO: create new method, instead of giving ints, give Enums

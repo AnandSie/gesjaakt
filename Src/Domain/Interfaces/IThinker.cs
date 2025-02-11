@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces;
 
-public interface IDecide
+public interface IThinker
 {
-    public TurnAction Decide(IGameStateReader state);
+    public TurnAction Decide(IGameStateReader gameState);
 }

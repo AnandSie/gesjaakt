@@ -6,7 +6,7 @@ namespace Domain.Entities.Game;
 
 public class GameState : IGameState
 {
-    private IList<IPlayer> _players;
+    private readonly IList<IPlayer> _players;
     private int _playerIndex;
     private ICollection<ICoin> _coinsOnTable;
     private IDeck _deck;
@@ -21,7 +21,23 @@ public class GameState : IGameState
         _deck = new Deck(3, 35); // TODO: extract to config
     }
 
-    public IEnumerable<IPlayer> Players => _players;
+    IEnumerable<IPlayerActions> IGameStateWriter.Players
+    {
+        get
+        {
+            return _players;
+        }
+    }
+
+    IEnumerable<IPlayerState> IGameStateReader.Players
+    {
+        get
+        {
+            return _players;
+        }
+    }
+
+    public IEnumerable<IPlayerActions> Players => _players;
 
     public void OpenNextCardFromDeck()
     {
@@ -48,16 +64,17 @@ public class GameState : IGameState
 
     public int AmountOfCoinsOnTable => _coinsOnTable.Count();
 
-    public IPlayer PlayerOnTurn => _players[_playerIndex];
+    public IPlayerState PlayerOnTurn => _players[_playerIndex];
 
     public void AddCoinToTable(ICoin coin)
     {
         _coinsOnTable.Add(coin);
     }
 
-    public void AddPlayer(IPlayer player)
+    public void AddPlayer(IPlayerActions newPlayer)
     {
-        _players.Add(player);
+        // FIXME: casting is suboptimal.., code smell?
+        _players.Add((IPlayer)newPlayer);
     }
 
     public void NextPlayer()

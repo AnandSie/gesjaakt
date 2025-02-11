@@ -7,24 +7,24 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.Players;
 
-// TODO: misschien abstract class Player maken
-// => strategy pattern? 
-
-// TODO: Inject IDecider 
-
-public abstract class Player : IPlayer
+public class Player : IPlayer
 {
     private readonly ICollection<ICoin> _coins;
     private readonly ICollection<ICard> _cards;
-    private string? _name;
-    public Player(string? name = null)
+    private readonly string? _name;
+    private readonly IThinker _thinker;
+    public Player(IThinker thinker, string? name = null)
     {
         _name = name;
         _coins = new HashSet<ICoin>();
         _cards = new HashSet<ICard>();
+        _thinker = thinker;
     }
 
-    public abstract TurnAction Decide(IGameStateReader gameState);
+    public TurnAction Decide(IGameStateReader gameState)
+    {
+        return _thinker.Decide(gameState);
+    }
 
     public int CoinsAmount => _coins.Count;
 
