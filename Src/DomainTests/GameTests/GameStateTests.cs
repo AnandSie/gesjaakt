@@ -1,8 +1,5 @@
-﻿using Domain.Cards;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
-using Domain.Game;
-using Domain.Players;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Domain.Entities.Game;
 
 namespace DomainTests.GameTests;
 

@@ -1,5 +1,5 @@
-﻿using Domain.Cards;
-using Domain.Players;
+﻿using Domain.Entities.Cards;
+using Domain.Entities.Players;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -70,7 +70,6 @@ public class PlayerTests
 
         result.Should().Be(value);
     }
-
 
     [TestMethod]
     public void LowestCard_ForThreeStreetTest()

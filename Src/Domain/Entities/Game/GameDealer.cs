@@ -1,0 +1,96 @@
+﻿using Domain.Entities.Players;
+using Domain.Interfaces;
+using System.Numerics;
+
+namespace Domain.Entities.Game;
+
+public class GameDealer : IGameDealer
+{
+    private readonly IGameState _state;
+
+    public GameDealer(IEnumerable<IPlayer> players)
+    {
+        // TODO: DI
+        _state = new GameState();
+        foreach (var player in players)
+        {
+            _state.AddPlayer(player);
+        }
+
+        // TODO: Create a rules config object with we inject
+        // TODO: Add ensures based on rules
+        var amountToRemoveFromDeck = 9;
+        _state.RemoveCardsFromDeck(amountToRemoveFromDeck);
+    }
+
+    public IGameStateReader State => _state;
+
+    private void DivideCoins()
+    {
+        var coinsPerPlayer = _state.Players.Count() switch
+        {
+            3 or 4 or 5 => 11,
+            6 => 9,
+            7 => 7,
+            _ => throw new Exception("There are more players than the rules for dividing coins expected"),
+        };
+        Console.WriteLine($"Every player gets {coinsPerPlayer} coins");
+        foreach (var player in _state.Players)
+        {
+            var coins = Enumerable.Range(1, coinsPerPlayer).Select(x => new Coin()).ToArray();
+            player.AcceptCoins(coins);
+        }
+    }
+
+    public void Play()
+    {
+        DivideCoins();
+        _state.OpenNextCardFromDeck();
+        while (!_state.Deck.IsEmpty())
+        {
+            NextPlayerPlays();
+        }
+    }
+
+    public IPlayer Winner()
+    {
+        return _state.Players
+            .OrderBy(p => p.CardPoints() - p.CoinsAmount)
+            .First();
+    }
+
+    private void NextPlayerPlays()
+    {
+        // TODO: REPLACE BY DESIGN PATTERN - STATE PATTERN?
+        var player = _state.PlayerOnTurn;
+
+        if (player.CoinsAmount == 0)
+        {
+            Console.WriteLine("!!!!!! GESJAAKT !!!!!! ");
+            Console.WriteLine("You need to take a card");
+            HandleTakeCard(player);
+        }
+        else
+        {
+            switch (player.Decide(_state))
+            {
+                case TurnAction.TAKECARD:
+                    HandleTakeCard(player);
+                    break;
+
+                case TurnAction.SKIPWITHCOIN:
+                    _state.AddCoinToTable(player.GiveCoin());
+                    break;
+            }
+        }
+
+        _state.NextPlayer();
+    }
+
+    private void HandleTakeCard(IPlayer player)
+    {
+        player.AcceptCard(_state.TakeOpenCard());
+        player.AcceptCoins(_state.TakeCoins());
+        _state.OpenNextCardFromDeck();
+    }
+}
