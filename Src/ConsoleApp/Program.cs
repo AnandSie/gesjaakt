@@ -1,45 +1,33 @@
-﻿using ConsoleApp.Helpers;
+﻿using Application;
+using ConsoleApp;
+using ConsoleApp.Helpers;
 using Domain.Entities.Game;
 using Domain.Entities.Players;
+using Domain.Entities.Thinkiers;
 using Domain.Interfaces;
-
-Console.WriteLine("LETS PLAY!");
-Console.WriteLine("What do you want?");
-Console.WriteLine("1. Demo Game");
-Console.WriteLine("2. Custom Game");
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System.Text;
 
 // TODO: IOC
-var choice = new ConsoleInputService().GetPlayerInputAsInt(new[] { 1, 2 });
+var serviceCollection = new ServiceCollection();
 
-// TODO: Extract class
-var players = new List<IPlayer>();
-switch (choice)
-{
-    case 1:
-        players.Add(new Player(new GreedyThinker()));
-        players.Add(new Player(new GreedyThinker()));
-        break;
-    case 2:
+serviceCollection.AddLogging(configure => configure.AddConsole()
+    .SetMinimumLevel(LogLevel.Warning)
+);
 
-        var playersToAdd = new ConsoleInputService().GetPlayerInputAsInt("How many players do you want to play (3-7)?", new[] { 3, 4, 5, 6, 7 });
+//serviceCollection.AddSingleton<ILogger, Logger>();// Use custom loggers
 
-        foreach (var i in Enumerable.Range(3, playersToAdd))
-        {
-            var name = new ConsoleInputService().GetPlayerInput($"Player number {i - 2} what is your name?");
-            players.Add(new Player(new HomoSapiensThinker(new ConsoleInputService()), name));
-        }
-        break;
-}
+// Application
+serviceCollection.AddSingleton<IPlayerInputProvider, ConsoleInputService>();
+serviceCollection.AddSingleton<IPlayerFactory, PlayerFactory>();
+serviceCollection.AddSingleton<App>();
 
-var dealer = new GameDealer(players);
-dealer.Play();
+var serviceProvider = serviceCollection.BuildServiceProvider();
 
-var winner = dealer.Winner();
-Console.WriteLine();
-Console.WriteLine($"The winner is: {winner.Name}");
-Console.WriteLine("And the other players");
+var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("Starting application...");
 
-foreach (var player in dealer.State.Players)
-{
-    Console.WriteLine($"- {player}");
-}
+var app = serviceProvider.GetRequiredService<App>();
+app.Run();
+

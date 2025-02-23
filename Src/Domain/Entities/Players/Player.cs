@@ -23,7 +23,17 @@ public class Player : IPlayer
 
     public TurnAction Decide(IGameStateReader gameState)
     {
-        return _thinker.Decide(gameState);
+        try
+        {
+            return _thinker.Decide(gameState);
+        }
+        catch (Exception e)
+        {
+            // TODO: replace with logging or something similar? We can't use logging in domain...?
+            Console.WriteLine("The calculation did not work");
+            Console.WriteLine(e.ToString());
+            return TurnAction.SKIPWITHCOIN;
+        }
     }
 
     public int CoinsAmount => _coins.Count;
@@ -70,6 +80,6 @@ public class Player : IPlayer
 
     public override string ToString()
     {
-        return $"{_name ?? "someone"} the {GetType().Name} has cards [{string.Join(", ", Cards.Select(c => c.Value).OrderBy(c => c))}] and {CoinsAmount} coins";
+        return $"{_name ?? "unkown"}, has {CardPoints() - CoinsAmount} penalty points, cards [{string.Join(", ", Cards.Select(c => c.Value).OrderBy(c => c))}] and {CoinsAmount} coins";
     }
 }

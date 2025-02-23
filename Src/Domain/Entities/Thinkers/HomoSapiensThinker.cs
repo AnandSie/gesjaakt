@@ -1,19 +1,17 @@
-﻿using Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Entities.Players;
+using Domain.Interfaces;
 
-namespace Domain.Entities.Players;
+namespace Domain.Entities.Thinkiers;
 
 public class HomoSapiensThinker : IThinker
 {
-    IPlayerInputProvider _playerInputProvider;
+    readonly IPlayerInputProvider _playerInputProvider;
+    string _name;
 
-    public HomoSapiensThinker(IPlayerInputProvider playerInputProvider)
+    public HomoSapiensThinker(IPlayerInputProvider playerInputProvider, string name)
     {
         _playerInputProvider = playerInputProvider;
+        _name = name;
     }
 
     public TurnAction Decide(IGameStateReader gameState)
@@ -23,7 +21,7 @@ public class HomoSapiensThinker : IThinker
         Console.WriteLine(gameState.ToString());
 
         Console.Write("");
-        Console.WriteLine($"Hai , what do you want to do?");
+        Console.WriteLine($"Hai {_name}, what do you want to do?");
         Console.WriteLine("1. Take Card 2. Play Coin");
 
         // TODO: create new method, instead of giving ints, give Enums
