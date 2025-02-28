@@ -1,13 +1,9 @@
 ﻿using Application;
 using ConsoleApp;
 using ConsoleApp.Helpers;
-using Domain.Entities.Game;
-using Domain.Entities.Players;
-using Domain.Entities.Thinkiers;
 using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Text;
 
 // TODO: IOC
 var serviceCollection = new ServiceCollection();
