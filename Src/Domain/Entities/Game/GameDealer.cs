@@ -45,10 +45,10 @@ public class GameDealer : IGameDealer
     public void Play()
     {
         DivideCoins();
-        _state.OpenNextCardFromDeck();
+        PlayFirstCard();
         while (!_state.Deck.IsEmpty())
         {
-            NextPlayerPlays();
+            PlayTurn();
         }
     }
 
@@ -59,10 +59,15 @@ public class GameDealer : IGameDealer
             .First();
     }
 
-    private void NextPlayerPlays()
+    public void PlayFirstCard()
+    {
+        _state.OpenNextCardFromDeck();
+    }
+
+    public void PlayTurn()
     {
         // TODO: REPLACE BY DESIGN PATTERN - STATE PATTERN?
-        var player = (IPlayer)((IGameStateReader)_state).PlayerOnTurn;
+        var player = (IPlayer)_state.PlayerOnTurn;
 
         if (player.CoinsAmount == 0)
         {
@@ -91,6 +96,11 @@ public class GameDealer : IGameDealer
     {
         player.AcceptCard(_state.TakeOpenCard());
         player.AcceptCoins(_state.TakeCoins());
-        _state.OpenNextCardFromDeck();
+
+        if (!_state.Deck.IsEmpty())
+        {
+            _state.OpenNextCardFromDeck();
+            PlayTurn();
+        }
     }
 }
