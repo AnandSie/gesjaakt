@@ -32,7 +32,7 @@ public class GameDealer : IGameDealer
             3 or 4 or 5 => 11,
             6 => 9,
             7 => 7,
-            _ => throw new Exception("The amoutn of players is not equal to the rules for dividing coins expected"),
+            _ => throw new Exception("The number of players is not equal to the rules for dividing coins expected"),
         };
         Console.WriteLine($"Every player gets {coinsPerPlayer} coins");
         foreach (var player in ((IGameStateWriter)_state).Players)
@@ -49,19 +49,25 @@ public class GameDealer : IGameDealer
         while (!_state.Deck.IsEmpty())
         {
             PlayTurn();
+            NextPlayer();
         }
     }
 
     public IPlayerState Winner()
     {
         return ((IGameStateReader)_state).Players
-            .OrderBy(p => p.CardPoints() - p.CoinsAmount)
+            .OrderBy(p => p.Points())
             .First();
     }
 
     public void PlayFirstCard()
     {
         _state.OpenNextCardFromDeck();
+    }
+
+    public void NextPlayer()
+    {
+        _state.NextPlayer();
     }
 
     public void PlayTurn()
@@ -88,8 +94,6 @@ public class GameDealer : IGameDealer
                     break;
             }
         }
-
-        _state.NextPlayer();
     }
 
     private void HandleTakeCard(IPlayerActions player)

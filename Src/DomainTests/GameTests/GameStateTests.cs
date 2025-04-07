@@ -1,10 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Domain.Entities.Game;
+﻿using Domain.Entities.Game;
 using Domain.Entities.Players;
 using Domain.Entities.Thinkiers;
 using Domain.Interfaces;
 using FluentAssertions;
-using Newtonsoft.Json.Bson;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 
 namespace DomainTests.GameTests;
@@ -14,17 +13,19 @@ public class GameStateTests
 {
     GameState sut = new GameState();
     Player greedyPlayer = new (new GreedyThinker());
+    Player greedyPlayer2 = new (new GreedyThinker());
 
     [TestInitialize]
     public void Setup()
     {
         sut.AddPlayer(greedyPlayer);
+        sut.AddPlayer(greedyPlayer2);
     }
 
     [TestMethod]
     public void AddPlayer()
     {
-        var expectedResult = new List<IPlayerActions> { greedyPlayer };
+        var expectedResult = new List<IPlayerActions> { greedyPlayer, greedyPlayer2 };
         sut.Players.Should().BeEquivalentTo(expectedResult);
     }
 

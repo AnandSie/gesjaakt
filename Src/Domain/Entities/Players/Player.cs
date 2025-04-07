@@ -78,8 +78,13 @@ public class Player : IPlayer
         return lowestOfConnectedGroups.Select(r => r.Value).Sum();
     }
 
+    public int Points()
+    {
+        return CardPoints() - CoinsAmount;
+    }
+
     public override string ToString()
     {
-        return $"{_name ?? "unkown"}, has {CardPoints() - CoinsAmount} penalty points, cards [{string.Join(", ", Cards.Select(c => c.Value).OrderBy(c => c))}] and {CoinsAmount} coins";
+        return $"{_name ?? "unkown"}, has {Points()} penalty points, cards [{string.Join(", ", Cards.Select(c => c.Value).OrderBy(c => c))}] and {CoinsAmount} coins";
     }
 }

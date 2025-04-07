@@ -52,11 +52,15 @@ public class GameDealerTests
         sut.PlayFirstCard();
         sut.State.PlayerOnTurn.Name.Should().Be("Donald");
         sut.PlayTurn();
+        sut.NextPlayer();
         sut.State.PlayerOnTurn.Name.Should().Be("Dagobert");
         sut.PlayTurn();
         sut.State.AmountOfCoinsOnTable.Should().Be(1);
+
         scaredPlayer.CoinsAmount.Should().Be(0);
         greedyPlayer.CoinsAmount.Should().Be(1);
+        scaredPlayer.Cards.Count.Should().Be(0);
+        greedyPlayer.Cards.Count.Should().Be(1);
     }
 
     [TestMethod]
@@ -68,9 +72,11 @@ public class GameDealerTests
         var sut = new GameDealer(new Player[] { scaredPlayer1, greedyPlayer, scaredPlayer2 });
 
         sut.Play();
-
         var winner = sut.Winner();
 
-        winner.Should().Be(scaredPlayer2);
+        var ranking = sut.State.Players.OrderBy(p => p.Points()).ToList();
+
+        winner.Should().Be(ranking.First());
+        greedyPlayer.Should().Be(ranking.Last());
     }
 }
