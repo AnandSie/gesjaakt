@@ -10,4 +10,5 @@ namespace Application;
 public interface IPlayerFactory
 {
     public IEnumerable<IPlayer> Create();
+    public bool LoadDynamicThinkers();
 }

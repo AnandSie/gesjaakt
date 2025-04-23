@@ -26,6 +26,22 @@ internal class App
 
     public void Run()
     {
+        if (!Directory.Exists(@"../thinkers")) Directory.CreateDirectory(@"../thinkers");
+
+        // Load dynamic thinkers
+        Console.WriteLine("Loading dynamic thinkers...");
+
+        bool playersLoaded = PlayerFactory.LoadDynamicThinkers();
+        if (!playersLoaded)
+        {
+            Console.WriteLine("One or more dynamic thinkers failed to load");
+            Console.WriteLine("Would you like to continue with the succesful thinkers anyway?");
+
+            var cont = new ConsoleInputService(logger).GetPlayerInputForYesNo();
+
+            if (!cont) { Environment.Exit(0); }
+        }
+
 
         Console.WriteLine("LETS PLAY!");
         Console.WriteLine("What do you want?");
