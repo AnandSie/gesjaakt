@@ -12,6 +12,10 @@ public class GreedyThinker : IThinker
 {
     public TurnAction Decide(IGameStateReader gameState)
     {
+        if (gameState.AmountOfCoinsOnTable == 0)
+        {
+            return TurnAction.SKIPWITHCOIN;
+        }
         return TurnAction.TAKECARD;
     }
 }
