@@ -2,11 +2,11 @@
 {
     public static class EnumerableExtensions
     {
-        private static Random Random = new();
+        private readonly static Random random = new();
 
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source)
         {
-            return source.OrderBy(_ => Random.Next());
+            return source.OrderBy(_ => random.Next());
         }
     }
 }

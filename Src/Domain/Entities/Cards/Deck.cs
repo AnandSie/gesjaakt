@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Interfaces;
+using Extensions;
 
 namespace Domain.Entities.Cards;
 
@@ -14,11 +15,10 @@ public class Deck : IDeck
 
     public Deck(int min, int max)
     {
-        var random = new Random();
         int deckSize = max - min + 1;
         Cards = Enumerable.Range(min, deckSize)
                                .Select(value => new Card(value))
-                               .OrderBy(_ => random.Next())
+                               .Shuffle()
                                .ToHashSet<ICard>();
     }
 
