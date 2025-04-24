@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 var serviceCollection = new ServiceCollection();
 
 serviceCollection.AddLogging(configure => configure.AddConsole()
-    .SetMinimumLevel(LogLevel.Warning)
+    .SetMinimumLevel(LogLevel.Information)
 );
 
 //serviceCollection.AddSingleton<ILogger, Logger>();// Use custom loggers
