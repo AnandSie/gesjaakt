@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application;
 using Extensions;
+using Domain.Helpers;
 
 namespace ConsoleApp;
 
@@ -27,6 +28,8 @@ internal class App
 
     public void Run()
     {
+        var thinker = new AnandThinker(); // TODO: Change with your thinker 
+        new ThinkerPlotter(thinker).Plot();
 
         Console.WriteLine("LETS PLAY!");
         Console.WriteLine("What do you want?");
