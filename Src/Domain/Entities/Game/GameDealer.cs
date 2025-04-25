@@ -78,7 +78,7 @@ public class GameDealer : IGameDealer
         if (player.CoinsAmount == 0)
         {
             Console.WriteLine("!!!!!! GESJAAKT !!!!!! ");
-            Console.WriteLine("You need to take a card");
+            Console.WriteLine($"{player.Name} needs to take a card");
             HandleTakeCard(player);
         }
         else

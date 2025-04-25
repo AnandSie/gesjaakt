@@ -42,7 +42,7 @@ internal class App
             case 1:
                 // TODO: Log critical
                 var simsAmount = new ConsoleInputService(logger).GetPlayerInputAsIntWithMinMax("How often should we run it", 1, 10000);
-                logger.LogInformation($"SimsAmount {simsAmount}");
+                logger.LogInformation($"Simulation started with {simsAmount} runs");
                 var resultPerPlayer = new Dictionary<string, int>(); // Primitive obsession: use PlayerName
 
                 foreach (var iter in Enumerable.Range(1, simsAmount))
