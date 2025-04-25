@@ -15,7 +15,7 @@ public class MarijnThinker : IThinker
         var tableThreshold1 = 5;
         var tableThreshold2 = 10;
         var dealT1 = 0;
-        var dealT2 = 15;
+        var dealT2 = 5; // 15 might be better
 
         var wMyCoins = 0.05; 
         var wCoinsOnTable = 0.90;
