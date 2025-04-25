@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Players;
+using Domain.Entities.Thinkers;
 using Domain.Entities.Thinkiers;
 using Domain.Interfaces;
 
@@ -12,8 +13,9 @@ namespace Application
             {
                 new Player(new BartThinker(), "Bart"),
                 new Player(new AnandThinker(), "Anand"),
+                new Player(new MarijnThinker(), "Marijn"),
+                new Player(new TomasThinker(), "Tomas"),
                 new Player(new MaartenThinker(), "Maarten"),
-                new Player(new TomasThinker(), "Tomas")
             };
             return players;
         }
