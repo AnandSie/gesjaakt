@@ -23,6 +23,7 @@ namespace Application
                 new Player(new MarijnThinker(), _logger, "Marijn"),
                 new Player(new TomasThinker(), _logger, "Tomas"),
                 new Player(new MaartenThinker(), _logger, "Maarten"),
+                new Player(new BarryThinker(), _logger, "Barry"),
             };
             return players;
         }
