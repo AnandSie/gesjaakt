@@ -7,18 +7,19 @@ namespace Domain.Entities.Game;
 public class GameState : IGameState
 {
     private readonly IList<IPlayer> _players;
+    private readonly ILogger<GameState> _logger;
     private int _playerIndex;
     private ICollection<ICoin> _coinsOnTable;
     private IDeck _deck;
     private ICard? _openCard;
 
-    public GameState()
+    public GameState(IEnumerable<IPlayer> players, ILogger<GameState> logger)
     {
-        _players = new List<IPlayer>();
+        _players = players.ToList();
         _playerIndex = 0;
         _coinsOnTable = new HashSet<ICoin>();
-        // TODO: extract with DI
         _deck = new Deck(3, 35); // TODO: extract to config
+        _logger = logger;
     }
 
     IEnumerable<IPlayerActions> IGameStateWriter.Players
@@ -42,6 +43,7 @@ public class GameState : IGameState
     public void OpenNextCardFromDeck()
     {
         _openCard = _deck.DrawCard();
+        _logger.LogInformation($"Card drawn: {_openCard.Value}. Cards left: {Deck.AmountOfCardsLeft()}");
     }
 
     public ICard TakeOpenCard()
@@ -59,6 +61,8 @@ public class GameState : IGameState
 
     // TODO: Custom Exception
     public int OpenCardValue => _openCard?.Value ?? throw new Exception("There is no card yet");
+
+    public bool HasOpenCard => _openCard != null;
 
     public IDeckState Deck => _deck;
 

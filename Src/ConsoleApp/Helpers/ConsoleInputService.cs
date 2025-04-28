@@ -1,5 +1,4 @@
 ﻿using Domain.Interfaces;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,24 +9,24 @@ namespace ConsoleApp.Helpers;
 
 internal class ConsoleInputService : IPlayerInputProvider
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<ConsoleInputService> _logger;
 
     // TODO: Readline
-    public ConsoleInputService(ILogger logger)
+    public ConsoleInputService(ILogger<ConsoleInputService> logger)
     {
         _logger = logger;
     }
 
     public string GetPlayerInput(string question)
     {
-        _logger.LogInformation($"{question}\n");
+        _logger.LogCritical($"{question}\n");
 
         while (true)
         {
             var value = Console.ReadLine();
             if (value is null)
             {
-                _logger.LogInformation($"Invalid input. Please enter a string.");
+                _logger.LogCritical($"Invalid input. Please enter a string.");
             }
             else
             {
@@ -39,8 +38,8 @@ internal class ConsoleInputService : IPlayerInputProvider
 
     public bool GetPlayerInputForYesNo()
     {
-        _logger.LogInformation("1. Yes");
-        _logger.LogInformation("2. No");
+        _logger.LogCritical("1. Yes");
+        _logger.LogCritical("2. No");
 
         var input = GetPlayerInputAsInt(new[] { 1, 2 });
 
@@ -61,19 +60,19 @@ internal class ConsoleInputService : IPlayerInputProvider
                 return value;
             }
 
-            _logger.LogInformation($"Invalid input. Please enter a valid number from the list {allowedInts}.");
+            _logger.LogCritical($"Invalid input. Please enter a valid number from the list {allowedInts}.");
         }
     }
 
     public int GetPlayerInputAsInt(string question, IEnumerable<int> allowedInts)
     {
-        _logger.LogInformation(question);
+        _logger.LogCritical(question);
         return GetPlayerInputAsInt(allowedInts);
     }
 
     public int GetPlayerInputAsIntWithMinMax(string question, int min, int max)
     {
-        _logger.LogInformation(question);
+        _logger.LogCritical(question);
         while (true)
         {
             if (int.TryParse(Console.ReadLine(), out var value) && value >= min && value <= max)
@@ -81,7 +80,7 @@ internal class ConsoleInputService : IPlayerInputProvider
                 return value;
             }
 
-            _logger.LogInformation($"Invalid input. Please enter a valid number between {min} and {max}.");
+            _logger.LogCritical($"Invalid input. Please enter a valid number between {min} and {max}.");
         }
     }
 }

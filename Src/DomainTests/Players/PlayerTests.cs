@@ -1,8 +1,10 @@
 ﻿using Domain.Entities.Cards;
 using Domain.Entities.Players;
 using Domain.Entities.Thinkiers;
+using Domain.Interfaces;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +21,7 @@ public class PlayerTests
     [TestInitialize]
     public void Setup()
     {
-        sut = new Player(new GreedyThinker());
+        sut = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object);
     }
 
     [TestMethod]
