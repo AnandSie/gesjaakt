@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Game;
 using Domain.Entities.Players;
-using Domain.Entities.Thinkiers;
+using Domain.Entities.Thinkers;
 using Domain.Interfaces;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -1,7 +1,7 @@
 ﻿using Domain.Entities.Players;
 using Domain.Interfaces;
 
-namespace Domain.Entities.Thinkiers;
+namespace Domain.Entities.Thinkers;
 
 public class HomoSapiensThinker : IThinker
 {

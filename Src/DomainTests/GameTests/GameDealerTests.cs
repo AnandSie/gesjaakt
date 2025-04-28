@@ -4,7 +4,7 @@ using Domain.Entities.Game;
 using Domain.Entities.Players;
 using Domain.Interfaces;
 using System.Numerics;
-using Domain.Entities.Thinkiers;
+using Domain.Entities.Thinkers;
 
 namespace DomainTests.GameTests;
 
