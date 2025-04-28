@@ -7,31 +7,33 @@ namespace Application
 {
     public class PlayerFactory : IPlayerFactory
     {
-        private readonly ILogger<Player> _logger;
+        private readonly ILogger<Player> _playerLogger;
+        private readonly ILogger<HomoSapiensThinker> _thinkerLogger;
 
-        public PlayerFactory(ILogger<Player> logger)
+        public PlayerFactory(ILogger<Player> playerLogger, ILogger<HomoSapiensThinker> thinkerLogger)
         {
-            _logger = logger;
+            _playerLogger = playerLogger;
+            _thinkerLogger = thinkerLogger;
         }
 
         public IEnumerable<IPlayer> Create()
         {
             var players = new List<IPlayer>
-            {
-                new Player(new BartThinker(), _logger, "Bart"),
-                new Player(new AnandThinker(), _logger, "Anand"),
-                new Player(new MarijnThinker(), _logger, "Marijn"),
-                new Player(new TomasThinker(), _logger, "Tomas"),
-                new Player(new MaartenThinker(), _logger, "Maarten"),
-                new Player(new BarryThinker(), _logger, "Barry"),
-            };
+        {
+            new Player(new BartThinker(), _playerLogger, "Bart"),
+            new Player(new AnandThinker(), _playerLogger, "Anand"),
+            new Player(new MarijnThinker(), _playerLogger, "Marijn"),
+            new Player(new TomasThinker(), _playerLogger, "Tomas"),
+            new Player(new MaartenThinker(), _playerLogger, "Maarten"),
+            new Player(new BarryThinker(), _playerLogger, "Barry"),
+        };
             return players;
         }
 
         public IPlayer CreateHomoSapiens(string name, IPlayerInputProvider playerInputProvider)
         {
-            var player = new Player(new HomoSapiensThinker(playerInputProvider, name), _logger, name); // FIXME Both classes uses name
-
+            var thinker = new HomoSapiensThinker(playerInputProvider, _thinkerLogger, name);
+            var player = new Player(thinker, _playerLogger, name);
             return player;
         }
     }

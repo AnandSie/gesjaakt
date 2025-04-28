@@ -23,11 +23,14 @@ internal class App
 
     public void Run()
     {
-
-        Console.WriteLine("LETS PLAY!");
-        Console.WriteLine("What do you want?");
-        Console.WriteLine("1. Simulated Game");
-        Console.WriteLine("2. Manual Game");
+        _logger.LogCritical(
+            """
+            LETS PLAY!
+            What do you want?
+            1. Simulated Game
+            2. Manual Game
+            """
+                );
 
         var choice = _playerInputProvider.GetPlayerInputAsInt(new[] { 1, 2 });
 
@@ -79,7 +82,8 @@ internal class App
                 }
                 _logger.LogCritical(sb.ToString());
 
-                Thread.Sleep(2000);
+                _logger.LogCritical($"Press enter to exit");
+                Console.ReadLine();
                 break;
 
             case 2:
@@ -96,15 +100,19 @@ internal class App
                 dealerManualGame.Play();
                 var winnerManualGame = dealerManualGame.Winner();
 
-                _logger.LogCritical($"-----------------------------\n\t" +
-                                    $"The winner is: {winnerManualGame.Name}");
+                var logMessage = new StringBuilder();
 
-                foreach (var player in players.OrderBy(p => p.CardPoints() - p.CoinsAmount))//FIXME: create player method/value
+                logMessage.AppendLine("-----------------------------");
+                logMessage.AppendLine($"\tThe winner is: {winnerManualGame.Name}");
+
+                foreach (var player in players.OrderBy(p => p.CardPoints() - p.CoinsAmount))
                 {
-                    Console.WriteLine($"- {player}");
+                    logMessage.AppendLine($"\t- {player}");
                 }
 
-                Thread.Sleep(3000);
+                _logger.LogCritical(logMessage.ToString());
+                _logger.LogCritical($"Press enter to exit");
+                Console.ReadLine();
                 break;
         }
     }

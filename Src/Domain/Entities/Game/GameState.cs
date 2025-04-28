@@ -109,13 +109,13 @@ public class GameState : IGameState
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine("Player states");
+        sb.AppendLine("Player states:");
         foreach (var player in _players)
         {
             sb.AppendLine($"- {player.ToString()}");
         }
         sb.AppendLine($"Card open: {OpenCardValue}");
-        sb.AppendLine($"Coins On Table {AmountOfCoinsOnTable}");
+        sb.AppendLine($"Coins On Table: {AmountOfCoinsOnTable}");
         sb.AppendLine($"Cards Left: {Deck.AmountOfCardsLeft()}");
 
         return sb.ToString();

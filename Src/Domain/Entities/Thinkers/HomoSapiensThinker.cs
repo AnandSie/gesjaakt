@@ -1,28 +1,33 @@
 ﻿using Domain.Entities.Players;
 using Domain.Interfaces;
+using System.Text;
 
 namespace Domain.Entities.Thinkiers;
 
 public class HomoSapiensThinker : IThinker
 {
     readonly IPlayerInputProvider _playerInputProvider;
+    readonly ILogger<HomoSapiensThinker> _logger;
     string _name;
 
-    public HomoSapiensThinker(IPlayerInputProvider playerInputProvider, string name)
+    public HomoSapiensThinker(IPlayerInputProvider playerInputProvider, ILogger<HomoSapiensThinker> logger, string name)
     {
         _playerInputProvider = playerInputProvider;
         _name = name;
+        _logger = logger;
     }
 
     public TurnAction Decide(IGameStateReader gameState)
     {
-        Console.Write("-----------\n");
-        Console.WriteLine($"Game state is:");
-        Console.WriteLine(gameState.ToString());
+        var logMessage = new StringBuilder();
 
-        Console.Write("");
-        Console.WriteLine($"Hai {_name}, what do you want to do?");
-        Console.WriteLine("1. Take Card 2. Play Coin");
+        logMessage.AppendLine("---GAME STATE---");
+        logMessage.AppendLine(gameState.ToString());
+        logMessage.AppendLine();
+        logMessage.AppendLine($"Hi {_name}, what do you want to do?");
+        logMessage.AppendLine("1. Take Card  2. Play Coin");
+
+        _logger.LogCritical(logMessage.ToString());
 
         // TODO: create new method, instead of giving ints, give Enums
         var choice = _playerInputProvider.GetPlayerInputAsInt(new[] { 1, 2 });
