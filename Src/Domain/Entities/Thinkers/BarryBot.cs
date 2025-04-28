@@ -22,15 +22,15 @@ public class BarryThinker : IThinker
             }
     }
     private bool isStreet(IGameStateReader gameState)
-{
-    int openCard = gameState.OpenCardValue;
-            foreach (var card in gameState.PlayerOnTurn.Cards)
-                {
-                    if ((openCard == card.Value - 1) || (openCard == card.Value  1))
-                        {
-                            return true;
-                        }
-                }
-            return false;
-        }
+    {
+        int openCard = gameState.OpenCardValue;
+        foreach (var card in gameState.PlayerOnTurn.Cards)
+            {
+                if ((openCard == card.Value - 1) || (openCard == card.Value + 1))
+                    {
+                        return true;
+                    }
+            }
+        return false;
+    }
 }

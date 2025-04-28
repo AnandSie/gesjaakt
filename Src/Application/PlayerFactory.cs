@@ -11,11 +11,12 @@ namespace Application
         {
             var players = new List<IPlayer>
             {
-                new Player(new BartThinker(), "Bart"),
                 new Player(new AnandThinker(), "Anand"),
+                new Player(new BarryThinker(), "Barry"),
+                new Player(new BartThinker(), "Bart"),
+                new Player(new MaartenThinker(), "Maarten"),
                 new Player(new MarijnThinker(), "Marijn"),
                 new Player(new TomasThinker(), "Tomas"),
-                new Player(new MaartenThinker(), "Maarten"),
             };
             return players;
         }
