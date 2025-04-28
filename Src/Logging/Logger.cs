@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace ConsoleApp.Logging
+namespace Logging
 {
     public class Logger<T> : Domain.Interfaces.ILogger<T>
     {

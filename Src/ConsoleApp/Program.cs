@@ -1,5 +1,6 @@
 ﻿using Application;
 using ConsoleApp;
+using Logging;
 using ConsoleApp.Helpers;
 using Domain.Entities.Cards;
 using Domain.Entities.Game;
@@ -19,7 +20,7 @@ serviceCollection.AddLogging(config =>
     config.SetMinimumLevel(LogLevel.Information);
 });
 
-serviceCollection.AddSingleton(typeof(Domain.Interfaces.ILogger<>), typeof(ConsoleApp.Logging.Logger<>));
+serviceCollection.AddSingleton(typeof(Domain.Interfaces.ILogger<>), typeof(Logging.Logger<>));
 
 
 // Application
