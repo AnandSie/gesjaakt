@@ -14,9 +14,12 @@ namespace Application
                 new Player(new BarryThinker(), "Barry"),
                 new Player(new BartThinker(), "Bart"),
                 new Player(new MarijnThinker(), "Marijn"),
-                new Player(new JensThinker(), "Jens"),
+                new Player(new TomasThinker(), "Tomas"),
                 new Player(new MaartenThinker(), "Maarten"),
-                new Player(new JeremyThinker(), "Jeremy")
+                new Player(new JeremyThinker(), "Jeremy"),
+                //new Player(new ScaredThinker(), "ScaredThinker"), //Max 7 players can be in a game simultaneously
+                //new Player(new GreedyThinker(), "GreedyThinker"),
+                //new Player(new JensThinker(), "Jens") ,
             };
             return players;
         }
