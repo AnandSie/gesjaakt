@@ -1,7 +1,7 @@
 ﻿using ConsoleApp.Helpers;
 using Domain.Entities.Game;
 using Domain.Entities.Players;
-using Domain.Entities.Thinkiers;
+using Domain.Entities.Thinkers;
 using Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application;
+using Extensions;
 
 namespace ConsoleApp;
 
@@ -48,7 +49,7 @@ internal class App
                 {
                     logger.LogInformation("-----------------------------");
                     logger.LogInformation($"iter #{iter}");
-                    var demoPlayers = PlayerFactory.Create();
+                    var demoPlayers = PlayerFactory.Create().Shuffle();
                     var dealer = new GameDealer(demoPlayers);
                     dealer.Play();
                     var winner = dealer.Winner();

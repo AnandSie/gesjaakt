@@ -1,5 +1,5 @@
 ﻿using Domain.Entities.Players;
-using Domain.Entities.Thinkiers;
+using Domain.Entities.Thinkers;
 using Domain.Interfaces;
 
 namespace Application
@@ -10,10 +10,13 @@ namespace Application
         {
             var players = new List<IPlayer>
             {
-                new Player(new BartThinker(), "Bart"),
                 new Player(new AnandThinker(), "Anand"),
+                new Player(new BarryThinker(), "Barry"),
+                new Player(new BartThinker(), "Bart"),
+                new Player(new MarijnThinker(), "Marijn"),
+                new Player(new TomasThinker(), "Tomas"),
                 new Player(new MaartenThinker(), "Maarten"),
-                new Player(new TomasThinker(), "Tomas")
+                new Player(new JeremyThinker(), "Jeremy")
             };
             return players;
         }
