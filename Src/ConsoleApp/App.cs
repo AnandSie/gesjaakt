@@ -55,7 +55,7 @@ internal class App
                         .Select(p => $"\t- {p}")
                         .Aggregate((current, next) => current + Environment.NewLine + next);
 
-                    _logger.LogInformation($"Winner of this round: {winner.Name}\n{playerList}");
+                    _logger.LogWarning($"Winner of this round: {winner.Name}\n{playerList}");
 
                     if (resultPerPlayer.ContainsKey(winner.Name))
                     {

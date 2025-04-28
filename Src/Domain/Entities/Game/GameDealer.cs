@@ -79,7 +79,7 @@ public class GameDealer : IGameDealer
 
         if (player.CoinsAmount == 0)
         {
-            _logger.LogInformation($"!!!!!! GESJAAKT !!!!!! \n\t {player.Name} needs to take card {_state.OpenCardValue}");
+            _logger.LogWarning($"!!!!!! GESJAAKT !!!!!! \n\t {player.Name} needs to take card {_state.OpenCardValue}");
             HandleTakeCard(player);
         }
         else

@@ -16,7 +16,7 @@ serviceCollection.AddLogging(config =>
     {
         options.IncludeScopes = true;
     });
-    config.SetMinimumLevel(LogLevel.Critical);
+    config.SetMinimumLevel(LogLevel.Information);
 });
 
 serviceCollection.AddSingleton(typeof(Domain.Interfaces.ILogger<>), typeof(ConsoleApp.Logging.Logger<>));
