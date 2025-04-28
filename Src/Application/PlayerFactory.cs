@@ -14,7 +14,7 @@ namespace Application
                 new Player(new BarryThinker(), "Barry"),
                 new Player(new BartThinker(), "Bart"),
                 new Player(new MarijnThinker(), "Marijn"),
-                new Player(new TomasThinker(), "Tomas"),
+                new Player(new JensThinker(), "Jens"),
                 new Player(new MaartenThinker(), "Maarten"),
                 new Player(new JeremyThinker(), "Jeremy")
             };
