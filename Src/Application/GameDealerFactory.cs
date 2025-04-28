@@ -1,13 +1,9 @@
 ﻿using Domain.Entities.Game;
 using Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application
-{    public class GameDealerFactory : IGameDealerFactory
+{
+    public class GameDealerFactory : IGameDealerFactory
     {
         private readonly ILogger<GameDealer> _logger;
         private readonly Func<IGameState> _gameStateFactory;

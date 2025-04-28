@@ -1,10 +1,8 @@
-﻿using Domain.Entities.Game;
+﻿using Application;
 using Domain.Entities.Players;
-using Domain.Entities.Thinkiers;
 using Domain.Interfaces;
-using System.Text;
-using Application;
 using Extensions;
+using System.Text;
 
 namespace ConsoleApp;
 

@@ -1,12 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
-using Domain.Entities.Game;
+﻿using Domain.Entities.Game;
 using Domain.Entities.Players;
-using Domain.Interfaces;
-using System.Numerics;
 using Domain.Entities.Thinkiers;
+using Domain.Interfaces;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Application;
 
 namespace DomainTests.GameTests;
 

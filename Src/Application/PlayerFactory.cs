@@ -1,5 +1,4 @@
-﻿using Domain.Entities.Game;
-using Domain.Entities.Players;
+﻿using Domain.Entities.Players;
 using Domain.Entities.Thinkers;
 using Domain.Entities.Thinkiers;
 using Domain.Interfaces;

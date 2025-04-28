@@ -6,7 +6,6 @@ using Domain.Entities.Game;
 using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 
 // TODO: IOC
 var serviceCollection = new ServiceCollection();
