@@ -1,7 +1,7 @@
 ﻿using ConsoleApp.Helpers;
 using Domain.Entities.Game;
 using Domain.Entities.Players;
-using Domain.Entities.Thinkiers;
+using Domain.Entities.Thinkers;
 using Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
