@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Cards;
 using Domain.Entities.Players;
-using Domain.Entities.Thinkiers;
+using Domain.Entities.Thinkers;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
