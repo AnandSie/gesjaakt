@@ -2,7 +2,7 @@
 using Domain.Interfaces;
 using System.Text;
 
-namespace Domain.Entities.Thinkiers;
+namespace Domain.Entities.Thinkers;
 
 public class HomoSapiensThinker : IThinker
 {
