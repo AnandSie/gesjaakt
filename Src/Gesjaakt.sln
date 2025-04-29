@@ -12,16 +12,23 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{CADF5033-3441-4A18-9587-25E03778818B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{9BDE0F24-CE80-4D21-A281-37D2B9F565D3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{37FF106A-218C-4DF3-9CE5-FD87C3863731} = {37FF106A-218C-4DF3-9CE5-FD87C3863731}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{F33BCF1C-769D-488C-B473-C735B8E363D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{A3E5B105-FA85-4096-9FFC-22A13D182269}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{A3E5B105-FA85-4096-9FFC-22A13D182269}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{293B8F83-30BC-4092-9FF8-24DF7F9EACB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions", "Extensions\Extensions.csproj", "{293B8F83-30BC-4092-9FF8-24DF7F9EACB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionsTests", "ExtensionsTests\ExtensionsTests.csproj", "{5CF86114-3A74-42DE-B12D-42EEB6CC3410}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtensionsTests", "ExtensionsTests\ExtensionsTests.csproj", "{5CF86114-3A74-42DE-B12D-42EEB6CC3410}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{64C4BDE2-B3F0-4803-A5CA-967A2FFD0EE0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logging", "Logging\Logging.csproj", "{37FF106A-218C-4DF3-9CE5-FD87C3863731}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +60,10 @@ Global
 		{5CF86114-3A74-42DE-B12D-42EEB6CC3410}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CF86114-3A74-42DE-B12D-42EEB6CC3410}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CF86114-3A74-42DE-B12D-42EEB6CC3410}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37FF106A-218C-4DF3-9CE5-FD87C3863731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37FF106A-218C-4DF3-9CE5-FD87C3863731}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37FF106A-218C-4DF3-9CE5-FD87C3863731}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37FF106A-218C-4DF3-9CE5-FD87C3863731}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +75,7 @@ Global
 		{A3E5B105-FA85-4096-9FFC-22A13D182269} = {F33BCF1C-769D-488C-B473-C735B8E363D2}
 		{293B8F83-30BC-4092-9FF8-24DF7F9EACB5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{5CF86114-3A74-42DE-B12D-42EEB6CC3410} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{37FF106A-218C-4DF3-9CE5-FD87C3863731} = {64C4BDE2-B3F0-4803-A5CA-967A2FFD0EE0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7FDA3261-138A-4671-96E3-AE81BEB4CF5D}

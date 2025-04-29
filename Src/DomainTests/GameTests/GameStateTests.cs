@@ -4,6 +4,7 @@ using Domain.Entities.Thinkers;
 using Domain.Interfaces;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 
 namespace DomainTests.GameTests;
@@ -11,13 +12,20 @@ namespace DomainTests.GameTests;
 [TestClass]
 public class GameStateTests
 {
-    GameState sut = new GameState();
-    Player greedyPlayer = new (new GreedyThinker());
-    Player greedyPlayer2 = new (new GreedyThinker());
+    private GameState sut;
+    private Player greedyPlayer;
+    private Player greedyPlayer2;
 
     [TestInitialize]
     public void Setup()
     {
+        var mockLogger = new Mock<ILogger<GameState>>();
+
+        greedyPlayer = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object);
+        greedyPlayer2 = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object);
+
+        sut = new GameState(new List<IPlayer>(), mockLogger.Object);
+
         sut.AddPlayer(greedyPlayer);
         sut.AddPlayer(greedyPlayer2);
     }

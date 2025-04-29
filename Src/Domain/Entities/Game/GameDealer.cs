@@ -6,11 +6,13 @@ namespace Domain.Entities.Game;
 public class GameDealer : IGameDealer
 {
     private readonly IGameState _state;
+    private readonly ILogger<GameDealer> _logger;
 
-    public GameDealer(IEnumerable<IPlayer> players)
+    public GameDealer(IEnumerable<IPlayer> players, Func<IGameState> gameStateFactory, ILogger<GameDealer> logger)
     {
-        // TODO: DI
-        _state = new GameState();
+        _logger = logger;
+        _state = gameStateFactory();
+
         foreach (var player in players)
         {
             _state.AddPlayer(player);
@@ -34,7 +36,7 @@ public class GameDealer : IGameDealer
             7 => 7,
             _ => throw new Exception("The number of players is not equal to the rules for dividing coins expected"),
         };
-        Console.WriteLine($"Every player gets {coinsPerPlayer} coins");
+        _logger.LogInformation($"Every player gets {coinsPerPlayer} coins");
         foreach (var player in ((IGameStateWriter)_state).Players)
         {
             var coins = Enumerable.Range(1, coinsPerPlayer).Select(x => new Coin()).ToArray();
@@ -46,7 +48,7 @@ public class GameDealer : IGameDealer
     {
         DivideCoins();
         PlayFirstCard();
-        while (!_state.Deck.IsEmpty())
+        while (!_state.Deck.IsEmpty() || _state.HasOpenCard)
         {
             PlayTurn();
             NextPlayer();
@@ -77,8 +79,7 @@ public class GameDealer : IGameDealer
 
         if (player.CoinsAmount == 0)
         {
-            Console.WriteLine("!!!!!! " + player.Name + " GESJAAKT !!!!!! ");
-            Console.WriteLine("You need to take a card");
+            _logger.LogWarning($"!!!!!! GESJAAKT !!!!!! \n\t {player.Name} needs to take card {_state.OpenCardValue}");
             HandleTakeCard(player);
         }
         else
@@ -91,6 +92,7 @@ public class GameDealer : IGameDealer
 
                 case TurnAction.SKIPWITHCOIN:
                     _state.AddCoinToTable(player.GiveCoin());
+                    _logger.LogInformation($"Amount of coins on table: {_state.AmountOfCoinsOnTable}");
                     break;
             }
         }
