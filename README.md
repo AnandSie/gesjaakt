@@ -101,3 +101,11 @@ To add your player:
 ✅ The game supports **3 to 7 players**.
 
 ---
+
+## Gain insight into your algorithm
+
+1. Go to the `Visualizer() constructor`
+2. Add your new `Thinker` there.
+3. Run the console and select the visualize option
+
+---
