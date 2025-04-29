@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces;
 
-internal interface IDeck : IDeckSetter, IDeckState
+public interface IDeck : IDeckSetter, IDeckState
 {
 }

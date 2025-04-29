@@ -1,42 +1,41 @@
-﻿using ConsoleApp.Helpers;
-using Domain.Entities.Game;
+﻿using Application;
 using Domain.Entities.Players;
-using Domain.Entities.Thinkiers;
 using Domain.Interfaces;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application;
 using Extensions;
 using Domain.Helpers;
+using System.Text;
 
 namespace ConsoleApp;
 
 internal class App
 {
-    readonly ILogger logger;
-    readonly IPlayerFactory PlayerFactory;
+    readonly ILogger<App> _logger;
+    readonly IPlayerFactory _playerFactory;
+    readonly IPlayerInputProvider _playerInputProvider;
+    readonly IGameDealerFactory _dealerFactory;
 
-    public App(ILogger<App> logger, IPlayerFactory playerFactory)
+    public App(ILogger<App> logger, IPlayerFactory playerFactory, IPlayerInputProvider playerInputProvider, IGameDealerFactory dealerFactory)
     {
-        this.logger = logger;
-        this.PlayerFactory = playerFactory;
+        _logger = logger;
+        _playerFactory = playerFactory;
+        _playerInputProvider = playerInputProvider;
+        _dealerFactory = dealerFactory;
     }
 
     public void Run()
     {
         var thinker = new AnandThinker(); // TODO: Change with your thinker 
         new ThinkerPlotter(thinker).Plot();
+        _logger.LogCritical(
+            """
+            LETS PLAY!
+            What do you want?
+            1. Simulated Game
+            2. Manual Game
+            """
+                );
 
-        Console.WriteLine("LETS PLAY!");
-        Console.WriteLine("What do you want?");
-        Console.WriteLine("1. Simulated Game");
-        Console.WriteLine("2. Manual Game");
-
-        var choice = new ConsoleInputService(logger).GetPlayerInputAsInt(new[] { 1, 2 });
+        var choice = _playerInputProvider.GetPlayerInputAsInt(new[] { 1, 2 });
 
 
         // TODO: Extract class
@@ -44,25 +43,25 @@ internal class App
         {
             case 1:
                 // TODO: Log critical
-                var simsAmount = new ConsoleInputService(logger).GetPlayerInputAsIntWithMinMax("How often should we run it", 1, 10000);
-                logger.LogInformation($"SimsAmount {simsAmount}");
+                var simsAmount = _playerInputProvider.GetPlayerInputAsIntWithMinMax("How often should we run it", 1, 10000);
+                _logger.LogCritical($"Simulation started with {simsAmount} runs");
                 var resultPerPlayer = new Dictionary<string, int>(); // Primitive obsession: use PlayerName
 
                 foreach (var iter in Enumerable.Range(1, simsAmount))
                 {
-                    logger.LogInformation("-----------------------------");
-                    logger.LogInformation($"iter #{iter}");
-                    var demoPlayers = PlayerFactory.Create().Shuffle();
-                    var dealer = new GameDealer(demoPlayers);
+                    _logger.LogInformation($"----------------------------- iter #{iter}");
+                    var demoPlayers = _playerFactory.Create().Shuffle();
+                    var dealer = _dealerFactory.Create(demoPlayers);
                     dealer.Play();
                     var winner = dealer.Winner();
 
                     // TODO: EXTRACT METHOD FOR GAMEDEALER -> USE DEPENDENCY INJECTION FOR WHERE TO PRINT/SHARE
-                    logger.LogInformation($"Winner of this round: {winner.Name}");
-                    foreach (var player in demoPlayers.OrderBy(p => p.CardPoints() - p.CoinsAmount))//FIXME: create player method/value
-                    {
-                        logger.LogInformation($"- {player}");
-                    }
+                    var playerList = demoPlayers
+                        .OrderBy(p => p.CardPoints() - p.CoinsAmount)
+                        .Select(p => $"\t- {p}")
+                        .Aggregate((current, next) => current + Environment.NewLine + next);
+
+                    _logger.LogWarning($"Winner of this round: {winner.Name}\n{playerList}");
 
                     if (resultPerPlayer.ContainsKey(winner.Name))
                     {
@@ -76,39 +75,47 @@ internal class App
 
                 var totalWinner = resultPerPlayer.OrderByDescending(entry => entry.Value).FirstOrDefault();
 
-                logger.LogCritical("-----------------------------");
-                logger.LogCritical($"The winner is: {totalWinner.Key}");
+                _logger.LogCritical($"-----------------------------\n\t" +
+                                    $"The winner is: {totalWinner.Key}");
 
                 var sb = new StringBuilder();
                 foreach (var player in resultPerPlayer.OrderByDescending(entry => entry.Value))
                 {
                     sb.AppendLine($"- {player.Key}, {(double)player.Value / simsAmount * 100}%");
                 }
-                logger.LogCritical(sb.ToString());
+                _logger.LogCritical(sb.ToString());
 
+                _logger.LogCritical($"Press enter to exit");
+                Console.ReadLine();
                 break;
 
             case 2:
-                var playersToAdd = new ConsoleInputService(logger).GetPlayerInputAsInt("How many players do you want to play (3-7)?", new[] { 3, 4, 5, 6, 7 });
+                var playersToAdd = _playerInputProvider.GetPlayerInputAsInt("How many players do you want to play (3-7)?", new[] { 3, 4, 5, 6, 7 });
 
                 var players = new List<Player>();
                 foreach (var i in Enumerable.Range(3, playersToAdd))
                 {
-                    var name = new ConsoleInputService(logger).GetPlayerInput($"Player number {i - 2} what is your name?");
-                    players.Add(new Player(new HomoSapiensThinker(new ConsoleInputService(logger), name), name)); // FIXME Both classes uses name
+                    var name = _playerInputProvider.GetPlayerInput($"Player number {i - 2} what is your name?");
+                    players.Add((Player)_playerFactory.CreateHomoSapiens(name, _playerInputProvider));
                 }
 
-                var dealerManualGame = new GameDealer(players);
+                var dealerManualGame = _dealerFactory.Create(players);
                 dealerManualGame.Play();
                 var winnerManualGame = dealerManualGame.Winner();
 
-                Console.WriteLine("-------------");
-                Console.WriteLine($"The winner is {winnerManualGame.Name}\n");
+                var logMessage = new StringBuilder();
 
-                foreach (var player in players.OrderBy(p => p.CardPoints() - p.CoinsAmount))//FIXME: create player method/value
+                logMessage.AppendLine("-----------------------------");
+                logMessage.AppendLine($"\tThe winner is: {winnerManualGame.Name}");
+
+                foreach (var player in players.OrderBy(p => p.CardPoints() - p.CoinsAmount))
                 {
-                    Console.WriteLine($"- {player}");
+                    logMessage.AppendLine($"\t- {player}");
                 }
+
+                _logger.LogCritical(logMessage.ToString());
+                _logger.LogCritical($"Press enter to exit");
+                Console.ReadLine();
                 break;
         }
     }
