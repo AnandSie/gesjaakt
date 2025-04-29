@@ -2,10 +2,11 @@
 using ScottPlot;
 using Domain.Entities.Players;
 using System.Diagnostics;
+using Application.Interfaces;
 
-namespace Domain.Helpers;
+namespace Visualization;
 
-public class ThinkerPlotter(IThinker thinker)
+public class ThinkerPlotter(IThinker thinker): IThinkerPlotter
 {
     private readonly IThinker thinker = thinker;
 
@@ -25,7 +26,7 @@ public class ThinkerPlotter(IThinker thinker)
         var scatTakeCard = plt.Add.Scatter(
             takeCardsXs.ToArray(),
             takeCardsYs.ToArray(),
-            color: ScottPlot.Color.FromColor(System.Drawing.Color.Blue)
+            color: Color.FromColor(System.Drawing.Color.Blue)
             );
         scatTakeCard.LineWidth = 0;
         scatTakeCard.LegendText = "Take Card";
@@ -33,7 +34,7 @@ public class ThinkerPlotter(IThinker thinker)
         var scatSkipCoin = plt.Add.Scatter(
             skipCoinsXs.ToArray(),
             skipCoinsYs.ToArray(),
-            color: ScottPlot.Color.FromColor(System.Drawing.Color.Red)
+            color: Color.FromColor(System.Drawing.Color.Red)
             );
         scatSkipCoin.LegendText = "Skip With Coin";
 
@@ -108,10 +109,11 @@ public class ThinkerPlotter(IThinker thinker)
 
     private class TestGameState : IGameStateReader
     {
-        public IEnumerable<IPlayerState> Players { get; set; }
-        public IPlayerState PlayerOnTurn { get; set; }
+        public IEnumerable<IPlayerState> Players => throw new NotImplementedException();
+        public IPlayerState PlayerOnTurn => throw new NotImplementedException();
         public int OpenCardValue { get; set; }
-        public IDeckState Deck { get; set; }
+        public IDeckState Deck => throw new NotImplementedException();
         public int AmountOfCoinsOnTable { get; set; }
+        public bool HasOpenCard => throw new NotImplementedException();
     }
 }

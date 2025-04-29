@@ -2,8 +2,8 @@
 using Domain.Entities.Players;
 using Domain.Interfaces;
 using Extensions;
-using Domain.Helpers;
 using System.Text;
+using Visualization;
 
 namespace ConsoleApp;
 
@@ -24,18 +24,17 @@ internal class App
 
     public void Run()
     {
-        var thinker = new AnandThinker(); // TODO: Change with your thinker 
-        new ThinkerPlotter(thinker).Plot();
         _logger.LogCritical(
             """
             LETS PLAY!
             What do you want?
             1. Simulated Game
             2. Manual Game
+            3. Visualize a thinker
             """
                 );
 
-        var choice = _playerInputProvider.GetPlayerInputAsInt(new[] { 1, 2 });
+        var choice = _playerInputProvider.GetPlayerInputAsInt(new[] { 1, 2, 3 });
 
 
         // TODO: Extract class
@@ -116,6 +115,10 @@ internal class App
                 _logger.LogCritical(logMessage.ToString());
                 _logger.LogCritical($"Press enter to exit");
                 Console.ReadLine();
+                break;
+
+            case 3:
+                new Visualizer().Show();
                 break;
         }
     }
