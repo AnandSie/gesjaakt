@@ -68,9 +68,10 @@ You can configure the **log level** in `Program.cs`:
 ## 🧠 Adding a New Bot (Thinker)
 
 If you want to create your own bot/AI player:
-1. Add a new `Thinker` class under:  
+1. Add a new `Thinker` class under:
    `Core.Domain.Entities.Thinkers`
 2. Implement the `IThinker` interface.
+3. To give you a headstart you can reuse the `YourThinker.cs`
 
 Example:
 ```csharp
@@ -97,6 +98,7 @@ public class YourCustomThinker : IThinker
 To add your player:
 1. Go to the `PlayerFactory.Create() method`
 2. Add your new `Player` with your `Thinker` there.
+3. To give you a headstart, we have already added the `YourThinker.cs`, you only have to uncomment the line and your player it a name
 
 ✅ The game supports **3 to 7 players**.
 
