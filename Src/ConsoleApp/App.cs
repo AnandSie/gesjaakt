@@ -111,8 +111,8 @@ internal class App
                 {
                     logMessage.AppendLine($"\t- {player}");
                 }
-
                 _logger.LogCritical(logMessage.ToString());
+
                 _logger.LogCritical($"Press enter to exit");
                 Console.ReadLine();
                 break;
