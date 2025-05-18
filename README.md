@@ -111,3 +111,26 @@ To add your player:
 3. Run the console and select the visualize option
 
 ---
+
+# Results
+
+Running all bots against eachother resulted in the following
+
+- BeterBarry - 2483218 wins -  12,7%
+- Mats - 2291307 wins -  11,8%
+- Hans - 1552803 wins -  8,0%
+- Maarten - 1444947 wins -  7,4%
+- Mels - 1432395 wins -  7,4%
+- Barry - 1365826 wins -  7,0%
+- Nils - 1209516 wins -  6,2%
+- Gerard - 1130092 wins -  5,8%
+- Marijn - 1127744 wins -  5,8%
+- Jens - 878313 wins -  4,5%
+- Jeremy - 875566 wins -  4,5%
+- Jessie - 869291 wins -  4,5%
+- Anand - 716142 wins -  3,7%
+- Jose - 700975 wins -  3,6%
+- Oliver - 678921 wins -  3,5%
+- Bart - 504204 wins -  2,6%
+- Tomas - 186740 wins -  1,0%
+
