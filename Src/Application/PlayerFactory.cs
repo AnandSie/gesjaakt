@@ -24,7 +24,7 @@ namespace Application
                 () => new Player(new BartThinker(), _playerLogger, "Bart"),
                 () => new Player(new BeterBarryThinker(), _playerLogger, "BeterBarry"),
                 () => new Player(new GerardThinker(), _playerLogger, "Gerard"),
-                //() => new Player(new GreedyThinker(), _playerLogger, "GreedyThinker"),
+                () => new Player(new GreedyThinker(), _playerLogger, "GreedyThinker"),
                 () => new Player(new HansThinker_R3(), _playerLogger, "Hans_R3"),
                 () => new Player(new JensThinker(), _playerLogger, "Jens"),
                 () => new Player(new JeremyThinker(), _playerLogger, "Jeremy"),
@@ -36,7 +36,7 @@ namespace Application
                 () => new Player(new MelsThinker(), _playerLogger, "Mels"),
                 () => new Player(new NilsThinker_R3(), _playerLogger, "Nils"),
                 () => new Player(new OliverThinker(), _playerLogger, "Oliver"),
-                //() => new Player(new ScaredThinker(), _playerLogger, "ScaredThinker"),
+                () => new Player(new ScaredThinker(), _playerLogger, "ScaredThinker"),
                 () => new Player(new TomasThinker(), _playerLogger, "Tomas"),
 
             ];
