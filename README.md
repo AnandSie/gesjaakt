@@ -116,21 +116,24 @@ To add your player:
 
 Running all bots against eachother resulted in the following
 
-- BeterBarry - 2483218 wins -  12,7%
-- Mats - 2291307 wins -  11,8%
-- Hans - 1552803 wins -  8,0%
-- Maarten - 1444947 wins -  7,4%
-- Mels - 1432395 wins -  7,4%
-- Barry - 1365826 wins -  7,0%
-- Nils - 1209516 wins -  6,2%
-- Gerard - 1130092 wins -  5,8%
-- Marijn - 1127744 wins -  5,8%
-- Jens - 878313 wins -  4,5%
-- Jeremy - 875566 wins -  4,5%
-- Jessie - 869291 wins -  4,5%
-- Anand - 716142 wins -  3,7%
-- Jose - 700975 wins -  3,6%
-- Oliver - 678921 wins -  3,5%
-- Bart - 504204 wins -  2,6%
-- Tomas - 186740 wins -  1,0%
-
+| Name | Wins | Percentage |
+| ---|---|---|
+| BeterBarry | 5630620 wins |  11,2%|
+| Mats | 5506280 wins |  11,0%|
+| Maarten | 3708274 wins |  7,4%|
+| Mels | 3588232 wins |  7,1%|
+| Hans_R3 | 3410106 wins |  6,8%|
+| Barry | 3019379 wins |  6,0%|
+| Jose | 2868191 wins |  5,7%|
+| Marijn | 2718551 wins |  5,4%|
+| Gerard | 2635713 wins |  5,2%|
+| Nils | 2591804 wins |  5,1%|
+| Jens | 2526772 wins |  5,0%|
+| Jessie | 2156723 wins |  4,3%|
+| Anand | 2100472 wins |  4,2%|
+| Oliver | 2071556 wins |  4,1%|
+| Jeremy | 2038751 wins |  4,0%|
+| Bart | 1703734 wins |  3,4%|
+| ScaredThinker | 1685907 wins |  3,3%|
+| Tomas | 381997 wins |  0,8%|
+| GreedyThinker | 44938 wins |  0,1%|
