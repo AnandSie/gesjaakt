@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.Thinkers;
 
-public class RealBarryThinker : IThinker
+public class BarryRealThinker : IThinker
 {
     double coinsToPoints = 3;
 
