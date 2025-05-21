@@ -118,22 +118,22 @@ Running all bots against eachother resulted in the following
 
 | Name | Wins | Percentage |
 | ---|---|---|
-| BarryReal | 5037668 wins |  10,0 % |
-| Ruben | 4600735 wins |  9,1% |
-| Mats_R3 | 4508787 wins |  9,0% |
-| Jorrit_01 | 4035581 wins |  8,0% |
-| Jorrit | 3943191 wins |  7,8% |
-| Jens_R3 | 3515174 wins |  7,0% |
-| Maarten | 2741740 wins |  5,4% |
-| Mels | 2704829 wins |  5,4% |
-| Hans_R3 | 2699941 wins |  5,4% |
-| Nils | 2635067 wins |  5,2% |
-| Gerard | 2275383 wins |  4,5% |
-| Marijn | 1961497 wins |  3,9% |
-| Anand | 1717788 wins |  3,4% |
-| Jessie | 1662595 wins |  3,3% |
-| Jeremy2 | 1589523 wins |  3,2% |
-| Oliver | 1579076 wins |  3,1% |
-| Jose | 1549018 wins |  3,1% |
-| Bart | 816159 wins |  1,6% |
-| ScaredThinker | 814248 wins |  1,6% |
+| BarryReal | 5275674 wins |  10,5% |
+| Mats_R3 | 4810460 wins |  9,5% |
+| Ruben | 4803417 wins |  9,5% |
+| Jorrit_01 | 4249764 wins |  8,4% |
+| Jens_R3 | 3761551 wins |  7,5% |
+| Hans_R3 | 3121560 wins |  6,2% |
+| Maarten | 3029080 wins |  6,0% |
+| Mels | 2999765 wins |  6,0% |
+| Nils | 2679116 wins |  5,3% |
+| Gerard | 2419970 wins |  4,8% |
+| Marijn | 2236197 wins |  4,4% |
+| Jessie_R3 | 1863957 wins |  3,7% |
+| Jeremy2 | 1786397 wins |  3,5% |
+| Anand | 1747793 wins |  3,5% |
+| Jose | 1634241 wins |  3,2% |
+| Oliver | 1516605 wins |  3,0% |
+| Bart | 994878 wins |  2,0% |
+| ScaredThinker | 990043 wins | 2,0 % |
+| Tomas | 467532 wins |  0,9% |

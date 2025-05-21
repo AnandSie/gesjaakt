@@ -30,10 +30,10 @@ namespace Application
                 () => new Player(new HansThinker_R3(), _playerLogger, "Hans_R3"),
                 //() => new Player(new JensThinker(), _playerLogger, "Jens"),
                 () => new Player(new JensThinker_R3(), _playerLogger, "Jens_R3"),
-                () => new Player(new Jeremy2Thinker(), _playerLogger, "Jeremy2"),
                 //() => new Player(new JeremyThinker(), _playerLogger, "Jeremy"),
-                () => new Player(new JessieThinker_R3(), _playerLogger, "Jessie"),
-                () => new Player(new JorritThinker(), _playerLogger, "Jorrit"),
+                () => new Player(new Jeremy2Thinker(), _playerLogger, "Jeremy2"),
+                () => new Player(new JessieThinker_R3(), _playerLogger, "Jessie_R3"),
+                //() => new Player(new JorritThinker(), _playerLogger, "Jorrit"),
                 () => new Player(new JorritThinker_01(), _playerLogger, "Jorrit_01"),
                 () => new Player(new JoseThinker(), _playerLogger, "Jose"),
                 () => new Player(new MaartenThinker(), _playerLogger, "Maarten"),
@@ -45,8 +45,7 @@ namespace Application
                 () => new Player(new OliverThinker(), _playerLogger, "Oliver"),
                 () => new Player(new RubenTHinker(), _playerLogger, "Ruben"),
                 () => new Player(new ScaredThinker(), _playerLogger, "ScaredThinker"),
-                //() => new Player(new TomasThinker(), _playerLogger, "Tomas"),
-
+                () => new Player(new TomasThinker(), _playerLogger, "Tomas"),
             ];
         }
 
