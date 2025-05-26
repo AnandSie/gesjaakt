@@ -38,7 +38,7 @@ public class GameState : IGameState
         }
     }
 
-    public IEnumerable<IPlayerActions> Players => _players;
+    public IEnumerable<IPlayer> Players => _players;
 
     public void OpenNextCardFromDeck()
     {
@@ -69,6 +69,7 @@ public class GameState : IGameState
     public int AmountOfCoinsOnTable => _coinsOnTable.Count();
 
     public IPlayerState PlayerOnTurn => _players[_playerIndex];
+
 
     public void AddCoinToTable(ICoin coin)
     {

@@ -28,13 +28,14 @@ public class GameDealer : IGameDealer
 
     private void DivideCoins()
     {
+        var numberOfPlayers = ((IGameStateReader)_state).Players.Count();
         // FIXME: COntinously casting is suboptimal
-        var coinsPerPlayer = ((IGameStateReader)_state).Players.Count() switch
+        var coinsPerPlayer = numberOfPlayers switch
         {
             3 or 4 or 5 => 11,
             6 => 9,
             7 => 7,
-            _ => throw new Exception("The number of players is not equal to the rules for dividing coins expected"),
+            _ => throw new Exception($"The given number of players {numberOfPlayers} is not equal to the rules for dividing coins expected"),
         };
         _logger.LogInformation($"Every player gets {coinsPerPlayer} coins");
         foreach (var player in ((IGameStateWriter)_state).Players)
@@ -108,5 +109,10 @@ public class GameDealer : IGameDealer
             _state.OpenNextCardFromDeck();
             PlayTurn();
         }
+    }
+
+    public IEnumerable<IPlayer> GameResultOrdended()
+    {
+        return this._state.Players.OrderBy(p => p.CardPoints() - p.CoinsAmount);
     }
 }

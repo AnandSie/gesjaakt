@@ -5,4 +5,6 @@ public interface IGameDealer
     IGameStateReader State { get; }
     void Play();
     IPlayerState Winner();
+
+    IEnumerable<IPlayer> GameResultOrdended();
 }

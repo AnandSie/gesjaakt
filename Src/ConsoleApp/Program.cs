@@ -17,7 +17,7 @@ serviceCollection.AddLogging(config =>
     {
         options.IncludeScopes = true;
     });
-    config.SetMinimumLevel(LogLevel.Information);
+    config.SetMinimumLevel(LogLevel.Critical);
 });
 
 serviceCollection.AddSingleton(typeof(Domain.Interfaces.ILogger<>), typeof(Logging.Logger<>));
@@ -27,6 +27,7 @@ serviceCollection.AddSingleton(typeof(Domain.Interfaces.ILogger<>), typeof(Loggi
 serviceCollection.AddSingleton<IPlayerInputProvider, ConsoleInputService>();
 serviceCollection.AddSingleton<IPlayerFactory, PlayerFactory>();
 serviceCollection.AddSingleton<IGameDealerFactory, GameDealerFactory>();
+serviceCollection.AddSingleton<ISimulator, Simulator>();
 serviceCollection.AddSingleton<App>();
 serviceCollection.AddTransient<IDeck>(sp => new Deck(3, 35));
 serviceCollection.AddTransient<IGameState, GameState>();

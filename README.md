@@ -111,3 +111,29 @@ To add your player:
 3. Run the console and select the visualize option
 
 ---
+
+# Results
+
+Running all bots against eachother resulted in the following
+
+| Name | Wins | Percentage |
+| ---|---|---|
+| BarryReal | 5275674 wins |  10,5% |
+| Mats_R3 | 4810460 wins |  9,5% |
+| Ruben | 4803417 wins |  9,5% |
+| Jorrit_01 | 4249764 wins |  8,4% |
+| Jens_R3 | 3761551 wins |  7,5% |
+| Hans_R3 | 3121560 wins |  6,2% |
+| Maarten | 3029080 wins |  6,0% |
+| Mels | 2999765 wins |  6,0% |
+| Nils | 2679116 wins |  5,3% |
+| Gerard | 2419970 wins |  4,8% |
+| Marijn | 2236197 wins |  4,4% |
+| Jessie_R3 | 1863957 wins |  3,7% |
+| Jeremy2 | 1786397 wins |  3,5% |
+| Anand | 1747793 wins |  3,5% |
+| Jose | 1634241 wins |  3,2% |
+| Oliver | 1516605 wins |  3,0% |
+| Bart | 994878 wins |  2,0% |
+| ScaredThinker | 990043 wins | 2,0 % |
+| Tomas | 467532 wins |  0,9% |
