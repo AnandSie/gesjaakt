@@ -5,10 +5,10 @@ namespace Domain.Entities.Thinkers;
 
 public class JessieThinker_R3 : IThinker
 {
-    private TurnAction previousTurnAction;
+    private GesjaaktTurnOption previousTurnAction;
     private double shift = 0;
     private static readonly double comfortableCoins = 15;
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         shift = gameState.PlayerOnTurn.CoinsAmount - comfortableCoins;
         var tippingPoint = 7 - shift;
@@ -16,15 +16,15 @@ public class JessieThinker_R3 : IThinker
         int nettoPenaltyPoints = gameState.OpenCardValue - gameState.AmountOfCoinsOnTable;
         if (IsStraatje(gameState) && otherHasAlmostStraat(gameState))
         {
-            previousTurnAction = TurnAction.TAKECARD;
+            previousTurnAction = GesjaaktTurnOption.TAKECARD;
         }
         else if (nettoPenaltyPoints < tippingPoint)
         {
-            previousTurnAction = TurnAction.TAKECARD;
+            previousTurnAction = GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            previousTurnAction = TurnAction.SKIPWITHCOIN;
+            previousTurnAction = GesjaaktTurnOption.SKIPWITHCOIN;
         }
 
         return previousTurnAction;

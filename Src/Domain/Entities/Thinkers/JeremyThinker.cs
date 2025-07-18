@@ -10,7 +10,7 @@ namespace Domain.Entities.Thinkers
 
     {
 
-        private TurnAction previousTurnAction;
+        private GesjaaktTurnOption previousTurnAction;
 
         private double shift = 0;
 
@@ -20,7 +20,7 @@ namespace Domain.Entities.Thinkers
 
         private Random random = new Random();
 
-        public TurnAction Decide(IGameStateReader gameState)
+        public GesjaaktTurnOption Decide(IGameStateReader gameState)
 
         {
 
@@ -42,7 +42,7 @@ namespace Domain.Entities.Thinkers
 
             {
 
-                previousTurnAction = TurnAction.TAKECARD;
+                previousTurnAction = GesjaaktTurnOption.TAKECARD;
 
             }
 
@@ -50,7 +50,7 @@ namespace Domain.Entities.Thinkers
 
             {
 
-                previousTurnAction = TurnAction.TAKECARD;
+                previousTurnAction = GesjaaktTurnOption.TAKECARD;
 
             }
 
@@ -58,7 +58,7 @@ namespace Domain.Entities.Thinkers
 
             {
 
-                previousTurnAction = TurnAction.SKIPWITHCOIN;
+                previousTurnAction = GesjaaktTurnOption.SKIPWITHCOIN;
 
             }
 

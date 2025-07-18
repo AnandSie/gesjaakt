@@ -10,7 +10,7 @@ namespace Domain.Entities.Thinkers;
 
 public class BartThinker : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         // Go Big - Go Long strategy 
 
@@ -18,11 +18,11 @@ public class BartThinker : IThinker
         var tippingPointCoinsSelf = 10;
         if (gameState.AmountOfCoinsOnTable > tippingPointTake && gameState.PlayerOnTurn.CoinsAmount < tippingPointCoinsSelf)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 }

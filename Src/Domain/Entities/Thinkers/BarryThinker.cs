@@ -5,19 +5,19 @@ namespace Domain.Entities.Thinkers;
 
 public class BarryThinker : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         if (IsStreet(gameState))
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         if ((gameState.PlayerOnTurn.Cards.Count == 0) && (gameState.PlayerOnTurn.CoinsAmount <= 1))
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
     private static bool IsStreet(IGameStateReader gameState)

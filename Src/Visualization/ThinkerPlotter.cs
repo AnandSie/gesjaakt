@@ -54,7 +54,7 @@ public class ThinkerPlotter(IThinker thinker): IThinkerPlotter
         Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
     }
 
-    private static (List<double> takeCardsXs, List<double> takeCardsYs, List<double> skipCoinsXs, List<double> skipCoinsYs) CreateCoordinates(IEnumerable<int> cards, IEnumerable<int> coinsOnTable, TurnAction[,] decisions)
+    private static (List<double> takeCardsXs, List<double> takeCardsYs, List<double> skipCoinsXs, List<double> skipCoinsYs) CreateCoordinates(IEnumerable<int> cards, IEnumerable<int> coinsOnTable, GesjaaktTurnOption[,] decisions)
     {
         var takeCardsXs = new List<double>();
         var takeCardsYs = new List<double>();
@@ -71,12 +71,12 @@ public class ThinkerPlotter(IThinker thinker): IThinkerPlotter
                 double cardValue = cards.ElementAt(x);
                 double coinCount = coinsOnTable.ElementAt(y);
 
-                if (decisions[x, y] == TurnAction.TAKECARD)
+                if (decisions[x, y] == GesjaaktTurnOption.TAKECARD)
                 {
                     takeCardsXs.Add(cardValue);
                     takeCardsYs.Add(coinCount);
                 }
-                else if (decisions[x, y] == TurnAction.SKIPWITHCOIN)
+                else if (decisions[x, y] == GesjaaktTurnOption.SKIPWITHCOIN)
                 {
                     skipCoinsXs.Add(cardValue);
                     skipCoinsYs.Add(coinCount);
@@ -86,10 +86,10 @@ public class ThinkerPlotter(IThinker thinker): IThinkerPlotter
         return (takeCardsXs, takeCardsYs, skipCoinsXs, skipCoinsYs);
     }
 
-    private TurnAction[,] SimulateDecisions(IEnumerable<int> cards, IEnumerable<int> coinsOnTable)
+    private GesjaaktTurnOption[,] SimulateDecisions(IEnumerable<int> cards, IEnumerable<int> coinsOnTable)
     {
 
-        var decisions = new TurnAction[cards.Count(), coinsOnTable.Count()];
+        var decisions = new GesjaaktTurnOption[cards.Count(), coinsOnTable.Count()];
 
         for (int x = 0; x < cards.Count(); x++)
         {

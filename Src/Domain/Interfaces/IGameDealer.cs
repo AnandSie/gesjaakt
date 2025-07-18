@@ -2,9 +2,8 @@
 
 public interface IGameDealer
 {
-    IGameStateReader State { get; }
+    public void Prepare();
     void Play();
     IPlayerState Winner();
-
     IEnumerable<IPlayer> GameResultOrdended();
 }

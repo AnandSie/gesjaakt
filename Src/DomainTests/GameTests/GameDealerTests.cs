@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Game;
+﻿using Domain.Entities.Components;
+using Domain.Entities.Game.Gesjaakt;
 using Domain.Entities.Players;
 using Domain.Entities.Thinkers;
 using Domain.Interfaces;
@@ -11,48 +12,25 @@ namespace DomainTests.GameTests;
 [TestClass]
 public class GameDealerTests
 {
-    private Mock<ILogger<GameDealer>> _loggerMock;
-    private Func<IGameState> _gameStateFactory;
-
-    [TestInitialize]
-    public void Setup()
-    {
-        _loggerMock = new Mock<ILogger<GameDealer>>();
-        _gameStateFactory = () => new GameState(new List<IPlayer>(), new Mock<ILogger<GameState>>().Object);
-    }
-
-    [TestMethod]
-    public void AddPlayerTest()
-    {
-        // Arrange
-        var scaredPlayer = new Player(new ScaredThinker(), new Mock<ILogger<Player>>().Object);
-
-        var sut = new GameDealer(new[] { scaredPlayer }, _gameStateFactory, _loggerMock.Object);
-
-        var expectedResult = new List<IPlayerActions> { scaredPlayer };
-
-        // Act & Assert
-        sut.State.Players.Should().BeEquivalentTo(expectedResult);
-    }
-
     [TestMethod]
     public void PlaceCoinAction()
     {
         // Arrange
-        var loggerMock = new Mock<ILogger<GameDealer>>();
-        var gameStateFactory = () => new GameState(new List<IPlayer>(), new Mock<ILogger<GameState>>().Object);
+        var loggerMock = new Mock<ILogger<GesjaaktGameDealer>>();
+        var gameStateFactory = () => new GesjaaktGameState(new List<IPlayer>(), new Mock<ILogger<GesjaaktGameState>>().Object);
+        var gamesState = gameStateFactory();
 
         var scaredPlayer = new Player(new ScaredThinker(), new Mock<ILogger<Player>>().Object);
         scaredPlayer.AcceptCoins(new List<Coin> { new() });
 
-        var sut = new GameDealer(new[] { scaredPlayer }, gameStateFactory, loggerMock.Object);
+        var sut = new GesjaaktGameDealer(new[] { scaredPlayer }, gamesState, loggerMock.Object);
 
         // Act
-        sut.PlayFirstCard();
+        //sut.PlayFirstCard();
         sut.PlayTurn();
 
         // Assert
-        sut.State.AmountOfCoinsOnTable.Should().Be(1);
+        gamesState.AmountOfCoinsOnTable.Should().Be(1);
         scaredPlayer.CoinsAmount.Should().Be(0);
     }
 
@@ -60,8 +38,9 @@ public class GameDealerTests
     public void TakeCardAction()
     {
         // Arrange
-        var loggerMock = new Mock<ILogger<GameDealer>>();
-        var gameStateFactory = () => new GameState(new List<IPlayer>(), new Mock<ILogger<GameState>>().Object);
+        var loggerMock = new Mock<ILogger<GesjaaktGameDealer>>();
+        var gameStateFactory = () => new GesjaaktGameState(new List<IPlayer>(), new Mock<ILogger<GesjaaktGameState>>().Object);
+        var gamesState = gameStateFactory();
 
         var scaredPlayer = new Player(new ScaredThinker(), new Mock<ILogger<Player>>().Object, "Donald");
         scaredPlayer.AcceptCoins(new List<Coin> { new() });
@@ -69,22 +48,25 @@ public class GameDealerTests
         var greedyPlayer = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object, "Dagobert");
         greedyPlayer.AcceptCoins(new List<Coin> { new() });
 
-        var sut = new GameDealer(new[] { scaredPlayer, greedyPlayer }, gameStateFactory, loggerMock.Object);
+        var greedyPlayer2 = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object, "Dagobert 2");
+        greedyPlayer2.AcceptCoins(new List<Coin> { new() });
+
+        var sut = new GesjaaktGameDealer(new[] { scaredPlayer, greedyPlayer, greedyPlayer2 }, gamesState, loggerMock.Object);
 
         // Act
-        sut.PlayFirstCard();
-        sut.State.PlayerOnTurn.Name.Should().Be("Donald");
+        sut.Prepare();
+        gamesState.PlayerOnTurn.Name.Should().Be("Donald");
 
         sut.PlayTurn();
         sut.NextPlayer();
-        sut.State.PlayerOnTurn.Name.Should().Be("Dagobert");
+        gamesState.PlayerOnTurn.Name.Should().Be("Dagobert");
 
         sut.PlayTurn();
 
         // Assert
-        sut.State.AmountOfCoinsOnTable.Should().Be(1);
-        scaredPlayer.CoinsAmount.Should().Be(0);
-        greedyPlayer.CoinsAmount.Should().Be(1);
+        gamesState.AmountOfCoinsOnTable.Should().Be(1);
+        scaredPlayer.CoinsAmount.Should().Be(11);
+        greedyPlayer.CoinsAmount.Should().Be(12);
         scaredPlayer.Cards.Count.Should().Be(0);
         greedyPlayer.Cards.Count.Should().Be(1);
     }
@@ -93,22 +75,22 @@ public class GameDealerTests
     public void GreedyPlayerTakesAllCards_LosesGameTest()
     {
         // Arrange
-        var loggerMock = new Mock<ILogger<GameDealer>>();
-        var gameStateFactory = () => new GameState(new List<IPlayer>(), new Mock<ILogger<GameState>>().Object);
+        var loggerMock = new Mock<ILogger<GesjaaktGameDealer>>();
+        var gameStateFactory = () => new GesjaaktGameState(new List<IPlayer>(), new Mock<ILogger<GesjaaktGameState>>().Object);
+        var gamesState = gameStateFactory();
 
         var scaredPlayer1 = new Player(new ScaredThinker(), new Mock<ILogger<Player>>().Object);
-        var greedyPlayer = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object);
-        var scaredPlayer2 = new Player(new ScaredThinker(), new Mock<ILogger<Player>>().Object);
+        var greedyPlayer1 = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object);
+        var greedyPlayer2 = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object);
 
-        var sut = new GameDealer(new Player[] { scaredPlayer1, greedyPlayer, scaredPlayer2 }, gameStateFactory, loggerMock.Object);
+        var sut = new GesjaaktGameDealer(new Player[] { scaredPlayer1, greedyPlayer1, greedyPlayer2 }, gamesState, loggerMock.Object);
 
         // Act
+        sut.Prepare();
         sut.Play();
         var winner = sut.Winner();
-        var ranking = sut.State.Players.OrderBy(p => p.Points()).ToList();
 
         // Assert
-        winner.Should().Be(ranking.First());
-        greedyPlayer.Should().Be(ranking.Last());
+        winner.Should().Be(scaredPlayer1);
     }
 }

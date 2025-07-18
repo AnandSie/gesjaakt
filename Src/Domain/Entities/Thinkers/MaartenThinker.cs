@@ -10,16 +10,16 @@ namespace Domain.Entities.Thinkers;
 
 public class MaartenThinker : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         var perceivedCoinValue = gameState.AmountOfCoinsOnTable * 3; 
         if (perceivedCoinValue > gameState.OpenCardValue)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 }

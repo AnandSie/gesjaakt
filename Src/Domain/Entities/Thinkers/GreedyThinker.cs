@@ -10,12 +10,12 @@ namespace Domain.Entities.Thinkers;
 
 public class GreedyThinker : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         if (gameState.AmountOfCoinsOnTable == 0)
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
-        return TurnAction.TAKECARD;
+        return GesjaaktTurnOption.TAKECARD;
     }
 }

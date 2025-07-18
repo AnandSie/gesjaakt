@@ -8,7 +8,7 @@ public class GerardThinker : IThinker
 
 {
 
-    private TurnAction previousTurnAction;
+    private GesjaaktTurnOption previousTurnAction;
 
     private double amountOfCoinsToComfortablySpend = 0;
 
@@ -21,7 +21,7 @@ public class GerardThinker : IThinker
     private static readonly int numberOfCoinsToStartWith = 11; // when there are 5 players
 
 
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
 
     {
 
@@ -37,7 +37,7 @@ public class GerardThinker : IThinker
 
         {
 
-            previousTurnAction = TurnAction.TAKECARD;
+            previousTurnAction = GesjaaktTurnOption.TAKECARD;
 
         }
 
@@ -45,7 +45,7 @@ public class GerardThinker : IThinker
 
         {
 
-            previousTurnAction = TurnAction.TAKECARD;
+            previousTurnAction = GesjaaktTurnOption.TAKECARD;
 
         }
 
@@ -53,7 +53,7 @@ public class GerardThinker : IThinker
 
         {
 
-            previousTurnAction = TurnAction.SKIPWITHCOIN;
+            previousTurnAction = GesjaaktTurnOption.SKIPWITHCOIN;
 
         }
 

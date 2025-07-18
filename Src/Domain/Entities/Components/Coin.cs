@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Interfaces;
 
-namespace Domain.Entities.Game;
+namespace Domain.Entities.Components;
 
 public class Coin : ICoin
 {

@@ -1,22 +1,21 @@
-﻿using Domain.Entities.Game;
+﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
 
-namespace Application
+namespace Application;
+
+public class GameDealerFactory : IGameDealerFactory
 {
-    public class GameDealerFactory : IGameDealerFactory
+    private readonly ILogger<GesjaaktGameDealer> _logger;
+    private readonly Func<IGameState> _gameStateFactory;
+
+    public GameDealerFactory(ILogger<GesjaaktGameDealer> logger, Func<IGameState> gameStateFactory)
     {
-        private readonly ILogger<GameDealer> _logger;
-        private readonly Func<IGameState> _gameStateFactory;
+        _logger = logger;
+        _gameStateFactory = gameStateFactory;
+    }
 
-        public GameDealerFactory(ILogger<GameDealer> logger, Func<IGameState> gameStateFactory)
-        {
-            _logger = logger;
-            _gameStateFactory = gameStateFactory;
-        }
-
-        public IGameDealer Create(IEnumerable<IPlayer> players)
-        {
-            return new GameDealer(players, _gameStateFactory, _logger);
-        }
+    public IGameDealer Create(IEnumerable<IPlayer> players)
+    {
+        return new GesjaaktGameDealer(players, _gameStateFactory(), _logger);
     }
 }

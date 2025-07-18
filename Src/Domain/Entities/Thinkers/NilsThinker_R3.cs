@@ -6,7 +6,7 @@ namespace Domain.Entities.Thinkers;
 
 public class NilsThinker_R3 : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         var deckOfCards = 24;
         var cardsLeft = gameState.Deck.AmountOfCardsLeft();
@@ -14,13 +14,13 @@ public class NilsThinker_R3 : IThinker
 
         if (freeCoins(gameState))
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
 
         if (gameState.PlayerOnTurn.Cards.Count == 0 && AnchorCard(gameState))
         {
             //Console.WriteLine("Anchor " + gameState.OpenCardValue);
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
 
         if (IsStreet(gameState))
@@ -29,24 +29,24 @@ public class NilsThinker_R3 : IThinker
             if (pushGreed(gameState))
             {
                 //Console.WriteLine(" value " + (gameState.OpenCardValue - gameState.AmountOfCoinsOnTable + gameState.Players.Count()).ToString());
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
         }
 
         if (IsStreetPotential(gameState, 2) && progression < 0.3 && gameState.PlayerOnTurn.Cards.Count < 3)
         {
             //Console.WriteLine("Street Potential" + gameState.OpenCardValue);
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
 
 
         if (lowValue(gameState, 7) && gameState.AmountOfCoinsOnTable < 4 && gameState.PlayerOnTurn.CoinsAmount < 3)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 

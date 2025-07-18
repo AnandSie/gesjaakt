@@ -1,12 +1,11 @@
 ﻿using Application;
 using ConsoleApp;
-using Logging;
 using ConsoleApp.Helpers;
-using Domain.Entities.Cards;
-using Domain.Entities.Game;
 using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Domain.Entities.Game.Gesjaakt;
+using Domain.Entities.Components;
 
 // TODO: IOC
 var serviceCollection = new ServiceCollection();
@@ -22,15 +21,14 @@ serviceCollection.AddLogging(config =>
 
 serviceCollection.AddSingleton(typeof(Domain.Interfaces.ILogger<>), typeof(Logging.Logger<>));
 
-
 // Application
 serviceCollection.AddSingleton<IPlayerInputProvider, ConsoleInputService>();
 serviceCollection.AddSingleton<IPlayerFactory, PlayerFactory>();
 serviceCollection.AddSingleton<IGameDealerFactory, GameDealerFactory>();
 serviceCollection.AddSingleton<ISimulator, Simulator>();
 serviceCollection.AddSingleton<App>();
-serviceCollection.AddTransient<IDeck>(sp => new Deck(3, 35));
-serviceCollection.AddTransient<IGameState, GameState>();
+serviceCollection.AddTransient<IDeck>(sp => new Deck(3, 35)); // TODO: Add to rule object
+serviceCollection.AddTransient<IGameState, GesjaaktGameState>();
 serviceCollection.AddTransient<Func<IGameState>>(sp => () => sp.GetRequiredService<IGameState>());
 
 var serviceProvider = serviceCollection.BuildServiceProvider();

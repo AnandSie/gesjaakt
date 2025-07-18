@@ -5,10 +5,10 @@ namespace Domain.Entities.Thinkers;
 
 public class Jeremy2Thinker :IThinker
 {
-    private TurnAction previousTurnAction;
+    private GesjaaktTurnOption previousTurnAction;
     private double shift = 0;
     private static double comfortableCoins = 4.5;
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         shift = gameState.PlayerOnTurn.CoinsAmount - comfortableCoins;
         var tippingPoint = 15 - shift;
@@ -21,15 +21,15 @@ public class Jeremy2Thinker :IThinker
         double nettoPenaltyPoints = gameState.OpenCardValue - gameState.AmountOfCoinsOnTable * 2.5;
         if (IsStraatje(gameState))
         {
-            previousTurnAction = TurnAction.TAKECARD;
+            previousTurnAction = GesjaaktTurnOption.TAKECARD;
         }
         else if (nettoPenaltyPoints < tippingPoint)
         {
-            previousTurnAction = TurnAction.TAKECARD;
+            previousTurnAction = GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            previousTurnAction = TurnAction.SKIPWITHCOIN;
+            previousTurnAction = GesjaaktTurnOption.SKIPWITHCOIN;
         }
 
         return previousTurnAction;

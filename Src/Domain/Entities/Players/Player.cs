@@ -19,7 +19,7 @@ public class Player : IPlayer
         _logger = logger;
     }
 
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         try
         {
@@ -29,7 +29,7 @@ public class Player : IPlayer
         {
             _logger.LogError("The calculation did not work");
             _logger.LogError(e.ToString());
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 

@@ -7,26 +7,26 @@ public class JensThinker_R3 : IThinker
 {
     private bool isMelking = false;
 
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         var tippingPoint = 9;
         int nettoPenaltyPoints = gameState.OpenCardValue - gameState.AmountOfCoinsOnTable;
         var perceivedCoinValue = gameState.AmountOfCoinsOnTable * 2.9;
         if (gameState.AmountOfCoinsOnTable < 3)
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
         if (nettoPenaltyPoints < tippingPoint || perceivedCoinValue > gameState.OpenCardValue)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else if (IsInStraatjeAndLangGenoegGemolken(gameState))
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 

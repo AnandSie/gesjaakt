@@ -12,7 +12,7 @@ namespace Domain.Entities.Thinkers
     {
         static int turnCount = 0;
         const int TotalCards = 24;
-        public TurnAction Decide(IGameStateReader gameState)
+        public GesjaaktTurnOption Decide(IGameStateReader gameState)
         {
             turnCount++;
             int CardsLeft = TotalCards - GetPlayedCards(gameState);
@@ -22,11 +22,11 @@ namespace Domain.Entities.Thinkers
             //Console.WriteLine($"perceivedCoinValue: {perceivedCoinValue}");
             if (IsStreetLower(gameState))
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
             else if (perceivedCoinValue > gameState.OpenCardValue)
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
             //else if (IsStreetHigher(gameState) && turnCount < 2)
             //{
@@ -38,14 +38,14 @@ namespace Domain.Entities.Thinkers
             //}
             else if (IsStreet(gameState) && gameState.AmountOfCoinsOnTable > 0)
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
             else
             {
                 //if(IsStreet(gameState) && gameState.AmountOfCoinsOnTable > 0) {
                 //    return TurnAction.TAKECARD;
                 //}
-                return TurnAction.SKIPWITHCOIN;
+                return GesjaaktTurnOption.SKIPWITHCOIN;
             }
         }
 

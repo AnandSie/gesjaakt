@@ -9,7 +9,7 @@ public class JoseThinker : IThinker
     private int[] _cardValues = { };
     private double limit = 10;
     private double max_coins = 6;
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         int card_value = gameState.OpenCardValue;
         int coins_on_table = gameState.AmountOfCoinsOnTable;
@@ -26,11 +26,11 @@ public class JoseThinker : IThinker
         if (my_coins > 0 && this.EstimateCardValue(card_value, coins_on_table) < 20 * Math.Pow(limit, 0.1) - 10)
         {
             this._cardValues.Append(card_value);
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 

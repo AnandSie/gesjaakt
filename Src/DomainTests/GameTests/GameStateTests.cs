@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Game;
+﻿using Domain.Entities.Components;
+using Domain.Entities.Game.Gesjaakt;
 using Domain.Entities.Players;
 using Domain.Entities.Thinkers;
 using Domain.Interfaces;
@@ -6,25 +7,24 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-
 namespace DomainTests.GameTests;
 
 [TestClass]
 public class GameStateTests
 {
-    private GameState sut;
+    private GesjaaktGameState sut;
     private Player greedyPlayer;
     private Player greedyPlayer2;
 
     [TestInitialize]
     public void Setup()
     {
-        var mockLogger = new Mock<ILogger<GameState>>();
+        var mockLogger = new Mock<ILogger<GesjaaktGameState>>();
 
         greedyPlayer = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object);
         greedyPlayer2 = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object);
 
-        sut = new GameState(new List<IPlayer>(), mockLogger.Object);
+        sut = new GesjaaktGameState(new List<IPlayer>(), mockLogger.Object);
 
         sut.AddPlayer(greedyPlayer);
         sut.AddPlayer(greedyPlayer2);
@@ -33,8 +33,8 @@ public class GameStateTests
     [TestMethod]
     public void AddPlayer()
     {
-        var expectedResult = new List<IPlayerActions> { greedyPlayer, greedyPlayer2 };
-        sut.Players.Should().BeEquivalentTo(expectedResult);
+        var expectedResult = new List<IGesjaaktActions> { greedyPlayer, greedyPlayer2 };
+        ((IGameStateReader)sut).Players.Should().BeEquivalentTo(expectedResult);
     }
 
     [TestMethod]

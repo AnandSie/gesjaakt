@@ -9,5 +9,5 @@ namespace Domain.Interfaces;
 
 public interface IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState);
+    public GesjaaktTurnOption Decide(IGameStateReader gameState);
 }

@@ -10,17 +10,17 @@ namespace Domain.Entities.Thinkers;
 
 public class AnandThinker : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         var tippingPoint = 15;
         int nettoPenaltyPoints = gameState.OpenCardValue - gameState.AmountOfCoinsOnTable;
         if (nettoPenaltyPoints < tippingPoint)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Domain.Entities.Thinkers;
 
 public class MarijnThinker : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         var myCoins = gameState.PlayerOnTurn.CoinsAmount;
         var tableCoins = gameState.AmountOfCoinsOnTable;
@@ -30,11 +30,11 @@ public class MarijnThinker : IThinker
         var random = new Random();
         if (random.NextDouble() < pTotal)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 }

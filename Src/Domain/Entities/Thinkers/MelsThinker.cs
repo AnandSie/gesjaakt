@@ -5,24 +5,24 @@ namespace Domain.Entities.Thinkers;
 
 public class MelsThinker : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         // YourThinker
         if (gameState.AmountOfCoinsOnTable < 3 && gameState.PlayerOnTurn.CoinsAmount > 3)
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
         else if (CreatesStreetThatIsWorth(gameState))
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else if (IsCardWorthIt(gameState))
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 

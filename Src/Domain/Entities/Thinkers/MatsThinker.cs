@@ -5,7 +5,7 @@ namespace Domain.Entities.Thinkers;
 
 public class MatsThinker : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         var cards = gameState.PlayerOnTurn.Cards;
         var coins = gameState.PlayerOnTurn.CoinsAmount;
@@ -15,7 +15,7 @@ public class MatsThinker : IThinker
 
         if (coinsOnCard >= openCard)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
 
         if (NewCardIsAdjacent(cards, openCard))
@@ -26,37 +26,37 @@ public class MatsThinker : IThinker
             }
             else
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
         }
 
         return GetCardBasedOnRatio(openCard, coinsOnCard, coins, players.Count());
     }
 
-    private static TurnAction WaitForCoins(int coins, int openCard, IEnumerable<IPlayerState> players)
+    private static GesjaaktTurnOption WaitForCoins(int coins, int openCard, IEnumerable<IPlayerState> players)
     {
         if (openCard < players.Count() + 7)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
             if (coins < players.Count())
             {
-                return TurnAction.SKIPWITHCOIN;
+                return GesjaaktTurnOption.SKIPWITHCOIN;
             }
             else
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
         }
     }
 
-    private TurnAction GetCardBasedOnRatio(int openCard, int coinsOnCard, int coins, int playerCount)
+    private GesjaaktTurnOption GetCardBasedOnRatio(int openCard, int coinsOnCard, int coins, int playerCount)
     {
         if (coinsOnCard == 0)
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
 
         var cardBonus = Math.Max(0, playerCount - coins);
@@ -67,22 +67,22 @@ public class MatsThinker : IThinker
         {
             if (ratio <= 1)
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
             else
             {
-                return TurnAction.SKIPWITHCOIN;
+                return GesjaaktTurnOption.SKIPWITHCOIN;
             }
         }
         else
         {
             if (ratio <= 2)
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
             else
             {
-                return TurnAction.SKIPWITHCOIN;
+                return GesjaaktTurnOption.SKIPWITHCOIN;
             }
         }
     }

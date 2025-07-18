@@ -17,7 +17,7 @@ public class TomasThinker : IThinker
     private int rondjes = 0;
 
 
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         var coinsStartAmount = gameState.Players.Select(p => p.CoinsAmount).Sum() / gameState.Players.Count();
         var myCoins = gameState.PlayerOnTurn.CoinsAmount;
@@ -27,16 +27,16 @@ public class TomasThinker : IThinker
 
         if (IsInStraatjeAndLangGenoegGemolken(gameState))
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
 
         if (perceivedCardValue < tippingPoint)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 

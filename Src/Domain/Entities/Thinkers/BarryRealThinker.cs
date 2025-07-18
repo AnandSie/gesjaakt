@@ -1,12 +1,6 @@
-﻿using Domain.Entities.Cards;
-using Domain.Entities.Game;
+﻿using Domain.Entities.Game;
 using Domain.Entities.Players;
 using Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entities.Thinkers;
 
@@ -14,13 +8,13 @@ public class BarryRealThinker : IThinker
 {
     double coinsToPoints = 3;
 
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         Random rnd = new Random();
 
         if (isStreet(gameState) && (gameState.Players.Select(p => p.CoinsAmount).Min() <= 2))
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
 
 
@@ -32,11 +26,11 @@ public class BarryRealThinker : IThinker
 
         if (perceivedCoinValue - perceivedRichness > perceivedCardPenalty)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
     private bool isStreet(IGameStateReader gameState)

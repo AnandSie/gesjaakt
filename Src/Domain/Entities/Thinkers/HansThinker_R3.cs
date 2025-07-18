@@ -9,7 +9,7 @@ namespace Domain.Entities.Thinkers;
 
 public class HansThinker_R3 : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         var me = gameState.PlayerOnTurn;
         var openCardValue = gameState.OpenCardValue;
@@ -17,7 +17,7 @@ public class HansThinker_R3 : IThinker
         {
             if (SchadePuntenVoorDezeSpeler(me, gameState.OpenCardValue) < 6)
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
             //else
             //{
@@ -40,11 +40,11 @@ public class HansThinker_R3 : IThinker
         {
             if ((gameState.OpenCardValue - gameState.AmountOfCoinsOnTable) < 20)
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
         }
 
-        return TurnAction.SKIPWITHCOIN;
+        return GesjaaktTurnOption.SKIPWITHCOIN;
     }
 
     private bool BenIkDeSjaak(IGameStateReader gameState, IPlayerState me)

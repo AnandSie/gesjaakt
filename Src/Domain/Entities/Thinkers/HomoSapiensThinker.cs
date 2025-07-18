@@ -17,7 +17,7 @@ public class HomoSapiensThinker : IThinker
         _logger = logger;
     }
 
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         var logMessage = new StringBuilder();
 
@@ -33,8 +33,8 @@ public class HomoSapiensThinker : IThinker
         var choice = _playerInputProvider.GetPlayerInputAsInt(new[] { 1, 2 });
         return choice switch
         {
-            1 => TurnAction.TAKECARD,
-            2 => TurnAction.SKIPWITHCOIN,
+            1 => GesjaaktTurnOption.TAKECARD,
+            2 => GesjaaktTurnOption.SKIPWITHCOIN,
             _ => throw new Exception("Incorrect choice"),
         };
     }

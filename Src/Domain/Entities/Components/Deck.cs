@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Domain.Interfaces;
 using Extensions;
 
-namespace Domain.Entities.Cards;
+namespace Domain.Entities.Components;
 
 public class Deck : IDeck
 {

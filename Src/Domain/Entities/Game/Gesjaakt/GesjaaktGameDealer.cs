@@ -1,17 +1,18 @@
-﻿using Domain.Entities.Players;
+﻿using Domain.Entities.Components;
+using Domain.Entities.Players;
 using Domain.Interfaces;
 
-namespace Domain.Entities.Game;
+namespace Domain.Entities.Game.Gesjaakt;
 
-public class GameDealer : IGameDealer
+public class GesjaaktGameDealer : IGameDealer
 {
     private readonly IGameState _state;
-    private readonly ILogger<GameDealer> _logger;
+    private readonly ILogger<GesjaaktGameDealer> _logger;
 
-    public GameDealer(IEnumerable<IPlayer> players, Func<IGameState> gameStateFactory, ILogger<GameDealer> logger)
+    public GesjaaktGameDealer(IEnumerable<IPlayer> players, IGameState gameState, ILogger<GesjaaktGameDealer> logger)
     {
         _logger = logger;
-        _state = gameStateFactory();
+        _state = gameState;
 
         foreach (var player in players)
         {
@@ -24,31 +25,14 @@ public class GameDealer : IGameDealer
         _state.RemoveCardsFromDeck(amountToRemoveFromDeck);
     }
 
-    public IGameStateReader State => _state;
-
-    private void DivideCoins()
+    public void Prepare()
     {
-        var numberOfPlayers = ((IGameStateReader)_state).Players.Count();
-        // FIXME: COntinously casting is suboptimal
-        var coinsPerPlayer = numberOfPlayers switch
-        {
-            3 or 4 or 5 => 11,
-            6 => 9,
-            7 => 7,
-            _ => throw new Exception($"The given number of players {numberOfPlayers} is not equal to the rules for dividing coins expected"),
-        };
-        _logger.LogInformation($"Every player gets {coinsPerPlayer} coins");
-        foreach (var player in ((IGameStateWriter)_state).Players)
-        {
-            var coins = Enumerable.Range(1, coinsPerPlayer).Select(x => new Coin()).ToArray();
-            player.AcceptCoins(coins);
-        }
+        DivideCoins();
+        OpenFirstCardFromDeck();
     }
 
     public void Play()
     {
-        DivideCoins();
-        PlayFirstCard();
         while (!_state.Deck.IsEmpty() || _state.HasOpenCard)
         {
             PlayTurn();
@@ -63,10 +47,6 @@ public class GameDealer : IGameDealer
             .First();
     }
 
-    public void PlayFirstCard()
-    {
-        _state.OpenNextCardFromDeck();
-    }
 
     public void NextPlayer()
     {
@@ -87,11 +67,11 @@ public class GameDealer : IGameDealer
         {
             switch (player.Decide(_state))
             {
-                case TurnAction.TAKECARD:
+                case GesjaaktTurnOption.TAKECARD:
                     HandleTakeCard(player);
                     break;
 
-                case TurnAction.SKIPWITHCOIN:
+                case GesjaaktTurnOption.SKIPWITHCOIN:
                     _state.AddCoinToTable(player.GiveCoin());
                     _logger.LogInformation($"Amount of coins on table: {_state.AmountOfCoinsOnTable}");
                     break;
@@ -99,7 +79,35 @@ public class GameDealer : IGameDealer
         }
     }
 
-    private void HandleTakeCard(IPlayerActions player)
+    public IEnumerable<IPlayer> GameResultOrdended()
+    {
+        return _state.Players.OrderBy(p => p.CardPoints() - p.CoinsAmount);
+    }
+
+    private void OpenFirstCardFromDeck()
+    {
+        _state.OpenNextCardFromDeck();
+    }
+
+    private void DivideCoins()
+    {
+        // FIXME: COntinously casting is suboptimal
+        var coinsPerPlayer = ((IGameStateReader)_state).Players.Count() switch
+        {
+            3 or 4 or 5 => 11,
+            6 => 9,
+            7 => 7,
+            _ => throw new Exception("The number of players is not equal to the rules for dividing coins expected"),
+        };
+        _logger.LogInformation($"Every player gets {coinsPerPlayer} coins");
+        foreach (var player in ((IGameStateWriter)_state).Players)
+        {
+            var coins = Enumerable.Range(1, coinsPerPlayer).Select(x => new Coin()).ToArray();
+            player.AcceptCoins(coins);
+        }
+    }
+
+    private void HandleTakeCard(IGesjaaktActions player)
     {
         player.AcceptCard(_state.TakeOpenCard());
         player.AcceptCoins(_state.TakeCoins());
@@ -109,10 +117,5 @@ public class GameDealer : IGameDealer
             _state.OpenNextCardFromDeck();
             PlayTurn();
         }
-    }
-
-    public IEnumerable<IPlayer> GameResultOrdended()
-    {
-        return this._state.Players.OrderBy(p => p.CardPoints() - p.CoinsAmount);
     }
 }

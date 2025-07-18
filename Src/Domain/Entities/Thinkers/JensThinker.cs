@@ -10,7 +10,7 @@ public class JensThinker : IThinker
     private bool isMelking = false;
     private int rondjes = 0;
 
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         var tippingPoint = 14;
         int nettoPenaltyPoints = gameState.OpenCardValue - gameState.AmountOfCoinsOnTable;
@@ -18,15 +18,15 @@ public class JensThinker : IThinker
 
         if (nettoPenaltyPoints < tippingPoint || perceivedCoinValue > gameState.OpenCardValue)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else if(IsInStraatjeAndLangGenoegGemolken(gameState))
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
 

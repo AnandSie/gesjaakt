@@ -12,7 +12,7 @@ public class OliverThinker : IThinker
 
 {
 
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
 
     {
 
@@ -22,7 +22,7 @@ public class OliverThinker : IThinker
 
         {
 
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
 
         }
 
@@ -30,7 +30,7 @@ public class OliverThinker : IThinker
 
         {
 
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
 
         }
 

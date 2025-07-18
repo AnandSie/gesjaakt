@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Domain.Interfaces;
 
-namespace Domain.Interfaces;
-
+// TODO: SPlit in gesjaakt en ordinary
 public interface IGameStateWriter
 {
-    IEnumerable<IPlayerActions> Players { get; }
-    public void AddPlayer(IPlayerActions player);
+    IEnumerable<IGesjaaktActions> Players { get; }
+    public void AddPlayer(IGesjaaktActions player);
     public void AddCoinToTable(ICoin coin);
     public IEnumerable<ICoin> TakeCoins();
     public void RemoveCardsFromDeck(int amount);

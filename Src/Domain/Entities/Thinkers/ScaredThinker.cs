@@ -10,8 +10,8 @@ namespace Domain.Entities.Thinkers;
 
 public class ScaredThinker : IThinker
 {
-    public TurnAction Decide(IGameStateReader _)
+    public GesjaaktTurnOption Decide(IGameStateReader _)
     {
-        return TurnAction.SKIPWITHCOIN;
+        return GesjaaktTurnOption.SKIPWITHCOIN;
     }
 }

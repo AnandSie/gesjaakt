@@ -1,19 +1,19 @@
-﻿using Domain.Entities.Cards;
+﻿using Domain.Entities.Components;
 using Domain.Interfaces;
 using System.Text;
 
-namespace Domain.Entities.Game;
+namespace Domain.Entities.Game.Gesjaakt;
 
-public class GameState : IGameState
+public class GesjaaktGameState : IGameState
 {
     private readonly IList<IPlayer> _players;
-    private readonly ILogger<GameState> _logger;
+    private readonly ILogger<GesjaaktGameState> _logger;
     private int _playerIndex;
     private ICollection<ICoin> _coinsOnTable;
     private IDeck _deck;
     private ICard? _openCard;
 
-    public GameState(IEnumerable<IPlayer> players, ILogger<GameState> logger)
+    public GesjaaktGameState(IEnumerable<IPlayer> players, ILogger<GesjaaktGameState> logger)
     {
         _players = players.ToList();
         _playerIndex = 0;
@@ -22,7 +22,7 @@ public class GameState : IGameState
         _logger = logger;
     }
 
-    IEnumerable<IPlayerActions> IGameStateWriter.Players
+    IEnumerable<IGesjaaktActions> IGameStateWriter.Players
     {
         get
         {
@@ -38,7 +38,7 @@ public class GameState : IGameState
         }
     }
 
-    public IEnumerable<IPlayer> Players => _players;
+    IEnumerable<IPlayer> IGameState.Players => _players;
 
     public void OpenNextCardFromDeck()
     {
@@ -76,7 +76,7 @@ public class GameState : IGameState
         _coinsOnTable.Add(coin);
     }
 
-    public void AddPlayer(IPlayerActions newPlayer)
+    public void AddPlayer(IGesjaaktActions newPlayer)
     {
         // FIXME: casting is suboptimal.., code smell?
         _players.Add((IPlayer)newPlayer);

@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using Domain.Interfaces;
-using Domain.Entities.Cards;
+using Domain.Entities.Components;
 
 namespace DomainTests.CardsTests;
 

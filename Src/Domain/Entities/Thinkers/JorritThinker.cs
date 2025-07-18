@@ -10,26 +10,26 @@ namespace Domain.Entities.Thinkers
 {
     public class JorritThinker : IThinker
     {
-        public TurnAction Decide(IGameStateReader gameState)
+        public GesjaaktTurnOption Decide(IGameStateReader gameState)
         {
             const int TotalCards = 24;
             var perceivedCoinValue = gameState.AmountOfCoinsOnTable * 2.9875;
             if (IsStreetLower(gameState))
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
             else if ((perceivedCoinValue * 100) > (gameState.OpenCardValue * 100.0))
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
             //else if(IsStreetHigher(gameState) && ) { }
             else if (IsStreet(gameState) && gameState.AmountOfCoinsOnTable > 0)
             {
-                return TurnAction.TAKECARD;
+                return GesjaaktTurnOption.TAKECARD;
             }
             else
             {
-                return TurnAction.SKIPWITHCOIN;
+                return GesjaaktTurnOption.SKIPWITHCOIN;
             }
         }
         private static bool IsStreet(IGameStateReader gameState)

@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Cards;
+﻿using Domain.Entities.Components;
 using Domain.Entities.Players;
 using Domain.Entities.Thinkers;
 using Domain.Interfaces;

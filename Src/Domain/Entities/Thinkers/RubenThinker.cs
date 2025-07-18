@@ -5,7 +5,7 @@ namespace Domain.Entities.Thinkers;
 
 public class RubenTHinker : IThinker
 {
-    public TurnAction Decide(IGameStateReader gameState)
+    public GesjaaktTurnOption Decide(IGameStateReader gameState)
     {
         ICollection<ICard> cards = gameState.PlayerOnTurn.Cards;
         int[] cardArray = cards.Select(card => card.Value).ToArray();
@@ -27,19 +27,19 @@ public class RubenTHinker : IThinker
 
         if (dealValue < 4)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else if (coinsOnTable < 2)
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
         else if (coinsOnTableValue > dealValue)
         {
-            return TurnAction.TAKECARD;
+            return GesjaaktTurnOption.TAKECARD;
         }
         else
         {
-            return TurnAction.SKIPWITHCOIN;
+            return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
     private static bool IsSequence(int currentCardValue, ICollection<ICard> cards)
