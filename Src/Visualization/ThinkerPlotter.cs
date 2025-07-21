@@ -1,8 +1,10 @@
 ﻿using Domain.Interfaces;
 using ScottPlot;
-using Domain.Entities.Players;
 using System.Diagnostics;
 using Application.Interfaces;
+using Domain.Interfaces.Components;
+using Domain.Interfaces.Games.Gesjaakt;
+using Domain.Entities.Game.Gesjaakt;
 
 namespace Visualization;
 
@@ -107,10 +109,10 @@ public class ThinkerPlotter(IThinker thinker): IThinkerPlotter
         return decisions;
     }
 
-    private class TestGameState : IGameStateReader
+    private class TestGameState : IGesjaaktReadOnlyGameState
     {
-        public IEnumerable<IPlayerState> Players => throw new NotImplementedException();
-        public IPlayerState PlayerOnTurn => throw new NotImplementedException();
+        public IEnumerable<IGesjaaktPlayerState> Players => throw new NotImplementedException();
+        public IGesjaaktPlayerState PlayerOnTurn => throw new NotImplementedException();
         public int OpenCardValue { get; set; }
         public IDeckState Deck => throw new NotImplementedException();
         public int AmountOfCoinsOnTable { get; set; }

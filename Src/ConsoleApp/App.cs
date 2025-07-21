@@ -1,5 +1,5 @@
 ﻿using Application;
-using Domain.Entities.Players;
+using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
 using System.Text;
 using Visualization;
@@ -67,11 +67,11 @@ internal class App
             case 3:
                 var playersToAdd = _playerInputProvider.GetPlayerInputAsInt("How many players do you want to play (3-7)?", new[] { 3, 4, 5, 6, 7 });
 
-                var players = new List<Player>();
+                var players = new List<GesjaaktPlayer>();
                 foreach (var i in Enumerable.Range(3, playersToAdd))
                 {
                     var name = _playerInputProvider.GetPlayerInput($"Player number {i - 2} what is your name?");
-                    players.Add((Player)_playerFactory.CreateHomoSapiens(name, _playerInputProvider));
+                    players.Add((GesjaaktPlayer)_playerFactory.CreateHomoSapiens(name, _playerInputProvider));
                 }
 
                 var dealerManualGame = _dealerFactory.Create(players);

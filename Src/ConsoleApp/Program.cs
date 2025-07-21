@@ -4,8 +4,10 @@ using ConsoleApp.Helpers;
 using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Domain.Entities.Game.Gesjaakt;
 using Domain.Entities.Components;
+using Domain.Interfaces.Components;
+using Domain.Interfaces.Games.Gesjaakt;
+using Domain.Entities.Game.Gesjaakt;
 
 // TODO: IOC
 var serviceCollection = new ServiceCollection();
@@ -28,8 +30,8 @@ serviceCollection.AddSingleton<IGameDealerFactory, GameDealerFactory>();
 serviceCollection.AddSingleton<ISimulator, Simulator>();
 serviceCollection.AddSingleton<App>();
 serviceCollection.AddTransient<IDeck>(sp => new Deck(3, 35)); // TODO: Add to rule object
-serviceCollection.AddTransient<IGameState, GesjaaktGameState>();
-serviceCollection.AddTransient<Func<IGameState>>(sp => () => sp.GetRequiredService<IGameState>());
+serviceCollection.AddTransient<IGesjaaktGameState, GesjaaktGameState>();
+serviceCollection.AddTransient<Func<IGesjaaktGameState>>(sp => () => sp.GetRequiredService<IGesjaaktGameState>());
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 

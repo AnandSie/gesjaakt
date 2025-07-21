@@ -1,15 +1,14 @@
-﻿using Domain.Entities.Components;
-using Domain.Entities.Players;
-using Domain.Interfaces;
+﻿using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Game.Gesjaakt;
 
 public class GesjaaktGameDealer : IGameDealer
 {
-    private readonly IGameState _state;
+    private readonly IGesjaaktGameState _state;
     private readonly ILogger<GesjaaktGameDealer> _logger;
 
-    public GesjaaktGameDealer(IEnumerable<IPlayer> players, IGameState gameState, ILogger<GesjaaktGameDealer> logger)
+    public GesjaaktGameDealer(IEnumerable<IGesjaaktPlayer> players, IGesjaaktGameState gameState, ILogger<GesjaaktGameDealer> logger)
     {
         _logger = logger;
         _state = gameState;
@@ -36,27 +35,21 @@ public class GesjaaktGameDealer : IGameDealer
         while (!_state.Deck.IsEmpty() || _state.HasOpenCard)
         {
             PlayTurn();
-            NextPlayer();
+            _state.NextPlayer();
         }
     }
 
-    public IPlayerState Winner()
+    public IGesjaaktPlayerState Winner()
     {
-        return ((IGameStateReader)_state).Players
+        return _state.Players
             .OrderBy(p => p.Points())
             .First();
-    }
-
-
-    public void NextPlayer()
-    {
-        _state.NextPlayer();
     }
 
     public void PlayTurn()
     {
         // TODO: REPLACE BY DESIGN PATTERN - STATE PATTERN?
-        var player = (IPlayer)_state.PlayerOnTurn;
+        var player = (IGesjaaktPlayer)_state.PlayerOnTurn;
 
         if (player.CoinsAmount == 0)
         {
@@ -79,9 +72,10 @@ public class GesjaaktGameDealer : IGameDealer
         }
     }
 
-    public IEnumerable<IPlayer> GameResultOrdended()
+    public IEnumerable<IGesjaaktPlayerState> GameResultOrdended()
     {
-        return _state.Players.OrderBy(p => p.CardPoints() - p.CoinsAmount);
+        // FIXME: De IGameState interface zou gewoon via één plek PLayers moeten hebben, niet en via reader en via writer (dit zou methods moeten zijn)
+        return ((IGesjaaktReadOnlyGameState)_state).Players.OrderBy(p => p.CardPoints() - p.CoinsAmount);
     }
 
     private void OpenFirstCardFromDeck()
@@ -92,7 +86,7 @@ public class GesjaaktGameDealer : IGameDealer
     private void DivideCoins()
     {
         // FIXME: COntinously casting is suboptimal
-        var coinsPerPlayer = ((IGameStateReader)_state).Players.Count() switch
+        var coinsPerPlayer = ((IGesjaaktReadOnlyGameState)_state).Players.Count() switch
         {
             3 or 4 or 5 => 11,
             6 => 9,
@@ -100,14 +94,10 @@ public class GesjaaktGameDealer : IGameDealer
             _ => throw new Exception("The number of players is not equal to the rules for dividing coins expected"),
         };
         _logger.LogInformation($"Every player gets {coinsPerPlayer} coins");
-        foreach (var player in ((IGameStateWriter)_state).Players)
-        {
-            var coins = Enumerable.Range(1, coinsPerPlayer).Select(x => new Coin()).ToArray();
-            player.AcceptCoins(coins);
-        }
+        _state.DivideCoins(coinsPerPlayer);
     }
 
-    private void HandleTakeCard(IGesjaaktActions player)
+    private void HandleTakeCard(IGesjaaktPlayerActions player)
     {
         player.AcceptCard(_state.TakeOpenCard());
         player.AcceptCoins(_state.TakeCoins());
@@ -115,7 +105,9 @@ public class GesjaaktGameDealer : IGameDealer
         if (!_state.Deck.IsEmpty())
         {
             _state.OpenNextCardFromDeck();
-            PlayTurn();
+
+            // !!!!!!!!!!!!!!!!!!!!!!!
+            PlayTurn(); // FIXME: waarom staat dit heir..? // Door weghalen faalt een test...
         }
     }
 }

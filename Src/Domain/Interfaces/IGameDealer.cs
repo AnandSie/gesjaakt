@@ -1,9 +1,11 @@
-﻿namespace Domain.Interfaces;
+﻿using Domain.Interfaces.Games.Gesjaakt;
+
+namespace Domain.Interfaces;
 
 public interface IGameDealer
 {
     public void Prepare();
     void Play();
-    IPlayerState Winner();
-    IEnumerable<IPlayer> GameResultOrdended();
+    IGesjaaktPlayerState Winner();
+    IEnumerable<IGesjaaktPlayerState> GameResultOrdended();
 }

@@ -1,9 +1,11 @@
-﻿namespace Domain.Interfaces;
+﻿using Domain.Interfaces.Games.Gesjaakt;
+
+namespace Domain.Interfaces;
 
 public interface IPlayerFactory
 {
-    public IEnumerable<IPlayer> Create();
-    public IEnumerable<Func<IPlayer>> AllPlayerFactories();
+    public IEnumerable<IGesjaaktPlayer> Create();
+    public IEnumerable<Func<IGesjaaktPlayer>> AllPlayerFactories();
 
-    public IPlayer CreateHomoSapiens(string name, IPlayerInputProvider playerInputProvider);
+    public IGesjaaktPlayer CreateHomoSapiens(string name, IPlayerInputProvider playerInputProvider);
 }

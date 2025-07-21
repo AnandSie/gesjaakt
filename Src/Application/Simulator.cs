@@ -2,6 +2,7 @@
 using System.Text;
 using Extensions;
 using System.Diagnostics;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Application;
 
@@ -35,9 +36,10 @@ public class Simulator : ISimulator
         ReportSimulationResults(resultPerPlayer);
     }
 
-    private void RunSingleGame(Dictionary<string, int> resultPerPlayer, IEnumerable<IPlayer> demoPlayers)
+    private void RunSingleGame(Dictionary<string, int> resultPerPlayer, IEnumerable<IGesjaaktPlayer> demoPlayers)
     {
         var dealer = _dealerFactory.Create(demoPlayers);
+        dealer.Prepare();
         dealer.Play();
 
         SaveGameResults(resultPerPlayer, dealer);
@@ -70,7 +72,7 @@ public class Simulator : ISimulator
         double totalElapsedMs = 0;
 
         var resultPerPlayer = new Dictionary<string, int>();
-        var allCombinations = GetCombinations<Func<IPlayer>>(allPlayerFactories, maxPlayers).ToList();
+        var allCombinations = GetCombinations<Func<IGesjaaktPlayer>>(allPlayerFactories, maxPlayers).ToList();
         int numberOfCombinations = allCombinations.Count;
         for (int i = 0; i < numberOfCombinations; i++)
         {

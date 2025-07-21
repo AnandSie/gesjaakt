@@ -1,5 +1,5 @@
 ﻿using Domain.Entities.Components;
-using Domain.Entities.Players;
+using Domain.Entities.Game.Gesjaakt;
 using Domain.Entities.Thinkers;
 using Domain.Interfaces;
 using FluentAssertions;
@@ -11,12 +11,12 @@ namespace DomainTests.Players;
 [TestClass]
 public class PlayerTests
 {
-    Player sut;
+    GesjaaktPlayer sut;
 
     [TestInitialize]
     public void Setup()
     {
-        sut = new Player(new GreedyThinker(), new Mock<ILogger<Player>>().Object);
+        sut = new GesjaaktPlayer(new GreedyThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object);
     }
 
     [TestMethod]

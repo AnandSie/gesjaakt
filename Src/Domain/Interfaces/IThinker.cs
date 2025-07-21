@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Players;
+﻿using Domain.Entities.Game.Gesjaakt;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +9,5 @@ namespace Domain.Interfaces;
 
 public interface IThinker
 {
-    public GesjaaktTurnOption Decide(IGameStateReader gameState);
+    public GesjaaktTurnOption Decide(IGesjaaktReadOnlyGameState gameState);
 }
