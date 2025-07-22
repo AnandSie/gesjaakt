@@ -75,6 +75,7 @@ internal class App
                 }
 
                 var dealerManualGame = _dealerFactory.Create(players);
+                dealerManualGame.Prepare();
                 dealerManualGame.Play();
                 var winnerManualGame = dealerManualGame.Winner();
 

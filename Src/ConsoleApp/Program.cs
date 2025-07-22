@@ -29,7 +29,6 @@ serviceCollection.AddSingleton<IPlayerFactory, PlayerFactory>();
 serviceCollection.AddSingleton<IGameDealerFactory, GameDealerFactory>();
 serviceCollection.AddSingleton<ISimulator, Simulator>();
 serviceCollection.AddSingleton<App>();
-serviceCollection.AddTransient<IDeck>(sp => new Deck(3, 35)); // TODO: Add to rule object
 serviceCollection.AddTransient<IGesjaaktGameState, GesjaaktGameState>();
 serviceCollection.AddTransient<Func<IGesjaaktGameState>>(sp => () => sp.GetRequiredService<IGesjaaktGameState>());
 

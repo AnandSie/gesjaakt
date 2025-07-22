@@ -3,7 +3,7 @@ using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Game.Gesjaakt;
 
-public class GesjaaktGameDealer : IGameDealer
+public class GesjaaktGameDealer : IGameDealer<IGesjaaktPlayerState>
 {
     private readonly IGesjaaktGameState _state;
     private readonly ILogger<GesjaaktGameDealer> _logger;
@@ -58,6 +58,7 @@ public class GesjaaktGameDealer : IGameDealer
         }
         else
         {
+            // TODO: give the ReadOnly version
             switch (player.Decide(_state))
             {
                 case GesjaaktTurnOption.TAKECARD:
@@ -105,9 +106,7 @@ public class GesjaaktGameDealer : IGameDealer
         if (!_state.Deck.IsEmpty())
         {
             _state.OpenNextCardFromDeck();
-
-            // !!!!!!!!!!!!!!!!!!!!!!!
-            PlayTurn(); // FIXME: waarom staat dit heir..? // Door weghalen faalt een test...
+            PlayTurn(); // After taking card, you can play another turn
         }
     }
 }

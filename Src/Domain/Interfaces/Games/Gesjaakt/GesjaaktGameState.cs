@@ -12,7 +12,7 @@ public class GesjaaktGameState : IGesjaaktGameState
     private readonly ILogger<GesjaaktGameState> _logger;
     private int _playerIndex;
     private ICollection<ICoin> _coinsOnTable;
-    private IDeck _deck;
+    private Deck _deck;
     private ICard? _openCard;
 
     public GesjaaktGameState(IEnumerable<IGesjaaktPlayer> players, ILogger<GesjaaktGameState> logger)
@@ -50,7 +50,8 @@ public class GesjaaktGameState : IGesjaaktGameState
 
     public bool HasOpenCard => _openCard != null;
 
-    public IDeckState Deck => _deck;
+    // FIXME: ensure it is really readonly? only casting is not sufficient?
+    public IDeckState Deck => new ReadOnlyDeck(_deck);
 
     public int AmountOfCoinsOnTable => _coinsOnTable.Count();
 
@@ -61,6 +62,7 @@ public class GesjaaktGameState : IGesjaaktGameState
         _coinsOnTable.Add(coin);
     }
 
+    // FIXME: can't we just inject players in constructor?
     public void AddPlayer(IGesjaaktPlayer newPlayer)
     {
         _players.Add(newPlayer);

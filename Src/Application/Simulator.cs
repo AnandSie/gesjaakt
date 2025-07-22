@@ -46,7 +46,7 @@ public class Simulator : ISimulator
         ReportGameResults(dealer);
     }
 
-    private static void SaveGameResults(Dictionary<string, int> resultPerPlayer, IGameDealer dealer)
+    private static void SaveGameResults(Dictionary<string, int> resultPerPlayer, IGameDealer<IGesjaaktPlayerState> dealer)
     {
         var winner = dealer.Winner();
         if (resultPerPlayer.ContainsKey(winner.Name))
@@ -105,7 +105,7 @@ public class Simulator : ISimulator
     }
 
 
-    private void ReportGameResults(IGameDealer dealer)
+    private void ReportGameResults(IGameDealer<IGesjaaktPlayerState> dealer)
     {
         var winner = dealer.Winner();
 

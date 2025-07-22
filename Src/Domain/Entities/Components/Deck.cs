@@ -9,7 +9,7 @@ using Extensions;
 
 namespace Domain.Entities.Components;
 
-public class Deck : IDeck
+public class Deck : IDeckSetter
 {
     private readonly ICollection<ICard> Cards;
 
@@ -21,6 +21,8 @@ public class Deck : IDeck
                                .Shuffle()
                                .ToHashSet<ICard>();
     }
+
+    public IDeckState AsReadOnly() => new ReadOnlyDeck(this);
 
     public int AmountOfCardsLeft()
     {

@@ -1,11 +1,13 @@
 ﻿using Domain.Interfaces;
+using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.Gesjaakt;
+using Domain.Interfaces.Games.TakeFive;
 
 namespace Domain.Entities.Game.TakeFive;
 
-public class TakeFiveGameDealer : IGameDealer
+public class TakeFiveGameDealer : IGameDealer<ITakeFivePlayerState>
 {
-    public IEnumerable<IGesjaaktPlayerState> GameResultOrdended()
+    public IEnumerable<ITakeFivePlayerState> GameResultOrdended()
     {
         throw new NotImplementedException();
     }
@@ -20,7 +22,7 @@ public class TakeFiveGameDealer : IGameDealer
         throw new NotImplementedException();
     }
 
-    public IGesjaaktPlayerState Winner()
+    public ITakeFivePlayerState Winner()
     {
         throw new NotImplementedException();
     }

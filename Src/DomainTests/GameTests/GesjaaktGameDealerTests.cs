@@ -10,7 +10,7 @@ using Moq;
 namespace DomainTests.GameTests;
 
 [TestClass]
-public class GameDealerTests
+public class GesjaaktGameDealerTests
 {
     [TestMethod]
     public void PlaceCoinAction()

@@ -10,7 +10,7 @@ using Moq;
 namespace DomainTests.GameTests;
 
 [TestClass]
-public class GameStateTests
+public class GesjaaktGameStateTests
 {
     private GesjaaktGameState sut;
     private GesjaaktPlayer greedyPlayer;
@@ -79,4 +79,6 @@ public class GameStateTests
             player.CoinsAmount.Should().Be(coinsPerPlayer);
         }
     }
+
+    // TODO: Deck is really readonly
 }

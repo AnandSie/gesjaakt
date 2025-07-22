@@ -1,10 +1,9 @@
 ﻿using Domain.Interfaces;
 using Domain.Interfaces.Games.Gesjaakt;
 
-namespace Application
+namespace Application;
+
+public interface IGameDealerFactory
 {
-    public interface IGameDealerFactory
-    {
-        IGameDealer Create(IEnumerable<IGesjaaktPlayer> players);
-    }
+    IGameDealer<IGesjaaktPlayerState> Create(IEnumerable<IGesjaaktPlayer> players);
 }
