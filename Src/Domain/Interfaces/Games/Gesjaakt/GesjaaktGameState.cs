@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Components;
+using Domain.Entities.Game.BaseGame;
 using Domain.Interfaces;
 using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.Gesjaakt;
@@ -12,7 +13,7 @@ public class GesjaaktGameState : IGesjaaktGameState
     private readonly ILogger<GesjaaktGameState> _logger;
     private int _playerIndex;
     private ICollection<ICoin> _coinsOnTable;
-    private Deck _deck;
+    private Deck<Card> _deck;
     private ICard? _openCard;
 
     public GesjaaktGameState(IEnumerable<IGesjaaktPlayer> players, ILogger<GesjaaktGameState> logger)
@@ -20,7 +21,8 @@ public class GesjaaktGameState : IGesjaaktGameState
         _players = players.ToList();
         _playerIndex = 0;
         _coinsOnTable = new HashSet<ICoin>();
-        _deck = new Deck(3, 35); // TODO: extract to config
+        var factory = new CardFactory(); // TODO: DI - Gesjaakt Di
+        _deck = new Deck<Card>(3, 35, factory); // TODO: extract to config
         _logger = logger;
     }
 
@@ -51,7 +53,7 @@ public class GesjaaktGameState : IGesjaaktGameState
     public bool HasOpenCard => _openCard != null;
 
     // FIXME: ensure it is really readonly? only casting is not sufficient?
-    public IDeckState Deck => new ReadOnlyDeck(_deck);
+    public IReadOnlyDeck<Card> Deck => new ReadOnlyDeck<Card>(_deck);
 
     public int AmountOfCoinsOnTable => _coinsOnTable.Count();
 

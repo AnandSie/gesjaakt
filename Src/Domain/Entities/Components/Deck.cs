@@ -5,31 +5,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Interfaces.Components;
+using Domain.Interfaces.Games.BaseGame;
 using Extensions;
 
 namespace Domain.Entities.Components;
 
-public class Deck : IDeckSetter
+public class Deck<TCard> : IMutableDeck<TCard> where TCard: ICard
 {
-    private readonly ICollection<ICard> Cards;
+    private readonly List<TCard> Cards;
 
-    public Deck(int min, int max)
+    public Deck(int min, int max, ICardFactory<TCard> cardFactory)
     {
         int deckSize = max - min + 1;
         Cards = Enumerable.Range(min, deckSize)
-                               .Select(value => new Card(value))
+                               .Select(value => cardFactory.Create(value))
                                .Shuffle()
-                               .ToHashSet<ICard>();
+                               .ToList<TCard>();
     }
 
-    public IDeckState AsReadOnly() => new ReadOnlyDeck(this);
+    public IReadOnlyDeck<TCard> AsReadOnly() => new ReadOnlyDeck<TCard>(this);
 
     public int AmountOfCardsLeft()
     {
         return Cards.Count;
     }
 
-    public ICard DrawCard()
+    public TCard DrawCard()
     {
         var card = Cards.First();
         Cards.Remove(card);

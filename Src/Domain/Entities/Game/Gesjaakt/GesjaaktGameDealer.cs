@@ -73,7 +73,7 @@ public class GesjaaktGameDealer : IGameDealer<IGesjaaktPlayerState>
         }
     }
 
-    public IEnumerable<IGesjaaktPlayerState> GameResultOrdended()
+    public IOrderedEnumerable<IGesjaaktPlayerState> GetPlayerResults()
     {
         // FIXME: De IGameState interface zou gewoon via één plek PLayers moeten hebben, niet en via reader en via writer (dit zou methods moeten zijn)
         return ((IGesjaaktReadOnlyGameState)_state).Players.OrderBy(p => p.CardPoints() - p.CoinsAmount);

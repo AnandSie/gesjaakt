@@ -5,6 +5,7 @@ using Application.Interfaces;
 using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.Gesjaakt;
 using Domain.Entities.Game.Gesjaakt;
+using Domain.Entities.Components;
 
 namespace Visualization;
 
@@ -114,7 +115,7 @@ public class ThinkerPlotter(IThinker thinker): IThinkerPlotter
         public IEnumerable<IGesjaaktPlayerState> Players => throw new NotImplementedException();
         public IGesjaaktPlayerState PlayerOnTurn => throw new NotImplementedException();
         public int OpenCardValue { get; set; }
-        public IDeckState Deck => throw new NotImplementedException();
+        public IReadOnlyDeck<Card> Deck => throw new NotImplementedException();
         public int AmountOfCoinsOnTable { get; set; }
         public bool HasOpenCard => throw new NotImplementedException();
     }

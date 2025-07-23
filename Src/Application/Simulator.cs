@@ -110,7 +110,7 @@ public class Simulator : ISimulator
         var winner = dealer.Winner();
 
         var sbGame = new StringBuilder();
-        foreach (var player in dealer.GameResultOrdended())
+        foreach (var player in dealer.GetPlayerResults())
         {
             sbGame.Append($"\t- {player}\n");
         }

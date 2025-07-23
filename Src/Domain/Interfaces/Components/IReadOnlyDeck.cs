@@ -1,6 +1,6 @@
 ﻿namespace Domain.Interfaces.Components;
 
-public interface IDeckState
+public interface IReadOnlyDeck<TCard> where TCard : ICard
 {
     int AmountOfCardsLeft();
     bool IsEmpty();

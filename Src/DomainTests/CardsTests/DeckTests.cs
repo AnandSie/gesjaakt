@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Domain.Entities.Components;
 using Domain.Interfaces.Components;
+using Domain.Entities.Game.BaseGame;
 
 namespace DomainTests.CardsTests;
 
@@ -10,12 +11,12 @@ public class DeckTests
 {
     readonly int min = 3;
     readonly int max = 35;
-    private Deck sut;
+    private Deck<Card> sut;
 
     [TestInitialize]
     public void Setup()
     {
-        this.sut = new Deck(min, max);
+        this.sut = new Deck<Card>(min, max, new CardFactory());
     }
 
     // TODO: maybe move to readonly..?

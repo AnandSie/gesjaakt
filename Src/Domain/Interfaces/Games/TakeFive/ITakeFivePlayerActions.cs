@@ -1,8 +1,11 @@
-﻿using Domain.Interfaces.Games.BaseGame;
+﻿using Domain.Entities.Game.TakeFive;
+using Domain.Interfaces.Games.BaseGame;
 
 namespace Domain.Interfaces.Games.TakeFive;
 
 // FIXME: misschien int vervangen door een enum lopen van 1 t/m 4 ..?
 public interface ITakeFivePlayerActions : IPlayerActions<ITakeFiveReadOnlyGameState, int>
 {
+    public void AccecptCards(IEnumerable<TakeFiveCard> cards);
+    public void AccecptPenaltyCards(IEnumerable<TakeFiveCard> cards);
 }

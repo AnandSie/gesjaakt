@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Components;
+﻿using Domain.Entities.Components;
+using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.Gesjaakt;
 
@@ -10,7 +11,7 @@ public interface IGesjaaktReadOnlyGameState: IReadOnlyGameState<IGesjaaktPlayerS
     IGesjaaktPlayerState PlayerOnTurn { get; }
     
     // ICardGame
-    IDeckState Deck { get; }
+    IReadOnlyDeck<Card> Deck { get; }
     int OpenCardValue { get; }
     bool HasOpenCard {  get; }
 

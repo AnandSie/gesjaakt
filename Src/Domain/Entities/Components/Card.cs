@@ -11,13 +11,13 @@ public class Card : ICard
 {
     private int _value;
 
-    public Card(int v)
+    public Card(int value)
     {
-        if (v <= 0)
+        if (value <= 0)
         {
             throw new ArgumentException("value should be positive");
         }
-        _value = v;
+        _value = value;
     }
 
     public int Value => _value;

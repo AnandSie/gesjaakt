@@ -81,7 +81,7 @@ public class TakeFiveGameStateTests
         // Arrange
         _state.InitializeRowsFromDeck();
 
-        var card = new Card(10);
+        var card = new TakeFiveCard(10, 1);
         var rowNumber = 3;
 
         // Act

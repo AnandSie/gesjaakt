@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces.Components;
 
-public interface IDeckSetter
+public interface IMutableDeck<TCard> where TCard : ICard
 {
     void TakeOut(int amount);
-    ICard DrawCard();
+    TCard DrawCard();
 }

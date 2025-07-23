@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.Components;
 
-public class ReadOnlyDeck: IDeckState
+public class ReadOnlyDeck<TCard> : IReadOnlyDeck<TCard> where TCard : ICard
 {
-    private readonly Deck _inner;
+    private readonly Deck<TCard> _inner;
 
-    public ReadOnlyDeck(Deck inner)
+    public ReadOnlyDeck(Deck<TCard> inner)
     {
         _inner = inner;
     }

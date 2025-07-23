@@ -7,28 +7,29 @@ namespace Domain.Entities.Game.TakeFive;
 
 public class TakeFiveGameState : ITakeFiveMutableGameState
 {
-    private readonly Deck _deck;
+    private readonly Deck<TakeFiveCard> _deck;
     private readonly HashSet<ITakeFivePlayerState> _players;
-    private readonly List<List<ICard>> _cardRows;
+    private readonly List<List<TakeFiveCard>> _cardRows;
     private bool _isInitialized = false;
 
     public TakeFiveGameState()
     {
-        _deck = new Deck(1, 104); // TODO: place this into config/rule object
+        var cardFactory = new TakeFiveCardFactory();
+        _deck = new Deck<TakeFiveCard>(1, 104, cardFactory); // TODO: place this into config/rule object
         _players = new HashSet<ITakeFivePlayerState>();
 
         var rowsToCreate = 4;// TODO: place into config/rule object
         _cardRows = Enumerable.Range(0, rowsToCreate)
-            .Select(_ => new List<ICard>())
+            .Select(_ => new List<TakeFiveCard>())
             .ToList();
     }
 
     public ITakeFiveReadOnlyGameState AsReadOnly() => new TakeFiveReadOnlyGameState(this);
-    public Deck Deck => _deck;
+    public Deck<TakeFiveCard> Deck => _deck;
 
     public IEnumerable<ITakeFivePlayerState> Players => _players;
 
-    public IEnumerable<IEnumerable<ICard>> CardRows => _cardRows;
+    public IEnumerable<IEnumerable<TakeFiveCard>> CardRows => _cardRows;
 
     // FIXME: can't we just inject players in constructor?
     public void AddPlayer(ITakeFivePlayerState player)
@@ -50,17 +51,22 @@ public class TakeFiveGameState : ITakeFiveMutableGameState
         this._isInitialized = true;
     }
 
-    public void PlaceCard(ICard card, int rowNumber)
+    public void PlaceCard(TakeFiveCard card, int rowNumber)
     {
         _cardRows.ElementAt(rowNumber).Add(card);
     }
 
-    public IEnumerable<ICard> GetCards(int rowNumber)
+    public IEnumerable<TakeFiveCard> GetCards(int rowNumber)
     {
-        List<ICard> cardRow = _cardRows.ElementAt(rowNumber);
+        var cardRow = _cardRows.ElementAt(rowNumber);
         var result = cardRow.ToHashSet();
 
         cardRow.Clear();
         return result;
+    }
+
+    public void DealStartingCards(int cardsPerPlayer)
+    {
+        throw new NotImplementedException();
     }
 }

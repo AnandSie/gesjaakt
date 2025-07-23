@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Components;
+﻿using Domain.Entities.Game.TakeFive;
+using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.BaseGame;
 
 namespace Domain.Interfaces.Games.TakeFive;
@@ -11,15 +12,15 @@ public interface ITakeFiveMutableGameState: IMutableGameState<ITakeFivePlayerSta
     /// 
     /// <param name="card">The card to place.</param>
     /// <param name="rowNumber">The row number to place the card in.</param>
-    public void PlaceCard(ICard card, int rowNumber);
+    public void PlaceCard(TakeFiveCard card, int rowNumber);
 
     /// <summary> 
-    /// Get Cards from a rownumber
+    /// Get Cards from a rownumber on the table
     /// </summary>
     /// 
     /// <param name="rowNumber">The row number from which the cards will be retrived.</param>
     /// <returns> The collection of cards</returns> 
-    public IEnumerable<ICard> GetCards(int rowNumber);
+    public IEnumerable<TakeFiveCard> GetCards(int rowNumber);
 
     /// <summary>
     /// Initializes the rows by drawing cards from the deck.
@@ -27,4 +28,9 @@ public interface ITakeFiveMutableGameState: IMutableGameState<ITakeFivePlayerSta
     /// </summary>
     void InitializeRowsFromDeck();
 
+    /// <summary>
+    /// Distributes the given number of cards from the deck to each player during game setup.
+    /// </summary>
+    /// <param name="cardsPerPlayer">The number of cards to deal to each player.</param>
+    void DealStartingCards(int cardsPerPlayer);
 }

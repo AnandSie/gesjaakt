@@ -8,5 +8,5 @@ public interface IGameDealer<out TPlayer> where TPlayer: INamed
     public void Prepare();
     public void Play();
     public TPlayer Winner();
-    public IEnumerable<TPlayer> GameResultOrdended();
+    public IOrderedEnumerable<TPlayer> GetPlayerResults();
 }

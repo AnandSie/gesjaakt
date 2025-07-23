@@ -7,7 +7,14 @@ namespace Domain.Entities.Game.TakeFive;
 
 public class TakeFiveGameDealer : IGameDealer<ITakeFivePlayerState>
 {
-    public IEnumerable<ITakeFivePlayerState> GameResultOrdended()
+    private readonly ITakeFiveMutableGameState _gameState;
+
+    public TakeFiveGameDealer(ITakeFiveMutableGameState gameState)
+    {
+        _gameState = gameState;
+    }
+
+    public IOrderedEnumerable<ITakeFivePlayerState> GetPlayerResults()
     {
         throw new NotImplementedException();
     }
@@ -19,7 +26,9 @@ public class TakeFiveGameDealer : IGameDealer<ITakeFivePlayerState>
 
     public void Prepare()
     {
-        throw new NotImplementedException();
+        _gameState.InitializeRowsFromDeck();
+        var startAmount = 10; // TODO: Config
+        _gameState.DealStartingCards(startAmount);
     }
 
     public ITakeFivePlayerState Winner()
