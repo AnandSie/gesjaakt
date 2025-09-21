@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Thinkers
 {
-    public class JorritThinker : IThinker
+    public class JorritThinker : IGesjaaktThinker
     {
         public GesjaaktTurnOption Decide(IGesjaaktReadOnlyGameState gameState)
         {

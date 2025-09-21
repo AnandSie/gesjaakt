@@ -4,8 +4,6 @@ using ConsoleApp.Helpers;
 using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Domain.Entities.Components;
-using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.Gesjaakt;
 using Domain.Entities.Game.Gesjaakt;
 
@@ -39,5 +37,5 @@ var logger = serviceProvider.GetRequiredService<Domain.Interfaces.ILogger<Progra
 logger.LogInformation("Starting application...");
 
 var app = serviceProvider.GetRequiredService<App>();
-app.Run();
+app.Start();
 

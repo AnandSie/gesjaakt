@@ -9,9 +9,9 @@ namespace Domain.Entities.Components;
 
 public class ReadOnlyDeck<TCard> : IReadOnlyDeck<TCard> where TCard : ICard
 {
-    private readonly Deck<TCard> _inner;
+    private readonly IMutableDeck<TCard> _inner;
 
-    public ReadOnlyDeck(Deck<TCard> inner)
+    public ReadOnlyDeck(IMutableDeck<TCard> inner)
     {
         _inner = inner;
     }

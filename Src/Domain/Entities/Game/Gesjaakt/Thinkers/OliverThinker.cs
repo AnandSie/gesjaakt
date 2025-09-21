@@ -6,8 +6,9 @@ using Domain.Entities.Game;
 using Domain.Entities.Game.Gesjaakt;
 
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
-public class OliverThinker : IThinker
+public class OliverThinker : IGesjaaktThinker
 
 {
 

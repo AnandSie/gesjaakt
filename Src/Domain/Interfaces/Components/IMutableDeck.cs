@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces.Components;
 
-public interface IMutableDeck<TCard> where TCard : ICard
+// TODO: make this interface internally accessible such that only relevant buisness logic can use it
+public interface IMutableDeck<TCard>: IReadOnlyDeck<TCard> where TCard : ICard
 {
     void TakeOut(int amount);
     TCard DrawCard();

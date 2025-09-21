@@ -1,10 +1,11 @@
 ﻿using Domain.Entities.Game;
 using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Thinkers;
 
-public class NilsThinker_R3 : IThinker
+public class NilsThinker_R3 : IGesjaaktThinker
 {
     public GesjaaktTurnOption Decide(IGesjaaktReadOnlyGameState gameState)
     {

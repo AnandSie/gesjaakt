@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Extensions\Extensions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\Game\TakeFive\Thinkers\" />
+  </ItemGroup>
+
 </Project>

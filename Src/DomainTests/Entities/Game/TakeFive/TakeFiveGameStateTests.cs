@@ -1,9 +1,12 @@
 ﻿using Domain.Entities.Components;
+using Domain.Entities.Game.BaseGame;
 using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Components;
+using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.TakeFive;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace DomainTests.Entities.Game.Gesjaakt;
 
@@ -11,18 +14,26 @@ namespace DomainTests.Entities.Game.Gesjaakt;
 public class TakeFiveGameStateTests
 {
     private TakeFiveGameState _state;
+    private Mock<ITakeFiveThinker> takeFiveThinkerMock;
+    private Mock<IDeckFactory<TakeFiveCard>> deckFactoryMock;
 
     [TestInitialize]
     public void Setup()
     {
-        _state = new TakeFiveGameState();
+        takeFiveThinkerMock = new Mock<ITakeFiveThinker>();
+        deckFactoryMock = new Mock<IDeckFactory<TakeFiveCard>>();
+
+        var cardFactory = new TakeFiveCardFactory();
+        var deck = new Deck<TakeFiveCard>(1, 104, cardFactory);
+        deckFactoryMock.Setup(df => df.Create()).Returns(deck);
+        _state = new TakeFiveGameState(deckFactoryMock.Object);
     }
 
     [TestMethod]
     public void AddPlayers_GetPlayersTest()
     {
         // Arrange
-        var player = new TakeFivePlayer();
+        var player = new TakeFivePlayer(takeFiveThinkerMock.Object, "player");
 
         // Act
         _state.AddPlayer(player);
@@ -124,4 +135,32 @@ public class TakeFiveGameStateTests
         _state.CardRows.ElementAt(2).Should().NotBeEmpty();
         _state.CardRows.ElementAt(3).Should().NotBeEmpty();
     }
+
+    [TestMethod]
+    public void DealStartingCardsTest()
+    {
+        // Arrange
+        var cardsPerPlayer = 10;
+        var totalcards = 104;// TODO move to config/rule object
+        var playerMock1 = new Mock<ITakeFivePlayer>();
+        var playerMock2 = new Mock<ITakeFivePlayer>();
+        var playerMock3 = new Mock<ITakeFivePlayer>();
+        var playerMocks = new List<Mock<ITakeFivePlayer>> { playerMock1, playerMock2, playerMock3 };
+        _state.AddPlayer(playerMock1.Object);
+        _state.AddPlayer(playerMock2.Object);
+        _state.AddPlayer(playerMock3.Object);
+
+        // Act
+        _state.DealStartingCards(cardsPerPlayer);
+
+        // Assert
+        _state.Deck.AmountOfCardsLeft().Should().Be(totalcards - playerMocks.Count * cardsPerPlayer);
+        foreach (var player in playerMocks)
+        {
+            player.Verify(p => p.AccecptCards(
+                It.Is<IEnumerable<TakeFiveCard>>(cards => cards.Count() == cardsPerPlayer)
+            ));
+        }
+    }
+
 }

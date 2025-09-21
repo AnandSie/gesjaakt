@@ -5,7 +5,7 @@ using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Thinkers;
 
-public class MatsThinker : IThinker
+public class MatsThinker : IGesjaaktThinker
 {
     public GesjaaktTurnOption Decide(IGesjaaktReadOnlyGameState gameState)
     {
@@ -35,7 +35,7 @@ public class MatsThinker : IThinker
         return GetCardBasedOnRatio(openCard, coinsOnCard, coins, players.Count());
     }
 
-    private static GesjaaktTurnOption WaitForCoins(int coins, int openCard, IEnumerable<IGesjaaktPlayerState> players)
+    private static GesjaaktTurnOption WaitForCoins(int coins, int openCard, IEnumerable<IGesjaaktReadOnlyPlayer> players)
     {
         if (openCard < players.Count() + 7)
         {
@@ -89,7 +89,7 @@ public class MatsThinker : IThinker
         }
     }
 
-    private bool NewCardIsAdjacent(ICollection<ICard> cards, int openCard)
+    private bool NewCardIsAdjacent(IReadOnlyCollection<ICard> cards, int openCard)
     {
         return cards.Any(card => Math.Abs(card.Value - openCard) == 1);
     }

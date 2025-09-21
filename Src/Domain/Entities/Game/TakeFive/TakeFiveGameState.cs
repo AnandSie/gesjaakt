@@ -1,22 +1,20 @@
-﻿using Domain.Entities.Components;
-using Domain.Interfaces.Components;
+﻿using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.TakeFive;
 
 namespace Domain.Entities.Game.TakeFive;
 
-public class TakeFiveGameState : ITakeFiveMutableGameState
+public class TakeFiveGameState : ITakeFiveGameState
 {
-    private readonly Deck<TakeFiveCard> _deck;
-    private readonly HashSet<ITakeFivePlayerState> _players;
+    private readonly IMutableDeck<TakeFiveCard> _deck;
+    private readonly HashSet<ITakeFivePlayer> _players;
     private readonly List<List<TakeFiveCard>> _cardRows;
     private bool _isInitialized = false;
 
-    public TakeFiveGameState()
+    public TakeFiveGameState(IDeckFactory<TakeFiveCard> deckFactory)
     {
-        var cardFactory = new TakeFiveCardFactory();
-        _deck = new Deck<TakeFiveCard>(1, 104, cardFactory); // TODO: place this into config/rule object
-        _players = new HashSet<ITakeFivePlayerState>();
+        _deck = deckFactory.Create();
+        _players = new HashSet<ITakeFivePlayer>();
 
         var rowsToCreate = 4;// TODO: place into config/rule object
         _cardRows = Enumerable.Range(0, rowsToCreate)
@@ -25,14 +23,15 @@ public class TakeFiveGameState : ITakeFiveMutableGameState
     }
 
     public ITakeFiveReadOnlyGameState AsReadOnly() => new TakeFiveReadOnlyGameState(this);
-    public Deck<TakeFiveCard> Deck => _deck;
 
-    public IEnumerable<ITakeFivePlayerState> Players => _players;
+    public IMutableDeck<TakeFiveCard> Deck => _deck;
 
     public IEnumerable<IEnumerable<TakeFiveCard>> CardRows => _cardRows;
 
+    public IEnumerable<ITakeFivePlayer> Players => _players;
+
     // FIXME: can't we just inject players in constructor?
-    public void AddPlayer(ITakeFivePlayerState player)
+    public void AddPlayer(ITakeFivePlayer player)
     {
         _players.Add(player);
     }
@@ -41,7 +40,7 @@ public class TakeFiveGameState : ITakeFiveMutableGameState
     {
         if (_isInitialized) return;
 
-        var rowsToInitalize = 4;
+        var rowsToInitalize = 4; // TODO: config/rule object
 
         for (int i = 0; i < rowsToInitalize; i++)
         {
@@ -67,6 +66,15 @@ public class TakeFiveGameState : ITakeFiveMutableGameState
 
     public void DealStartingCards(int cardsPerPlayer)
     {
-        throw new NotImplementedException();
+        foreach (var player in _players)
+        {
+            var drawnCards = DrawCards(cardsPerPlayer);
+            player.AccecptCards(drawnCards);
+        }
     }
+
+    private List<TakeFiveCard> DrawCards(int count) => 
+            Enumerable.Range(0, count)
+              .Select(_ => _deck.DrawCard())
+              .ToList();
 }

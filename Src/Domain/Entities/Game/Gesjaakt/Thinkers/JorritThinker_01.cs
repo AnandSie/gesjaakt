@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Thinkers
 {
-    public class JorritThinker_01 : IThinker
+    public class JorritThinker_01 : IGesjaaktThinker
     {
         static int turnCount = 0;
         const int TotalCards = 24;

@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.Thinkers;
 
-public class BartThinker : IThinker
+public class BartThinker : IGesjaaktThinker
 {
     public GesjaaktTurnOption Decide(IGesjaaktReadOnlyGameState gameState)
     {

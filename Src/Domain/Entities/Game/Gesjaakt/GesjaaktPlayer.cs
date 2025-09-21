@@ -9,10 +9,10 @@ public class GesjaaktPlayer : IGesjaaktPlayer
     private readonly ICollection<ICoin> _coins;
     private readonly ICollection<ICard> _cards;
     private readonly string? _name;
-    private readonly IThinker _thinker;
+    private readonly IGesjaaktThinker _thinker;
     private readonly ILogger<GesjaaktPlayer> _logger;
 
-    public GesjaaktPlayer(IThinker thinker, ILogger<GesjaaktPlayer> logger, string? name = null)
+    public GesjaaktPlayer(IGesjaaktThinker thinker, ILogger<GesjaaktPlayer> logger, string? name = null)
     {
         _name = name;
         _coins = new HashSet<ICoin>();
@@ -37,7 +37,7 @@ public class GesjaaktPlayer : IGesjaaktPlayer
 
     public int CoinsAmount => _coins.Count;
 
-    public ICollection<ICard> Cards => _cards;
+    public IEnumerable<ICard> Cards => _cards;
 
     public string Name => _name ?? "";
 
@@ -89,5 +89,10 @@ public class GesjaaktPlayer : IGesjaaktPlayer
     public override string ToString()
     {
         return $"{_name ?? "unkown"}, has {Points()} penalty points, cards [{string.Join(", ", Cards.Select(c => c.Value).OrderBy(c => c))}] and {CoinsAmount} coins";
+    }
+
+    public IGesjaaktReadOnlyPlayer AsReadOnly()
+    {
+        return new GesjaaktReadOnlyPlayer(this);
     }
 }

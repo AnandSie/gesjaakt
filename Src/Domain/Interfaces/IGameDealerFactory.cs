@@ -5,5 +5,5 @@ namespace Application;
 
 public interface IGameDealerFactory
 {
-    IGameDealer<IGesjaaktPlayerState> Create(IEnumerable<IGesjaaktPlayer> players);
+    IGameDealer<IGesjaaktReadOnlyPlayer> Create(IEnumerable<IGesjaaktPlayer> players);
 }

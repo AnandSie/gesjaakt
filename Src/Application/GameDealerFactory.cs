@@ -15,7 +15,7 @@ public class GameDealerFactory : IGameDealerFactory
         _gameStateFactory = gameStateFactory;
     }
 
-    public IGameDealer<IGesjaaktPlayerState> Create(IEnumerable<IGesjaaktPlayer> players)
+    public IGameDealer<IGesjaaktReadOnlyPlayer> Create(IEnumerable<IGesjaaktPlayer> players)
     {
         return new GesjaaktGameDealer(players, _gameStateFactory(), _logger);
     }

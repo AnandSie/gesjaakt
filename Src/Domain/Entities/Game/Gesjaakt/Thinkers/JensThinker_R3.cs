@@ -1,9 +1,10 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Thinkers;
 
-public class JensThinker_R3 : IThinker
+public class JensThinker_R3 : IGesjaaktThinker
 {
     private bool isMelking = false;
 

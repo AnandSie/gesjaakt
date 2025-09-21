@@ -1,9 +1,10 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Thinkers;
 
-public class Jeremy2Thinker :IThinker
+public class Jeremy2Thinker :IGesjaaktThinker
 {
     private GesjaaktTurnOption previousTurnAction;
     private double shift = 0;

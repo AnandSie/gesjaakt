@@ -26,6 +26,22 @@ public class GesjaaktGameState : IGesjaaktGameState
         _logger = logger;
     }
 
+
+    // TODO: Custom Exception
+    public int OpenCardValue => _openCard?.Value ?? throw new Exception("There is no card yet");
+    
+
+    public bool HasOpenCard => _openCard != null;
+
+    // FIXME: ensure it is really readonly? only casting is not sufficient?
+    public IReadOnlyDeck<Card> Deck => new ReadOnlyDeck<Card>(_deck);
+
+    public int AmountOfCoinsOnTable => _coinsOnTable.Count();
+
+    public IGesjaaktPlayer PlayerOnTurn => _players[_playerIndex];
+    
+    public IEnumerable<IGesjaaktPlayer> Players => _players;
+
     public void OpenNextCardFromDeck()
     {
         _openCard = _deck.DrawCard();
@@ -44,20 +60,6 @@ public class GesjaaktGameState : IGesjaaktGameState
         _openCard = null;
         return result;
     }
-
-    // TODO: Custom Exception
-    public int OpenCardValue => _openCard?.Value ?? throw new Exception("There is no card yet");
-    
-    public IEnumerable<IGesjaaktPlayerState> Players => _players;
-
-    public bool HasOpenCard => _openCard != null;
-
-    // FIXME: ensure it is really readonly? only casting is not sufficient?
-    public IReadOnlyDeck<Card> Deck => new ReadOnlyDeck<Card>(_deck);
-
-    public int AmountOfCoinsOnTable => _coinsOnTable.Count();
-
-    public IGesjaaktPlayerState PlayerOnTurn => _players[_playerIndex];
 
     public void AddCoinToTable(ICoin coin)
     {
@@ -117,5 +119,10 @@ public class GesjaaktGameState : IGesjaaktGameState
             var coins = Enumerable.Range(1, coinsPerPlayer).Select(x => new Coin()).ToArray();
             player.AcceptCoins(coins);
         }
+    }
+
+    public IGesjaaktReadOnlyGameState AsReadOnly()
+    {
+        return new GesjaaktReadOnlyGameState(this);
     }
 }

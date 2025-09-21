@@ -1,11 +1,12 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Thinkers
 
 {
 
-    public class JeremyThinker : IThinker
+    public class JeremyThinker : IGesjaaktThinker
 
     {
 

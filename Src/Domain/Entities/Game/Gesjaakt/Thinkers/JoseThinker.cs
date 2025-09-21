@@ -1,10 +1,11 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 using System;
 
 namespace Domain.Entities.Thinkers;
 
-public class JoseThinker : IThinker
+public class JoseThinker : IGesjaaktThinker
 {
     private int[] _cardValues = { };
     private double limit = 10;

@@ -8,7 +8,7 @@ using System.Numerics;
 
 namespace Domain.Entities.Thinkers;
 
-public class HansThinker_R3 : IThinker
+public class HansThinker_R3 : IGesjaaktThinker
 {
     public GesjaaktTurnOption Decide(IGesjaaktReadOnlyGameState gameState)
     {
@@ -48,13 +48,13 @@ public class HansThinker_R3 : IThinker
         return GesjaaktTurnOption.SKIPWITHCOIN;
     }
 
-    private bool BenIkDeSjaak(IGesjaaktReadOnlyGameState gameState, IGesjaaktPlayerState me)
+    private bool BenIkDeSjaak(IGesjaaktReadOnlyGameState gameState, IGesjaaktReadOnlyPlayer me)
     {
         var coinsLow = gameState.Players.Min(i => i.CoinsAmount);
         return (me.CoinsAmount == coinsLow);
     }
 
-    private int SchadePuntenVoorDezeSpeler(IGesjaaktPlayerState player, int openCardValue)
+    private int SchadePuntenVoorDezeSpeler(IGesjaaktReadOnlyPlayer player, int openCardValue)
     {
         if (player.Cards.Where(i => ((i.Value - 1) == openCardValue)).Any()) return -1;
         if (player.Cards.Where(i => ((i.Value + 1) == openCardValue)).Any()) return 0;

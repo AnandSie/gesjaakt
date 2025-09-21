@@ -5,15 +5,15 @@ using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Interfaces;
 
-public interface IGesjaaktReadOnlyGameState: IReadOnlyGameState<IGesjaaktPlayerState>
+public interface IGesjaaktReadOnlyGameState: IReadOnlyGameState<IGesjaaktReadOnlyPlayer>
 {
     // IGamePlayerByPlayer (takeFive, all together)
-    IGesjaaktPlayerState PlayerOnTurn { get; }
+    IGesjaaktReadOnlyPlayer PlayerOnTurn { get; }
     
     // ICardGame
     IReadOnlyDeck<Card> Deck { get; }
-    int OpenCardValue { get; }
     bool HasOpenCard {  get; }
+    int OpenCardValue { get; }
 
     // Gesjaakt specifiek
     int AmountOfCoinsOnTable { get; }

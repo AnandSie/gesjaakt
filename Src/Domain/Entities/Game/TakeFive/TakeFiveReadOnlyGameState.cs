@@ -7,15 +7,16 @@ namespace Domain.Entities.Game.TakeFive;
 public class TakeFiveReadOnlyGameState : ITakeFiveReadOnlyGameState
 {
     private readonly TakeFiveGameState _gameState;
-    private readonly IReadOnlyDeck<TakeFiveCard> _readonlyDeck;
+    private readonly IReadOnlyDeck<TakeFiveCard> _readonlyDeck; // FIXME: remove, unused?
     public TakeFiveReadOnlyGameState(TakeFiveGameState gameState)
     {
         _gameState = gameState;
         _readonlyDeck = new ReadOnlyDeck<TakeFiveCard>(gameState.Deck);
     }
 
-    public IReadOnlyDeck<TakeFiveCard> Deck => _readonlyDeck;
     public IEnumerable<IEnumerable<TakeFiveCard>> CardRows => _gameState.CardRows;
 
-    public IEnumerable<ITakeFivePlayerState> Players =>_gameState.Players;
+    // TODO: Share Call ReadOnly?
+    // FIXME: cache -> move from method to local readonly
+    public IEnumerable<ITakeFiveReadOnlyPlayer> Players =>_gameState.Players.Select(p => p.AsReadOnly());
 }

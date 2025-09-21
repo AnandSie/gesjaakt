@@ -9,9 +9,9 @@ using Domain.Entities.Components;
 
 namespace Visualization;
 
-public class ThinkerPlotter(IThinker thinker): IThinkerPlotter
+public class ThinkerPlotter(IGesjaaktThinker thinker): IThinkerPlotter
 {
-    private readonly IThinker thinker = thinker;
+    private readonly IGesjaaktThinker thinker = thinker;
 
     public void Plot()
     {
@@ -112,8 +112,8 @@ public class ThinkerPlotter(IThinker thinker): IThinkerPlotter
 
     private class TestGameState : IGesjaaktReadOnlyGameState
     {
-        public IEnumerable<IGesjaaktPlayerState> Players => throw new NotImplementedException();
-        public IGesjaaktPlayerState PlayerOnTurn => throw new NotImplementedException();
+        public IEnumerable<IGesjaaktReadOnlyPlayer> Players => throw new NotImplementedException();
+        public IGesjaaktReadOnlyPlayer PlayerOnTurn => throw new NotImplementedException();
         public int OpenCardValue { get; set; }
         public IReadOnlyDeck<Card> Deck => throw new NotImplementedException();
         public int AmountOfCoinsOnTable { get; set; }

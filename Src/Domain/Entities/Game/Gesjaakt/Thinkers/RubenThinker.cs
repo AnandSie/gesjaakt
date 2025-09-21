@@ -1,14 +1,15 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
 using Domain.Interfaces.Components;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Thinkers;
 
-public class RubenTHinker : IThinker
+public class RubenTHinker : IGesjaaktThinker
 {
     public GesjaaktTurnOption Decide(IGesjaaktReadOnlyGameState gameState)
     {
-        ICollection<ICard> cards = gameState.PlayerOnTurn.Cards;
+        IReadOnlyCollection<ICard> cards = gameState.PlayerOnTurn.Cards;
         int[] cardArray = cards.Select(card => card.Value).ToArray();
         int coinsOnTable = gameState.AmountOfCoinsOnTable;
         int currentCardValue = gameState.OpenCardValue;
@@ -43,7 +44,7 @@ public class RubenTHinker : IThinker
             return GesjaaktTurnOption.SKIPWITHCOIN;
         }
     }
-    private static bool IsSequence(int currentCardValue, ICollection<ICard> cards)
+    private static bool IsSequence(int currentCardValue, IReadOnlyCollection<ICard> cards)
     {
         foreach (var card in cards)
         {

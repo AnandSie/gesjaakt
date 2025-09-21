@@ -1,9 +1,10 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Thinkers;
 
-public class BarryBeterThinker : IThinker
+public class BarryBeterThinker : IGesjaaktThinker
 {
     double coinsToPoints = 3;
 

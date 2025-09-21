@@ -1,10 +1,9 @@
 ﻿using Domain.Entities.Game.TakeFive;
-using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.BaseGame;
 
 namespace Domain.Interfaces.Games.TakeFive;
 
-public interface ITakeFiveMutableGameState: IMutableGameState<ITakeFivePlayerState>
+public interface ITakeFiveGameState: IGameState<ITakeFivePlayer>
 {
     /// <summary> 
     /// Places a card in the specified row.
@@ -33,4 +32,9 @@ public interface ITakeFiveMutableGameState: IMutableGameState<ITakeFivePlayerSta
     /// </summary>
     /// <param name="cardsPerPlayer">The number of cards to deal to each player.</param>
     void DealStartingCards(int cardsPerPlayer);
+
+    // TODO: dit bestaat nu ook op de readonly versie..., => DRY (of hoort dit gewoon bij de seperation of concern?)
+    IEnumerable<IEnumerable<TakeFiveCard>> CardRows { get; }
+
+    public ITakeFiveReadOnlyGameState AsReadOnly();
 }

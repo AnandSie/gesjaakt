@@ -27,7 +27,7 @@ internal class App
         _simulator = simulator;
     }
 
-    public void Run()
+    public void Start()
     {
         _logger.LogCritical(
             """

@@ -1,9 +1,10 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Thinkers;
 
-public class JensThinker : IThinker
+public class JensThinker : IGesjaaktThinker
 {
     private const int rondjesTippingPoint = 1;
 

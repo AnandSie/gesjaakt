@@ -1,10 +1,11 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 using System.Text;
 
 namespace Domain.Entities.Thinkers;
 
-public class HomoSapiensThinker : IThinker
+public class HomoSapiensThinker : IGesjaaktThinker
 {
     readonly IPlayerInputProvider _playerInputProvider;
     readonly ILogger<HomoSapiensThinker> _logger;

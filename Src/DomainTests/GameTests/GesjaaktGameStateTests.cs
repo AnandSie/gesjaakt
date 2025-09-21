@@ -34,7 +34,7 @@ public class GesjaaktGameStateTests
     public void AddPlayer()
     {
         var expectedResult = new List<IGesjaaktPlayerActions> { greedyPlayer, greedyPlayer2 };
-        ((IGesjaaktReadOnlyGameState)sut).Players.Should().BeEquivalentTo(expectedResult);
+        sut.Players.Should().BeEquivalentTo(expectedResult);
     }
 
     [TestMethod]
@@ -74,7 +74,7 @@ public class GesjaaktGameStateTests
         sut.DivideCoins(coinsPerPlayer);
 
         // Assert
-        foreach (var player in ((IGesjaaktReadOnlyGameState)sut).Players)
+        foreach (var player in sut.Players)
         {
             player.CoinsAmount.Should().Be(coinsPerPlayer);
         }
