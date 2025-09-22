@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces.Games.BaseGame;
 
-public interface IGameRunner
+public interface IGame
 {
 
     // TODO: the implementation will probably make use of something like
@@ -23,7 +23,7 @@ public interface IGameRunner
 
     public void SimulateAllPossiblePlayerCombinations();
 
-    public void RunManualGame();
+    public void RunManualGame(int amountOfPlayers);
 
     public void ShowStatistics();
 }

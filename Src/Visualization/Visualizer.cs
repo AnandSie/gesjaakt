@@ -1,9 +1,10 @@
 ﻿using Application.Interfaces;
 using Domain.Entities.Thinkers;
+using Domain.Interfaces;
 
 namespace Visualization;
 
-public class Visualizer
+public class Visualizer: IVisualizer
 {
     private readonly IThinkerPlotter thinkerPlotter;
 
