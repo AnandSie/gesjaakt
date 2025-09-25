@@ -1,20 +1,20 @@
-﻿using Domain.Entities.Game.Gesjaakt;
-using Domain.Interfaces;
+﻿using Domain.Interfaces;
 using Domain.Interfaces.Games.Gesjaakt;
 using System.Text;
 
-namespace Domain.Entities.Thinkers;
+namespace Domain.Entities.Game.Gesjaakt.Thinkers;
 
-public class HomoSapiensThinker : IGesjaaktThinker
+public class ManualGesjaaktThinker : IGesjaaktThinker
 {
     readonly IPlayerInputProvider _playerInputProvider;
-    readonly ILogger<HomoSapiensThinker> _logger;
+    readonly ILogger<ManualGesjaaktThinker> _logger;
     string _name;
 
-    public HomoSapiensThinker(IPlayerInputProvider playerInputProvider, ILogger<HomoSapiensThinker> logger, string name)
+    public ManualGesjaaktThinker(IPlayerInputProvider playerInputProvider, ILogger<ManualGesjaaktThinker> logger, string name)
     {
         _playerInputProvider = playerInputProvider;
         _name = name;
+        // TODO: no logger in Domain Entitie
         _logger = logger;
     }
 
@@ -31,7 +31,7 @@ public class HomoSapiensThinker : IGesjaaktThinker
         _logger.LogCritical(logMessage.ToString());
 
         // TODO: create new method, instead of giving ints, give Enums
-        var choice = _playerInputProvider.GetPlayerInputAsInt(new[] { 1, 2 });
+        var choice = _playerInputProvider.GetPlayerInputAsInt([1, 2]);
         return choice switch
         {
             1 => GesjaaktTurnOption.TAKECARD,

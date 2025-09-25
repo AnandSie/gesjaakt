@@ -1,9 +1,8 @@
 ﻿using Domain.Entities.Components;
 using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.BaseGame;
-using Domain.Interfaces.Games.Gesjaakt;
 
-namespace Domain.Interfaces;
+namespace Domain.Interfaces.Games.Gesjaakt;
 
 public interface IGesjaaktReadOnlyGameState: IReadOnlyGameState<IGesjaaktReadOnlyPlayer>
 {

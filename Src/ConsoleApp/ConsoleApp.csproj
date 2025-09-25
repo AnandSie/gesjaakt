@@ -11,8 +11,8 @@
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Extensions\Extensions.csproj" />
-    <ProjectReference Include="..\Visualization\Visualization.csproj" />
-    <ProjectReference Include="..\Logging\Logging.csproj" />
+    <ProjectReference Include="..\Infrastructure\Logging\Logging.csproj" />
+    <ProjectReference Include="..\Infrastructure\Visualization\Visualization.csproj" />
   </ItemGroup>
 
   <ItemGroup>

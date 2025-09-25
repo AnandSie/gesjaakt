@@ -1,6 +1,5 @@
 ﻿using Domain.Entities.Game;
 using Domain.Entities.Game.Gesjaakt;
-using Domain.Interfaces;
 using Domain.Interfaces.Games.Gesjaakt;
 using System.Collections.ObjectModel;
 using System.Linq;

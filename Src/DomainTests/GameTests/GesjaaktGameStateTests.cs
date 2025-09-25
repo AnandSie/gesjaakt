@@ -19,12 +19,10 @@ public class GesjaaktGameStateTests
     [TestInitialize]
     public void Setup()
     {
-        var mockLogger = new Mock<ILogger<GesjaaktGameState>>();
-
         greedyPlayer = new GesjaaktPlayer(new GreedyThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object);
         greedyPlayer2 = new GesjaaktPlayer(new GreedyThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object);
 
-        sut = new GesjaaktGameState(new List<IGesjaaktPlayer>(), mockLogger.Object);
+        sut = new GesjaaktGameState();
 
         sut.AddPlayer(greedyPlayer);
         sut.AddPlayer(greedyPlayer2);

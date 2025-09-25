@@ -6,7 +6,6 @@ internal class ConsoleInputService : IPlayerInputProvider
 {
     private readonly ILogger<ConsoleInputService> _logger;
 
-    // TODO: Readline
     public ConsoleInputService(ILogger<ConsoleInputService> logger)
     {
         _logger = logger;

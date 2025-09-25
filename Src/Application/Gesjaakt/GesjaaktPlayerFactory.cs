@@ -1,19 +1,23 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
+using Domain.Entities.Game.Gesjaakt.Thinkers;
 using Domain.Entities.Thinkers;
 using Domain.Interfaces;
+using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.Gesjaakt;
 
-namespace Application;
+namespace Application.Gesjaakt;
 
-public class PlayerFactory : IPlayerFactory
+public class GesjaaktPlayerFactory : IPlayerFactory<IGesjaaktPlayer>
 {
     private readonly ILogger<GesjaaktPlayer> _playerLogger;
-    private readonly ILogger<HomoSapiensThinker> _thinkerLogger;
+    private readonly ILogger<ManualGesjaaktThinker> _thinkerLogger;
+    private readonly IPlayerInputProvider _playerInputProvider;
 
-    public PlayerFactory(ILogger<GesjaaktPlayer> playerLogger, ILogger<HomoSapiensThinker> thinkerLogger)
+    public GesjaaktPlayerFactory(ILogger<GesjaaktPlayer> playerLogger, ILogger<ManualGesjaaktThinker> thinkerLogger, IPlayerInputProvider playerInputProvider)
     {
         _playerLogger = playerLogger;
         _thinkerLogger = thinkerLogger;
+        _playerInputProvider = playerInputProvider;
     }
 
     public IEnumerable<Func<IGesjaaktPlayer>> AllPlayerFactories()
@@ -74,10 +78,22 @@ public class PlayerFactory : IPlayerFactory
         return players;
     }
 
-    public IGesjaaktPlayer CreateHomoSapiens(string name, IPlayerInputProvider playerInputProvider)
+    public IGesjaaktPlayer CreateHomoSapiens()
     {
-        var thinker = new HomoSapiensThinker(playerInputProvider, _thinkerLogger, name);
+        var name = _playerInputProvider.GetPlayerInput($"Next player, what is your name?");
+        var thinker = new ManualGesjaaktThinker(_playerInputProvider, _thinkerLogger, name);
         var player = new GesjaaktPlayer(thinker, _playerLogger, name);
         return player;
+    }
+
+    public IEnumerable<IGesjaaktPlayer> CreateManualPlayers(int playersToAdd)
+    {
+        var players = new List<IGesjaaktPlayer>();
+        foreach (var i in Enumerable.Range(3, playersToAdd))
+        {
+            players.Add(CreateHomoSapiens());
+        }
+        return players;
+
     }
 }

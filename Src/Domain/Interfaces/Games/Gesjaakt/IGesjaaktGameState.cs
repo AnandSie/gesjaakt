@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Components;
+using Domain.Entities.Events;
 using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.BaseGame;
 
@@ -39,4 +40,8 @@ public interface IGesjaaktGameState: IGameState<IGesjaaktPlayer>
     // Gesjaakt specifiek
     int AmountOfCoinsOnTable { get; }
 
+    // Events
+    event EventHandler<InfoEvent>? CardDrawnFromDeck;
+
 }
+

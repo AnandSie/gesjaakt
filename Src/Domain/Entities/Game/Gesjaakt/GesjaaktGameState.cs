@@ -1,35 +1,36 @@
 ﻿using Domain.Entities.Components;
+using Domain.Entities.Events;
 using Domain.Entities.Game.BaseGame;
-using Domain.Interfaces;
 using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.Gesjaakt;
 using System.Text;
 
 namespace Domain.Entities.Game.Gesjaakt;
 
+// TODO: granada hotel verder gaan - draai de gamedealerfactory terug (smell met logger in domain objects even behouden), dat refactoren we later. 
+// We willen het nu gewoon even werkend krijgen/houden
+
 public class GesjaaktGameState : IGesjaaktGameState
 {
     private readonly IList<IGesjaaktPlayer> _players;
-    private readonly ILogger<GesjaaktGameState> _logger;
     private int _playerIndex;
     private ICollection<ICoin> _coinsOnTable;
-    private Deck<Card> _deck;
+    private readonly Deck<Card> _deck;
     private ICard? _openCard;
 
-    public GesjaaktGameState(IEnumerable<IGesjaaktPlayer> players, ILogger<GesjaaktGameState> logger)
+    public event EventHandler<InfoEvent>? CardDrawnFromDeck;
+
+    public GesjaaktGameState()
     {
-        _players = players.ToList();
+        _players = new List<IGesjaaktPlayer>();
         _playerIndex = 0;
         _coinsOnTable = new HashSet<ICoin>();
         var factory = new CardFactory(); // TODO: DI - Gesjaakt Di
         _deck = new Deck<Card>(3, 35, factory); // TODO: extract to config
-        _logger = logger;
     }
-
 
     // TODO: Custom Exception
     public int OpenCardValue => _openCard?.Value ?? throw new Exception("There is no card yet");
-    
 
     public bool HasOpenCard => _openCard != null;
 
@@ -39,13 +40,15 @@ public class GesjaaktGameState : IGesjaaktGameState
     public int AmountOfCoinsOnTable => _coinsOnTable.Count();
 
     public IGesjaaktPlayer PlayerOnTurn => _players[_playerIndex];
-    
+
     public IEnumerable<IGesjaaktPlayer> Players => _players;
 
     public void OpenNextCardFromDeck()
     {
         _openCard = _deck.DrawCard();
-        _logger.LogInformation($"Card drawn: {_openCard.Value}. Cards left: {Deck.AmountOfCardsLeft()}");
+
+        string message = $"Card drawn: {_openCard.Value}. Cards left: {Deck.AmountOfCardsLeft()}";
+        CardDrawnFromDeck?.Invoke(this, new(message));
     }
 
     public ICard TakeOpenCard()
@@ -66,7 +69,6 @@ public class GesjaaktGameState : IGesjaaktGameState
         _coinsOnTable.Add(coin);
     }
 
-    // FIXME: can't we just inject players in constructor?
     public void AddPlayer(IGesjaaktPlayer newPlayer)
     {
         _players.Add(newPlayer);

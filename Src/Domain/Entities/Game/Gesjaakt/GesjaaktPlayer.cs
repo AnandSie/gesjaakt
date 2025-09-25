@@ -10,6 +10,7 @@ public class GesjaaktPlayer : IGesjaaktPlayer
     private readonly ICollection<ICard> _cards;
     private readonly string? _name;
     private readonly IGesjaaktThinker _thinker;
+    // TODO: replace logger by events
     private readonly ILogger<GesjaaktPlayer> _logger;
 
     public GesjaaktPlayer(IGesjaaktThinker thinker, ILogger<GesjaaktPlayer> logger, string? name = null)

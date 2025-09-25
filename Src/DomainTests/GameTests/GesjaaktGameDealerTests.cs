@@ -16,14 +16,14 @@ public class GesjaaktGameDealerTests
     public void PlaceCoinAction()
     {
         // Arrange
-        var loggerMock = new Mock<ILogger<GesjaaktGameDealer>>();
-        var gameStateFactory = () => new GesjaaktGameState(new List<IGesjaaktPlayer>(), new Mock<ILogger<GesjaaktGameState>>().Object);
+        var gameStateFactory = () => new GesjaaktGameState();
         var gamesState = gameStateFactory();
 
         var scaredPlayer = new GesjaaktPlayer(new ScaredThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object);
         scaredPlayer.AcceptCoins(new List<Coin> { new() });
 
-        var sut = new GesjaaktGameDealer(new[] { scaredPlayer }, gamesState, loggerMock.Object);
+        var sut = new GesjaaktGameDealer(gamesState);
+        sut.Add([scaredPlayer]);
 
         // Act
         //sut.PlayFirstCard();
@@ -39,14 +39,15 @@ public class GesjaaktGameDealerTests
     {
         // Arrange
         var loggerMock = new Mock<ILogger<GesjaaktGameDealer>>();
-        var gameStateFactory = () => new GesjaaktGameState(new List<IGesjaaktPlayer>(), new Mock<ILogger<GesjaaktGameState>>().Object);
+        var gameStateFactory = () => new GesjaaktGameState();
         var gamesState = gameStateFactory();
 
         var scaredPlayer1 = new GesjaaktPlayer(new ScaredThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object, "ScaredPlayer One");
         var scaredPlayer2 = new GesjaaktPlayer(new ScaredThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object, "ScaredPlayer Two");
         var greedyPlayer = new GesjaaktPlayer(new GreedyThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object, "Greedy");
 
-        var sut = new GesjaaktGameDealer(new GesjaaktPlayer[] { scaredPlayer1, scaredPlayer2, greedyPlayer }, gamesState, loggerMock.Object);
+        var sut = new GesjaaktGameDealer(gamesState);
+        sut.Add([scaredPlayer1, scaredPlayer2, greedyPlayer]);
 
         // Act
         sut.Prepare();

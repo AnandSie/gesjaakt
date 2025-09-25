@@ -1,36 +1,28 @@
-﻿using Application;
-using Domain.Interfaces;
+﻿using Domain.Interfaces;
 using Domain.Interfaces.Games.BaseGame;
 
 namespace ConsoleApp;
 
+// TODO: don't define the TPlayer in the app...
 internal class App
 {
     readonly ILogger<App> _logger;
     readonly IPlayerInputProvider _playerInputProvider;
-    readonly Func<int, IGame> _gameFactory;
+    readonly IGameRunner _gameRunner;
 
     public App(ILogger<App> logger,
         IPlayerInputProvider playerInputProvider,
-        // TODO: nu defined in program.cs, misschien losse factory van maken
-        Func<int, IGame> gameFactory)
+        IGameRunner gameRunner)
     {
         _logger = logger;
         _playerInputProvider = playerInputProvider;
-        _gameFactory = gameFactory;
+        _gameRunner = gameRunner;
     }
 
     public void Start()
     {
-        _logger.LogCritical(
-            """
-            Which Game?
-            1. Gesjaakt
-            2. TakeFive
-            """
-                );
-        var gameChoice = _playerInputProvider.GetPlayerInputAsInt(new[] { 1, 2, 3 });
-        var game = _gameFactory.Invoke(gameChoice);
+        _logger.LogInformation("Starting application...");
+
 
         _logger.LogCritical(
             """
@@ -47,27 +39,29 @@ internal class App
         switch (choice)
         {
             case 1:
-                game.Simulate();
-                Console.ReadLine();
+                var numberOfSimulations = _playerInputProvider.GetPlayerInputAsIntWithMinMax("How often should we run it", 1, 10000);
+                _logger.LogCritical($"Simulation started with {numberOfSimulations} runs");
+
+                _gameRunner.Simulate(numberOfSimulations);
                 break;
 
             case 2:
-                game.SimulateAllPossiblePlayerCombinations();
-                Console.ReadLine();
+                _logger.LogCritical($"Simulation started with all possible combination");
+
+                _gameRunner.SimulateAllPossibleCombis();
                 break;
 
             case 3:
                 var playersToAdd = _playerInputProvider.GetPlayerInputAsInt("How many players do you want to play (3-7)?", new[] { 3, 4, 5, 6, 7 });
-
-                game.RunManualGame(playersToAdd);
-                _logger.LogCritical($"Press enter to exit");
-                Console.ReadLine();
-
+                _gameRunner.ManualGame(playersToAdd);
                 break;
 
             case 4:
-                game.ShowStatistics();
+                _gameRunner.ShowStatistics();
                 break;
         }
+
+        _logger.LogCritical($"Press enter to exit");
+        Console.ReadLine();
     }
 }

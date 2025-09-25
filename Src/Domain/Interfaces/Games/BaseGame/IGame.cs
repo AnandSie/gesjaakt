@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Domain.Interfaces.Games.BaseGame;
 
-public interface IGame
+public interface IGame<TPlayer> where TPlayer : INamed
 {
 
     // TODO: the implementation will probably make use of something like
@@ -19,11 +14,8 @@ public interface IGame
 
     // TODO: in app, everything to setup a game in app and Simulator should be in the same factoryclass (which can have multiple options)
 
-    public void Simulate();
+    public void PlayWith(IEnumerable<TPlayer> players);
+    public IOrderedEnumerable<TPlayer> Results();
 
-    public void SimulateAllPossiblePlayerCombinations();
-
-    public void RunManualGame(int amountOfPlayers);
-
-    public void ShowStatistics();
+    
 }

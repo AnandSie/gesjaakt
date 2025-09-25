@@ -5,7 +5,7 @@ using Domain.Interfaces.Games.BaseGame;
 namespace Domain.Interfaces.Games.Gesjaakt;
 
 // FIXME: Composition > Inheritance : ReadOnlyAspect as seperate class from private method
-public interface IGesjaaktPlayer: INamed, IToReadOnlyPlayer<IGesjaaktReadOnlyPlayer>,IDecide<IGesjaaktReadOnlyGameState, GesjaaktTurnOption>, IGesjaaktPlayerActions
+public interface IGesjaaktPlayer : INamed, IDecide<IGesjaaktReadOnlyGameState, GesjaaktTurnOption>, IToReadOnlyPlayer<IGesjaaktReadOnlyPlayer>, IGesjaaktPlayerActions
 {
     // TODO: DRY with the readonly version - maybe okay
     int CoinsAmount { get; }

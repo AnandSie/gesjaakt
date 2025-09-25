@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces;
+﻿using Domain.Entities.Events;
+using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.TakeFive;
 
 namespace Domain.Entities.Game.TakeFive;
@@ -15,18 +16,39 @@ namespace Domain.Entities.Game.TakeFive;
 
 // Winner {GameRules.Winner(GameStat)
 
-public class TakeFiveGameDealer : IGameDealer<ITakeFiveReadOnlyPlayer>
+public class TakeFiveGameDealer : ITakeFiveGameDealer
 {
     private readonly ITakeFiveGameState _gameState;
+
+    public event EventHandler<WarningEvent>? PlayerGesjaakt;
+    public event EventHandler<InfoEvent>? SkippedWithCoin;
+    public event EventHandler<InfoEvent>? CoinsDivided;
 
     public TakeFiveGameDealer(ITakeFiveGameState gameState)
     {
         _gameState = gameState;
     }
 
-    public IOrderedEnumerable<ITakeFiveReadOnlyPlayer> GetPlayerResults()
+
+    public IOrderedEnumerable<ITakeFivePlayer> GetPlayerResults()
     {
-        throw new NotImplementedException();
+        return _gameState.Players
+            .OrderBy(p => p.PenaltyCards.Sum(c => c.CowHeads));
+    }
+
+    // TODO: remove (move tests to new method)
+    public ITakeFiveReadOnlyPlayer Winner()
+    {
+        var winner = GetPlayerResults().First();
+        return winner.AsReadOnly();
+    }
+
+    public void Add(IEnumerable<ITakeFivePlayer> players)
+    {
+        foreach (var player in players)
+        {
+            _gameState.AddPlayer(player);
+        }
     }
 
     public void Prepare()
@@ -88,12 +110,4 @@ public class TakeFiveGameDealer : IGameDealer<ITakeFiveReadOnlyPlayer>
         player.AccecptPenaltyCards(cardsToTake);
     }
 
-    public ITakeFiveReadOnlyPlayer Winner()
-    {
-        ITakeFivePlayer winner = _gameState.Players
-            .OrderBy(p => p.PenaltyCards.Sum(c => c.CowHeads))
-            .First();
-
-        return winner.AsReadOnly();
-    }
 }

@@ -1,5 +1,4 @@
 ﻿using Domain.Entities.Components;
-using Domain.Interfaces;
 using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.Gesjaakt;
 
@@ -25,4 +24,6 @@ public class GesjaaktReadOnlyGameState : IGesjaaktReadOnlyGameState
     public int AmountOfCoinsOnTable => _gameState.AmountOfCoinsOnTable;
 
     public IEnumerable<IGesjaaktReadOnlyPlayer> Players => _gameState.Players.Select(p => p.AsReadOnly());
+
+    public override string ToString() => _gameState.ToString() ?? "";
 }

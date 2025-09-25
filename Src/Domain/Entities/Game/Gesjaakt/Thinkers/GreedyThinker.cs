@@ -1,5 +1,4 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
-using Domain.Interfaces;
 using Domain.Interfaces.Games.Gesjaakt;
 using System;
 using System.Collections.Generic;
