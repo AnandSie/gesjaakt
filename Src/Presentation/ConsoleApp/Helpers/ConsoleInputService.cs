@@ -1,7 +1,6 @@
 ﻿using Domain.Interfaces;
 
-// TODO: FIX NAMESPACE (by adding extra directory)
-namespace ConsoleApp.Helpers;
+namespace Presentation.ConsoleApp.Helpers;
 
 // TODO: update interface by giving questions (such that we can log it)
 internal class ConsoleInputService : IPlayerInputProvider
