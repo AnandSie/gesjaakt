@@ -1,6 +1,5 @@
 ﻿using Application;
 using ConsoleApp;
-using ConsoleApp.Helpers;
 using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,6 +9,7 @@ using Domain.Interfaces.Games.BaseGame;
 using Visualization;
 using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.TakeFive;
+using Presentation.ConsoleApp.Helpers;
 using Application.Gesjaakt;
 using Application.TakeFive;
 

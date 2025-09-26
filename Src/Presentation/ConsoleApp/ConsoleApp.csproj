@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Application\Application.csproj" />
-    <ProjectReference Include="..\..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\Core\Domain\Domain.csproj" />
     <ProjectReference Include="..\..\Extensions\Extensions.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Logging\Logging.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Visualization\Visualization.csproj" />
