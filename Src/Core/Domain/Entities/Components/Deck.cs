@@ -1,11 +1,10 @@
-﻿using System.Threading.Tasks;
-using Domain.Interfaces.Components;
+﻿using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.BaseGame;
 using Extensions;
 
 namespace Domain.Entities.Components;
 
-public class Deck<TCard> : IMutableDeck<TCard> where TCard: ICard
+public class Deck<TCard> : IMutableDeck<TCard> where TCard : ICard
 {
     private readonly List<TCard> Cards;
 
@@ -13,9 +12,9 @@ public class Deck<TCard> : IMutableDeck<TCard> where TCard: ICard
     {
         int deckSize = max - min + 1;
         Cards = Enumerable.Range(min, deckSize)
-                               .Select(value => cardFactory.Create(value))
+                               .Select(cardFactory.Create)
                                .Shuffle()
-                               .ToList<TCard>();
+                               .ToList();
     }
 
     public IReadOnlyDeck<TCard> AsReadOnly() => new ReadOnlyDeck<TCard>(this);
