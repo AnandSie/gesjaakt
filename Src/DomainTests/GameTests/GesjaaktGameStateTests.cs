@@ -77,6 +77,4 @@ public class GesjaaktGameStateTests
             player.CoinsAmount.Should().Be(coinsPerPlayer);
         }
     }
-
-    // TODO: Deck is really readonly
 }

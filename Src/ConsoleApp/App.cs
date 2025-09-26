@@ -1,9 +1,7 @@
 ﻿using Domain.Interfaces;
-using Domain.Interfaces.Games.BaseGame;
 
 namespace ConsoleApp;
 
-// TODO: don't define the TPlayer in the app...
 internal class App
 {
     readonly ILogger<App> _logger;
@@ -21,9 +19,7 @@ internal class App
 
     public void Start()
     {
-        _logger.LogInformation("Starting application...");
-
-
+        // TODO: move to playerInput
         _logger.LogCritical(
             """
             LETS PLAY!
@@ -35,7 +31,7 @@ internal class App
             """
                 );
 
-        var choice = _playerInputProvider.GetPlayerInputAsInt(new[] { 1, 2, 3 });
+        var choice = _playerInputProvider.GetPlayerInputAsInt([1, 2, 3]);
         switch (choice)
         {
             case 1:

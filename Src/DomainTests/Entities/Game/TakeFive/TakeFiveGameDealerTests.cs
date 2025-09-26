@@ -62,7 +62,7 @@ public class TakeFiveGameDealerTests
         gameStateMock.Setup(gs => gs.Players).Returns([mockPlayerWithLessPenaltyPoints.Object, mockPlayerWithMorePenaltyPoints.Object]);
 
         // Act
-        var result = gameDealer.Winner();
+        var result = gameDealer.GetPlayerResults().First();
 
         // Assert
         result.Should().Be(mockReadOnlyPlayer.Object);

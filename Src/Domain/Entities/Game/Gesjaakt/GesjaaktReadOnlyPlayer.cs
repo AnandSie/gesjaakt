@@ -6,7 +6,7 @@ namespace Domain.Entities.Game.Gesjaakt;
 
 public class GesjaaktReadOnlyPlayer : IGesjaaktReadOnlyPlayer
 {
-    // FIXME: Cache the player attributes to avoid reflection
+    // REFACTOR: Cache the player attributes to avoid reflection
 
     private IGesjaaktPlayer _player;
 

@@ -15,7 +15,7 @@ public class TakeFivePlayerFactory : IPlayerFactory<TakeFivePlayer>
         throw new NotImplementedException();
     }
 
-    public TakeFivePlayer CreateHomoSapiens()
+    public TakeFivePlayer CreateManualPlayer()
     {
         throw new NotImplementedException();
     }

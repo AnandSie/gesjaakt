@@ -12,7 +12,6 @@ using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.TakeFive;
 using Application.Gesjaakt;
 using Application.TakeFive;
-using ScottPlot.Colormaps;
 
 var loglevel = LogLevel.Warning;
 
@@ -36,7 +35,7 @@ using var bootstrapProvider = bootstrapServices.BuildServiceProvider();
 
 var input = bootstrapProvider.GetRequiredService<IPlayerInputProvider>();
 var logger = bootstrapProvider.GetRequiredService<Domain.Interfaces.ILogger<Program>>();
-// TODO: get input by playerInputProvider
+// TODO: get input by playerInputProvider => move to app
 logger.LogCritical("""
 Which game do you want to play?
 1. Gesjaakt
@@ -65,7 +64,6 @@ serviceCollection.AddLogging(config =>
 switch (gameChoice)
 {
     case 1:
-        // TODO: make one single gamerunner/simulator which takes an IGame (which contains then all required Ts)
         serviceCollection.AddSingleton<IGameRunner, GameRunner<IGesjaaktPlayer>>();
         serviceCollection.AddTransient<IGame<IGesjaaktPlayer>, GesjaaktGame>();
 
@@ -73,19 +71,16 @@ switch (gameChoice)
         serviceCollection.AddTransient<IVisualizer, GesjaaktVisualizer>();
         serviceCollection.AddTransient<IGesjaaktGameDealer, GesjaaktGameDealer>();
 
-        // Application specific
         serviceCollection.AddTransient<GesjaaktGameEventOrchestrator>();
-        serviceCollection.AddTransient<GameStateEventListener>();
-        serviceCollection.AddTransient<GameDealerEventListener>();
 
         break;
 
     case 2:
+        // TODO: move game choosing to app (=> one serviceCollection)
         serviceCollection.AddSingleton<IGameRunner, GameRunner<ITakeFivePlayer>>();
         serviceCollection.AddTransient<IGame<ITakeFivePlayer>, TakeFiveGame>();
 
         serviceCollection.AddSingleton<IPlayerFactory<TakeFivePlayer>, TakeFivePlayerFactory>(); // Refactor - door deze generic is het eigenlijk uniek en hoeft het niet in een switch..
-        serviceCollection.AddTransient<ITakeFiveGameState, TakeFiveGameState>();
 
         break;
 }

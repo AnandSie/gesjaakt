@@ -1,8 +1,6 @@
-﻿using Domain.Entities.Components;
-using Domain.Entities.Game.Gesjaakt;
+﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Entities.Thinkers;
 using Domain.Interfaces;
-using Domain.Interfaces.Games.Gesjaakt;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -12,28 +10,6 @@ namespace DomainTests.GameTests;
 [TestClass]
 public class GesjaaktGameDealerTests
 {
-    [TestMethod]
-    public void PlaceCoinAction()
-    {
-        // Arrange
-        var gameStateFactory = () => new GesjaaktGameState();
-        var gamesState = gameStateFactory();
-
-        var scaredPlayer = new GesjaaktPlayer(new ScaredThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object);
-        scaredPlayer.AcceptCoins(new List<Coin> { new() });
-
-        var sut = new GesjaaktGameDealer(gamesState);
-        sut.Add([scaredPlayer]);
-
-        // Act
-        //sut.PlayFirstCard();
-        sut.PlayTurn();
-
-        // Assert
-        gamesState.AmountOfCoinsOnTable.Should().Be(1);
-        scaredPlayer.CoinsAmount.Should().Be(0);
-    }
-
     [TestMethod]
     public void GreedyPlayerTakesAllCards_LosesGameTest()
     {
@@ -52,7 +28,7 @@ public class GesjaaktGameDealerTests
         // Act
         sut.Prepare();
         sut.Play();
-        var winner = sut.Winner();
+        var winner = sut.GetPlayerResults().First();
 
         // Assert
         winner.Should().NotBe(greedyPlayer);

@@ -6,7 +6,6 @@ namespace Domain.Entities.Game.Gesjaakt;
 public class GesjaaktGameDealer : IGesjaaktGameDealer
 {
     private readonly IGesjaaktGameState _gameState;
-    //private readonly ILogger<GesjaaktGameDealer> _logger;
 
     public event EventHandler<WarningEvent>? PlayerGesjaakt;
     public event EventHandler<InfoEvent>? SkippedWithCoin;
@@ -14,12 +13,10 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
 
     public GesjaaktGameDealer(IGesjaaktGameState gameState)
     {
-        //_logger = logger;
-        // TODO: bevat deze dan ook een deck enzo..?
         _gameState = gameState;
 
-        // TODO: Create a rules config object with we inject
-        // TODO: Add ensures based on rules
+        // REFACTOR: Create a rules config object with we inject
+        // REFACTOR: Add ensures based on rules
         var amountToRemoveFromDeck = 9;
         _gameState.RemoveCardsFromDeck(amountToRemoveFromDeck);
     }
@@ -39,30 +36,24 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
         }
     }
 
-    public IGesjaaktReadOnlyPlayer Winner()
+    public IOrderedEnumerable<IGesjaaktPlayer> GetPlayerResults()
     {
-        return _gameState.Players
-            .OrderBy(p => p.Points())
-            .First()
-            .AsReadOnly();
+        return _gameState.Players.OrderBy(p => p.Points());
     }
 
-    // TODO: make private
-    public void PlayTurn()
+    private void PlayTurn()
     {
-        // TODO: REPLACE BY DESIGN PATTERN - STATE PATTERN?
+        // REFACTOR: REPLACE BY DESIGN PATTERN - STATE PATTERN?
         var player = _gameState.PlayerOnTurn;
 
         if (player.CoinsAmount == 0)
         {
             string message = $"!!!!!! GESJAAKT !!!!!! \n\t {player.Name} needs to take card {_gameState.OpenCardValue}";
             PlayerGesjaakt?.Invoke(this, new(message));
-            //_logger.LogWarning(message);
             HandleTakeCard(player);
         }
         else
         {
-            // TODO: give the ReadOnly version
             switch (player.Decide(_gameState.AsReadOnly()))
             {
                 case GesjaaktTurnOption.TAKECARD:
@@ -73,16 +64,11 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
                     _gameState.AddCoinToTable(player.GiveCoin());
                     string message = $"Amount of coins on table: {_gameState.AmountOfCoinsOnTable}";
                     SkippedWithCoin?.Invoke(this, new(message));
-                    //_logger.LogInformation(message);
                     break;
             }
         }
     }
 
-    public IOrderedEnumerable<IGesjaaktPlayer> GetPlayerResults()
-    {
-        return _gameState.Players.OrderBy(p => p.CardPoints() - p.CoinsAmount);
-    }
 
     private void OpenFirstCardFromDeck()
     {
@@ -101,18 +87,17 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
         _gameState.DivideCoins(coinsPerPlayer);
         string message = $"Every player gets {coinsPerPlayer} coins";
         CoinsDivided?.Invoke(this, new(message));
-        //_logger.LogInformation(message);
     }
 
     private void HandleTakeCard(IGesjaaktPlayer player)
     {
         player.AcceptCard(_gameState.TakeOpenCard());
-        player.AcceptCoins(_gameState.TakeCoins());
+        player.AcceptCoins(_gameState.TakeCoinsFromTable());
 
         if (!_gameState.Deck.IsEmpty())
         {
             _gameState.OpenNextCardFromDeck();
-            PlayTurn(); // After taking card, you can play another turn
+            PlayTurn(); // Context: After taking card, you can play another turn
         }
     }
 

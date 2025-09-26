@@ -10,7 +10,7 @@ public class GesjaaktReadOnlyGameState : IGesjaaktReadOnlyGameState
 
     public GesjaaktReadOnlyGameState(IGesjaaktGameState gameState) 
     {
-        _gameState = gameState; // FIXME: maybe don't save the state itself to avoid reflection and improve performance
+        _gameState = gameState; // REFACTOR: maybe don't save the state itself to avoid reflection and improve performance
     }
 
     public IGesjaaktReadOnlyPlayer PlayerOnTurn => _gameState.PlayerOnTurn.AsReadOnly();

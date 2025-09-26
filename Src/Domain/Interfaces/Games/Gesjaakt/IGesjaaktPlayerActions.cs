@@ -1,11 +1,11 @@
-﻿using Domain.Entities.Game.Gesjaakt;
+﻿using Domain.Entities.Components;
 using Domain.Interfaces.Components;
 
 namespace Domain.Interfaces.Games.Gesjaakt;
 
 public interface IGesjaaktPlayerActions
 {
-    public void AcceptCoins(IEnumerable<ICoin> coins);
+    public void AcceptCoins(IEnumerable<Coin> coins);
     public void AcceptCard(ICard card);
-    public ICoin GiveCoin();
+    public Coin GiveCoin();
 }

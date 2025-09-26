@@ -70,12 +70,15 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         {
             stopwatch.Restart();
 
+            // TODO: replace log by events
             _logger.LogCritical($"------------- Player Combi #{i}/{numberOfCombinations} - {(i / numberOfCombinations) * 100}% ---------------- ");
             var players = allCombinations[i].Select(pf => pf.Invoke()).Shuffle();
 
             foreach (var iter in Enumerable.Range(1, numberOfSimulations))
             {
+                // TODO: replace log by events
                 _logger.LogInformation($"------------- Game #{iter} ---------------- ");
+
                 // TODO: check if we are creating new players (probably not because only call playerfactory once.., so we maybe need to reset them?
                 RunGameWith(players);
             }
@@ -127,7 +130,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         _logger.LogWarning(sbGame.ToString());
     }
 
-    // TODO:Voelt dubel op met ReportGameResults
+    // TODO: Voelt dubel op met ReportGameResults
     private void ReportSimulationResults(Dictionary<string, int> resultPerPlayer)
     {
         var numberOfGames = resultPerPlayer.Values.Sum();

@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces;
+﻿using Domain.Entities.Components;
+using Domain.Interfaces;
 using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.Gesjaakt;
 
@@ -6,7 +7,7 @@ namespace Domain.Entities.Game.Gesjaakt;
 
 public class GesjaaktPlayer : IGesjaaktPlayer
 {
-    private readonly ICollection<ICoin> _coins;
+    private readonly ICollection<Coin> _coins;
     private readonly ICollection<ICard> _cards;
     private readonly string? _name;
     private readonly IGesjaaktThinker _thinker;
@@ -16,7 +17,7 @@ public class GesjaaktPlayer : IGesjaaktPlayer
     public GesjaaktPlayer(IGesjaaktThinker thinker, ILogger<GesjaaktPlayer> logger, string? name = null)
     {
         _name = name;
-        _coins = new HashSet<ICoin>();
+        _coins = new HashSet<Coin>();
         _cards = new HashSet<ICard>();
         _thinker = thinker;
         _logger = logger;
@@ -42,7 +43,7 @@ public class GesjaaktPlayer : IGesjaaktPlayer
 
     public string Name => _name ?? "";
 
-    public void AcceptCoins(IEnumerable<ICoin> coins)
+    public void AcceptCoins(IEnumerable<Coin> coins)
     {
         foreach (var coin in coins)
         {
@@ -51,7 +52,7 @@ public class GesjaaktPlayer : IGesjaaktPlayer
         _logger.LogDebug($"{_name} gains {coins.Count()} coins. New total amount: {_coins.Count}");
     }
 
-    public ICoin GiveCoin()
+    public Coin GiveCoin()
     {
         var coin = _coins.First();
         _coins.Remove(coin);

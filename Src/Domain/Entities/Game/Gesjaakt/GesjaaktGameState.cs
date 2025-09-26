@@ -7,14 +7,11 @@ using System.Text;
 
 namespace Domain.Entities.Game.Gesjaakt;
 
-// TODO: granada hotel verder gaan - draai de gamedealerfactory terug (smell met logger in domain objects even behouden), dat refactoren we later. 
-// We willen het nu gewoon even werkend krijgen/houden
-
 public class GesjaaktGameState : IGesjaaktGameState
 {
     private readonly IList<IGesjaaktPlayer> _players;
     private int _playerIndex;
-    private ICollection<ICoin> _coinsOnTable;
+    private ICollection<Coin> _coinsOnTable;
     private readonly Deck<Card> _deck;
     private ICard? _openCard;
 
@@ -24,9 +21,10 @@ public class GesjaaktGameState : IGesjaaktGameState
     {
         _players = new List<IGesjaaktPlayer>();
         _playerIndex = 0;
-        _coinsOnTable = new HashSet<ICoin>();
+        _coinsOnTable = new HashSet<Coin>();
+
         var factory = new CardFactory(); // TODO: DI - Gesjaakt Di
-        _deck = new Deck<Card>(3, 35, factory); // TODO: extract to config
+        _deck = new Deck<Card>(3, 35, factory); // TODO: extract 3/5 to config
     }
 
     // TODO: Custom Exception
@@ -34,7 +32,6 @@ public class GesjaaktGameState : IGesjaaktGameState
 
     public bool HasOpenCard => _openCard != null;
 
-    // FIXME: ensure it is really readonly? only casting is not sufficient?
     public IReadOnlyDeck<Card> Deck => new ReadOnlyDeck<Card>(_deck);
 
     public int AmountOfCoinsOnTable => _coinsOnTable.Count();
@@ -64,7 +61,7 @@ public class GesjaaktGameState : IGesjaaktGameState
         return result;
     }
 
-    public void AddCoinToTable(ICoin coin)
+    public void AddCoinToTable(Coin coin)
     {
         _coinsOnTable.Add(coin);
     }
@@ -91,27 +88,11 @@ public class GesjaaktGameState : IGesjaaktGameState
         _deck.TakeOut(amount);
     }
 
-    public IEnumerable<ICoin> TakeCoins()
+    public IEnumerable<Coin> TakeCoinsFromTable()
     {
         var result = _coinsOnTable;
-        _coinsOnTable = new HashSet<ICoin>();
+        _coinsOnTable = new HashSet<Coin>();
         return result;
-    }
-
-    public override string ToString()
-    {
-        var sb = new StringBuilder();
-
-        sb.AppendLine("Player states:");
-        foreach (var player in _players)
-        {
-            sb.AppendLine($"- {player.ToString()}");
-        }
-        sb.AppendLine($"Card open: {OpenCardValue}");
-        sb.AppendLine($"Coins On Table: {AmountOfCoinsOnTable}");
-        sb.AppendLine($"Cards Left: {Deck.AmountOfCardsLeft()}");
-
-        return sb.ToString();
     }
 
     public void DivideCoins(int coinsPerPlayer)
@@ -126,5 +107,21 @@ public class GesjaaktGameState : IGesjaaktGameState
     public IGesjaaktReadOnlyGameState AsReadOnly()
     {
         return new GesjaaktReadOnlyGameState(this);
+    }
+
+    public override string ToString()
+    {
+        var result = new StringBuilder();
+
+        result.AppendLine("Player states:");
+        foreach (var player in _players)
+        {
+            result.AppendLine($"- {player.ToString()}");
+        }
+        result.AppendLine($"Card open: {OpenCardValue}");
+        result.AppendLine($"Coins On Table: {AmountOfCoinsOnTable}");
+        result.AppendLine($"Cards Left: {Deck.AmountOfCardsLeft()}");
+
+        return result.ToString();
     }
 }

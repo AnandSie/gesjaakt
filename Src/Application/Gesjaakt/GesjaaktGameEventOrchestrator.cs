@@ -1,24 +1,33 @@
-﻿using Domain.Interfaces.Games.Gesjaakt;
+﻿using Domain.Entities.Events;
+using Domain.Interfaces;
+using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Application.Gesjaakt;
 
-public class GesjaaktGameEventOrchestrator
+public class GesjaaktGameEventOrchestrator(ILogger<GesjaaktGameEventOrchestrator> logger)
 {
-    private readonly GameStateEventListener _stateListener;
-    private readonly GameDealerEventListener _gamedealerListner;
-
-    public GesjaaktGameEventOrchestrator(
-        GameStateEventListener gameStateListner,
-        GameDealerEventListener gamedealerListner)
+    public GesjaaktGameEventOrchestrator Attach(IGesjaaktGameState gameState)
     {
-        // TODO: simplify.., just log everything here. no sepearte listners. complex
-        _stateListener = gameStateListner;
-        _gamedealerListner = gamedealerListner;
+        gameState.CardDrawnFromDeck += LogEvent;
+        return this;
     }
 
-    public void Attach(IGesjaaktGameState state, IGesjaaktGameDealer dealer)
+    public GesjaaktGameEventOrchestrator Attach(IGesjaaktGameDealer gamedealer)
     {
-        _stateListener.Subscribe(state);
-        _gamedealerListner.Subscribe(dealer);
+        gamedealer.PlayerGesjaakt += LogEvent;
+        gamedealer.SkippedWithCoin += LogEvent;
+        gamedealer.CoinsDivided += LogEvent;
+
+        return this;
+    }
+
+    private void LogEvent(object sender, WarningEvent eventObject)
+    {
+        logger.LogWarning(eventObject.Message);
+    }
+
+    private void LogEvent(object sender, InfoEvent eventObject)
+    {
+        logger.LogInformation(eventObject.Message);
     }
 }

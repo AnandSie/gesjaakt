@@ -78,7 +78,7 @@ public class GesjaaktPlayerFactory : IPlayerFactory<IGesjaaktPlayer>
         return players;
     }
 
-    public IGesjaaktPlayer CreateHomoSapiens()
+    public IGesjaaktPlayer CreateManualPlayer()
     {
         var name = _playerInputProvider.GetPlayerInput($"Next player, what is your name?");
         var thinker = new ManualGesjaaktThinker(_playerInputProvider, _thinkerLogger, name);
@@ -91,7 +91,7 @@ public class GesjaaktPlayerFactory : IPlayerFactory<IGesjaaktPlayer>
         var players = new List<IGesjaaktPlayer>();
         foreach (var i in Enumerable.Range(3, playersToAdd))
         {
-            players.Add(CreateHomoSapiens());
+            players.Add(CreateManualPlayer());
         }
         return players;
 

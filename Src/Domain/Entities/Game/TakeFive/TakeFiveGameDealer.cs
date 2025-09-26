@@ -1,10 +1,9 @@
 ﻿using Domain.Entities.Events;
-using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.TakeFive;
 
 namespace Domain.Entities.Game.TakeFive;
 
-// TODO: Try to make generic such that we have one gameDealer
+// IMPROVE: Try to make generic such that we have one gameDealer
 // e.g. The GameSTate does not have to have two seperate methods (e.g. InitializeRowsFromDeck/DealStartingCards => prepare)
 // => a lot of thing will go to the GameSTate (which is fine (?)). It will probably also be easier if we create rule objeect
 
@@ -34,13 +33,6 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
     {
         return _gameState.Players
             .OrderBy(p => p.PenaltyCards.Sum(c => c.CowHeads));
-    }
-
-    // TODO: remove (move tests to new method)
-    public ITakeFiveReadOnlyPlayer Winner()
-    {
-        var winner = GetPlayerResults().First();
-        return winner.AsReadOnly();
     }
 
     public void Add(IEnumerable<ITakeFivePlayer> players)
