@@ -56,16 +56,13 @@ public class TakeFiveGameDealerTests
         mockPlayerWithLessPenaltyPoints.Setup(p => p.PenaltyCards).Returns(lessPoints);
         mockPlayerWithMorePenaltyPoints.Setup(p => p.PenaltyCards).Returns(morePoints);
 
-        var mockReadOnlyPlayer = new Mock<ITakeFiveReadOnlyPlayer>();
-        mockPlayerWithLessPenaltyPoints.Setup(p => p.AsReadOnly()).Returns(mockReadOnlyPlayer.Object);
-
         gameStateMock.Setup(gs => gs.Players).Returns([mockPlayerWithLessPenaltyPoints.Object, mockPlayerWithMorePenaltyPoints.Object]);
 
         // Act
         var result = gameDealer.GetPlayerResults().First();
 
         // Assert
-        result.Should().Be(mockReadOnlyPlayer.Object);
+        result.Should().Be(mockPlayerWithLessPenaltyPoints.Object);
     }
 
     [TestMethod]
