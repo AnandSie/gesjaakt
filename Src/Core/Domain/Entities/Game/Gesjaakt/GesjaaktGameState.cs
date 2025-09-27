@@ -23,11 +23,11 @@ public class GesjaaktGameState : IGesjaaktGameState
         _playerIndex = 0;
         _coinsOnTable = new HashSet<Coin>();
 
-        var factory = new CardFactory(); // TODO: DI - Gesjaakt Di
-        _deck = new Deck<Card>(3, 35, factory); // TODO: extract 3/5 to config
+        var factory = new CardFactory(); // REFACTOR: DI - Gesjaakt Di
+        _deck = new Deck<Card>(3, 35, factory); // REFACTOR: extract 3/5 to config
     }
 
-    // TODO: Custom Exception
+    // REFACOTR: Custom Exception
     public int OpenCardValue => _openCard?.Value ?? throw new Exception("There is no card yet");
 
     public bool HasOpenCard => _openCard != null;
@@ -52,7 +52,7 @@ public class GesjaaktGameState : IGesjaaktGameState
     {
         if (_openCard is null)
         {
-            // TODO: Custom Exception
+            // REFACTOR: Custom Exception
             throw new Exception("There is no open card to give");
         }
 

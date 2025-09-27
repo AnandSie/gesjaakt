@@ -7,7 +7,6 @@ namespace Domain.Interfaces.Games.Gesjaakt;
 
 public interface IGesjaaktGameState: IGameState<IGesjaaktPlayer>
 {
-    
     public IGesjaaktReadOnlyGameState AsReadOnly(); // TODO: Create a ToReadonlyGameState interface (similar to player)
 
     // GameWithRounds    

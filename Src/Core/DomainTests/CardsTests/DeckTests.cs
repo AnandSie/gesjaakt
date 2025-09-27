@@ -19,7 +19,6 @@ public class DeckTests
         this.sut = new Deck<Card>(min, max, new CardFactory());
     }
 
-    // TODO: maybe move to readonly..?
     [TestMethod]
     public void DeckSizeBasedOnMinMax()
     {

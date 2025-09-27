@@ -11,27 +11,27 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     private readonly ILogger<GameRunner<TPlayer>> _logger;
     private readonly IPlayerFactory<TPlayer> _playerFactory;
     private readonly IGame<TPlayer> _game;
-
-    private Dictionary<string, int> resultPerPlayer;
+    private readonly IVisualizer _visualizer;
+    private Dictionary<string, int> winsByPlayerName;
 
     public GameRunner(ILogger<GameRunner<TPlayer>> logger,
         IPlayerFactory<TPlayer> playerFactory,
-        IGame<TPlayer> game
+        IGame<TPlayer> game,
+        IVisualizer visualizer
     )
     {
         _logger = logger;
         _playerFactory = playerFactory;
         _game = game;
+        _visualizer = visualizer;
 
-        resultPerPlayer = new Dictionary<string, int>();
+        // REFACTOR - Primitive obsession -> string replace by PlayerName
+        winsByPlayerName = new Dictionary<string, int>();
     }
 
     public void ShowStatistics()
     {
-        // TODO: implement
-        //_visualizer.Show();
-
-        throw new NotImplementedException();
+        _visualizer.Show();
     }
 
     public void Simulate(int numberOfSimulations)
@@ -44,7 +44,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
             RunGameWith(demoPlayers);
         }
 
-        ReportSimulationResults(resultPerPlayer);
+        ReportSimulationResults(winsByPlayerName);
     }
 
     public void ManualGame(int numberOfPlayers)
@@ -95,7 +95,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
             _logger.LogCritical($"Iteration {i + 1}/{numberOfCombinations} took {elapsed:F2} ms. Estimated remaining: {estimatedRemainingMs / 1000 / 60:F2} min");
         }
 
-        ReportSimulationResults(resultPerPlayer);
+        ReportSimulationResults(winsByPlayerName);
     }
 
     private void RunGameWith(IEnumerable<TPlayer> players)
@@ -111,7 +111,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
 
     private void SaveGameResults(TPlayer winner)
     {
-        resultPerPlayer[winner.Name] = resultPerPlayer.GetValueOrDefault(winner.Name) + 1;
+        winsByPlayerName[winner.Name] = winsByPlayerName.GetValueOrDefault(winner.Name) + 1;
     }
 
     private void ReportGameResults(IOrderedEnumerable<TPlayer> playerResults)
@@ -156,7 +156,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         _logger.LogCritical($"The winner of the simulation: {totalWinner.Key}");
     }
 
-    // TODO: add documentation
+    // REFACTOR: add documentation
     private static IEnumerable<IEnumerable<T>> GetCombinations<T>(List<T> source, int k)
     {
         if (k == 0)

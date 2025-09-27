@@ -24,6 +24,8 @@ public class TakeFiveGame : IGame<ITakeFivePlayer>
         _gameDealer = gameDealer;
     }
 
+    public static string Name { get; } = "TakeFive";
+
     public void PlayWith(IEnumerable<ITakeFivePlayer> players)
     {
         throw new NotImplementedException();

@@ -8,6 +8,8 @@ public class GesjaaktGame(GesjaaktGameEventOrchestrator gameEventOrchestrator) :
 {
     private GesjaaktGameDealer _gameDealer;
 
+    public static string Name { get; } = "Gejaakt";
+
     public void PlayWith(IEnumerable<IGesjaaktPlayer> players)
     {
         var gameState = new GesjaaktGameState();

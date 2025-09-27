@@ -2,7 +2,6 @@
 
 namespace Presentation.ConsoleApp.Helpers;
 
-// TODO: update interface by giving questions (such that we can log it)
 internal class ConsoleInputService : IPlayerInputProvider
 {
     private readonly ILogger<ConsoleInputService> _logger;
@@ -31,22 +30,7 @@ internal class ConsoleInputService : IPlayerInputProvider
         }
     }
 
-    public bool GetPlayerInputForYesNo()
-    {
-        _logger.LogCritical("1. Yes");
-        _logger.LogCritical("2. No");
-
-        var input = GetPlayerInputAsInt(new[] { 1, 2 });
-
-        return input switch
-        {
-            1 => true,
-            2 => false,
-            _ => throw new Exception("Unexpected possible"),
-        };
-    }
-
-    public int GetPlayerInputAsInt(IEnumerable<int> allowedInts)
+    private int GetPlayerInputAsInt(IEnumerable<int> allowedInts)
     {
         while (true)
         {

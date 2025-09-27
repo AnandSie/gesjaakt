@@ -14,7 +14,6 @@ public class GesjaaktGameDealerTests
     public void GreedyPlayerTakesAllCards_LosesGameTest()
     {
         // Arrange
-        var loggerMock = new Mock<ILogger<GesjaaktGameDealer>>();
         var gameStateFactory = () => new GesjaaktGameState();
         var gamesState = gameStateFactory();
 

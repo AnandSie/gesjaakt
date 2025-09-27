@@ -141,7 +141,7 @@ public class TakeFiveGameStateTests
     {
         // Arrange
         var cardsPerPlayer = 10;
-        var totalcards = 104;// TODO move to config/rule object
+        var totalcards = 104;
         var playerMock1 = new Mock<ITakeFivePlayer>();
         var playerMock2 = new Mock<ITakeFivePlayer>();
         var playerMock3 = new Mock<ITakeFivePlayer>();

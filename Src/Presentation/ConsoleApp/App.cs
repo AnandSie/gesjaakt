@@ -1,37 +1,41 @@
-﻿using Domain.Interfaces;
+﻿using Application;
+using Domain.Interfaces;
 
 namespace ConsoleApp;
 
 internal class App
 {
     readonly ILogger<App> _logger;
+    readonly List<Option> _gameoptions;
     readonly IPlayerInputProvider _playerInputProvider;
-    readonly IGameRunner _gameRunner;
+    readonly GameRunnerFactory _gameRunnerFactory;
 
     public App(ILogger<App> logger,
+        List<Option> gameoptions,
         IPlayerInputProvider playerInputProvider,
-        IGameRunner gameRunner)
+        GameRunnerFactory gameRunnerFactory)
     {
         _logger = logger;
+        _gameoptions = gameoptions;
         _playerInputProvider = playerInputProvider;
-        _gameRunner = gameRunner;
+        _gameRunnerFactory = gameRunnerFactory;
     }
 
     public void Start()
     {
-        // TODO: move to playerInput
-        _logger.LogCritical(
-            """
+        IGameRunner _gameRunner = GetGameRunner();
+
+        // REFACTOR - use class Option to create options
+        const string Message = """
             LETS PLAY!
             What do you want?
             1. Simulated Set Game
             2. Simulated All GamesS
             3. Manual Game
             4. Visualize a thinker
-            """
-                );
+            """;
 
-        var choice = _playerInputProvider.GetPlayerInputAsInt([1, 2, 3]);
+        var choice = _playerInputProvider.GetPlayerInputAsInt(Message, [1, 2, 3, 4]);
         switch (choice)
         {
             case 1:
@@ -59,5 +63,18 @@ internal class App
 
         _logger.LogCritical($"Press enter to exit");
         Console.ReadLine();
+    }
+
+    private IGameRunner GetGameRunner()
+    {
+        string question = "Which game do you want to play?\n";
+        string options = string.Join("\n", _gameoptions.Select((g, i) => $"{i + 1}. {g.Name}"));
+        var message = question + options;
+
+        // REFACTOR - give a IEnumerble<MenuOption> MenuOption(string name, Type option) and print name and return option 
+        int gameChoice = _playerInputProvider.GetPlayerInputAsInt(message, Enumerable.Range(1, _gameoptions.Count).ToArray());
+        var selected = _gameoptions[gameChoice - 1]; // Note: zero-based index
+
+        return _gameRunnerFactory.Create(selected.Type);
     }
 }

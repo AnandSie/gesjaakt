@@ -33,8 +33,7 @@ public interface ITakeFiveGameState: IGameState<ITakeFivePlayer>
     /// <param name="cardsPerPlayer">The number of cards to deal to each player.</param>
     void DealStartingCards(int cardsPerPlayer);
 
-    // TODO: dit bestaat nu ook op de readonly versie..., => DRY (of hoort dit gewoon bij de seperation of concern?)
     IEnumerable<IEnumerable<TakeFiveCard>> CardRows { get; }
 
-    public ITakeFiveReadOnlyGameState AsReadOnly();
+    public ITakeFiveReadOnlyGameState AsReadOnly(); // TODO: Move to readonly interface
 }

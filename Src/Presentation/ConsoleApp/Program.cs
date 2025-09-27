@@ -1,89 +1,64 @@
-﻿using Application;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+using Application;
+using Application.Gesjaakt;
+using Application.TakeFive;
 using ConsoleApp;
 using Domain.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Domain.Interfaces.Games.Gesjaakt;
 using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces.Games.BaseGame;
-using Visualization;
 using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.TakeFive;
 using Presentation.ConsoleApp.Helpers;
-using Application.Gesjaakt;
-using Application.TakeFive;
-
-var loglevel = LogLevel.Warning;
-
-var bootstrapServices = new ServiceCollection();
-bootstrapServices.AddLogging(config =>
-{
-    config.AddSimpleConsole(options =>
-    {
-        options.IncludeScopes = true;
-    });
-    // TODO: move to the EventListners classes, and depending on what we run, we choose what level we share (log)
-    config.SetMinimumLevel(loglevel);
-});
-
-bootstrapServices.AddSingleton(typeof(Domain.Interfaces.ILogger<>), typeof(Infrastructure.Logging.Logger<>));
-
-// Minimal services needed before game choice
-bootstrapServices.AddSingleton<IPlayerInputProvider, ConsoleInputService>();
-
-using var bootstrapProvider = bootstrapServices.BuildServiceProvider();
-
-var input = bootstrapProvider.GetRequiredService<IPlayerInputProvider>();
-var logger = bootstrapProvider.GetRequiredService<Domain.Interfaces.ILogger<Program>>();
-// TODO: get input by playerInputProvider => move to app
-logger.LogCritical("""
-Which game do you want to play?
-1. Gesjaakt
-2. TakeFive
-""");
-
-int gameChoice = input.GetPlayerInputAsInt(new[] { 1, 2 });
-
-//-------------------------------------------------
-
+using Visualization;
 
 var serviceCollection = new ServiceCollection();
-serviceCollection.AddSingleton(input);
-serviceCollection.AddSingleton(typeof(Domain.Interfaces.ILogger<>), typeof(Infrastructure.Logging.Logger<>));
 
+var loglevel = LogLevel.Warning;
 serviceCollection.AddLogging(config =>
 {
     config.AddSimpleConsole(options =>
     {
         options.IncludeScopes = true;
     });
+    // TODO: move this to the class which is actually doing something with it? or also show it there?
     config.SetMinimumLevel(loglevel);
 });
+serviceCollection.AddSingleton(typeof(Domain.Interfaces.ILogger<>), typeof(Infrastructure.Logging.Logger<>));
 
-// Application
-switch (gameChoice)
+serviceCollection.AddSingleton<IPlayerInputProvider, ConsoleInputService>();
+serviceCollection.AddTransient<GameRunnerFactory>();
+
+// Gesjaakt
+serviceCollection.AddSingleton<GameRunner<IGesjaaktPlayer>>();
+serviceCollection.AddTransient<IGame<IGesjaaktPlayer>, GesjaaktGame>();
+serviceCollection.AddSingleton<IPlayerFactory<IGesjaaktPlayer>, GesjaaktPlayerFactory>();
+serviceCollection.AddTransient<IGesjaaktGameDealer, GesjaaktGameDealer>();
+serviceCollection.AddTransient<IVisualizer, GesjaaktVisualizer>();
+serviceCollection.AddTransient<GesjaaktGameEventOrchestrator>();
+
+// TakeFive
+serviceCollection.AddSingleton<GameRunner<ITakeFivePlayer>>();
+serviceCollection.AddTransient<IGame<ITakeFivePlayer>, TakeFiveGame>();
+serviceCollection.AddSingleton<IPlayerFactory<ITakeFivePlayer>, TakeFivePlayerFactory>();
+
+// REFACTOR - gamerunner<T> and game<T> seems a bit double (or it is just different responsibilites with both need a generic)
+// Note: allow to dynamically retrieve the correct gamerunner
+serviceCollection.AddSingleton(sp => new Dictionary<Type, Func<IGameRunner>>
 {
-    case 1:
-        serviceCollection.AddSingleton<IGameRunner, GameRunner<IGesjaaktPlayer>>();
-        serviceCollection.AddTransient<IGame<IGesjaaktPlayer>, GesjaaktGame>();
+    // TODO: dont'use general type, use somethign specific related to Game
+    [typeof(GesjaaktGame)] = () => sp.GetRequiredService<GameRunner<IGesjaaktPlayer>>(),
+    [typeof(TakeFiveGame)] = () => sp.GetRequiredService<GameRunner<ITakeFivePlayer>>()
+});
 
-        serviceCollection.AddSingleton<IPlayerFactory<IGesjaaktPlayer>, GesjaaktPlayerFactory>();
-        serviceCollection.AddTransient<IVisualizer, GesjaaktVisualizer>();
-        serviceCollection.AddTransient<IGesjaaktGameDealer, GesjaaktGameDealer>();
-
-        serviceCollection.AddTransient<GesjaaktGameEventOrchestrator>();
-
-        break;
-
-    case 2:
-        // TODO: move game choosing to app (=> one serviceCollection)
-        serviceCollection.AddSingleton<IGameRunner, GameRunner<ITakeFivePlayer>>();
-        serviceCollection.AddTransient<IGame<ITakeFivePlayer>, TakeFiveGame>();
-
-        serviceCollection.AddSingleton<IPlayerFactory<TakeFivePlayer>, TakeFivePlayerFactory>(); // Refactor - door deze generic is het eigenlijk uniek en hoeft het niet in een switch..
-
-        break;
-}
+// REFACTOR - Create a specific GameOption which uses an IGame (which has a name)
+serviceCollection.AddSingleton(sp => new List<Option>
+{
+    new GameOption<GesjaaktGame>(),
+    new GameOption<TakeFiveGame>()
+});
 
 serviceCollection
     .AddTransient<App>()

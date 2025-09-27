@@ -10,4 +10,7 @@ public interface IGesjaaktPlayer : INamed, IDecide<IGesjaaktReadOnlyGameState, G
     IEnumerable<ICard> Cards { get; }
     public int CardPoints();
     public int Points();
+
+    // Events
+
 }

@@ -35,12 +35,11 @@ public class TakeFivePlayer : ITakeFivePlayer
 
     public TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
-        // TODO: Implement/use thinker
         var cardValue = _thinker.Decide(gameState);
         return GetCard(cardValue);
     }
 
-    // This method will be called when a player has played a card which does not fit and needs to choose a row to take
+    // NOTE: This method will be called when a player has played a card which does not fit and needs to choose a row to take
     public int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardRows)
     {
         return _thinker.Decide(cardRows);
@@ -52,7 +51,7 @@ public class TakeFivePlayer : ITakeFivePlayer
 
         if (card == null)
         {
-            // TODO: Use logger
+            // TODO: Use events
             Console.WriteLine($"[WARN] Card with value {cardValue} not found. Falling back to first available card.");
             card = _hand.FirstOrDefault();
         }

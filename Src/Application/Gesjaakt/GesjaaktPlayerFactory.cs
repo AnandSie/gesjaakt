@@ -10,13 +10,11 @@ namespace Application.Gesjaakt;
 public class GesjaaktPlayerFactory : IPlayerFactory<IGesjaaktPlayer>
 {
     private readonly ILogger<GesjaaktPlayer> _playerLogger;
-    private readonly ILogger<ManualGesjaaktThinker> _thinkerLogger;
     private readonly IPlayerInputProvider _playerInputProvider;
 
-    public GesjaaktPlayerFactory(ILogger<GesjaaktPlayer> playerLogger, ILogger<ManualGesjaaktThinker> thinkerLogger, IPlayerInputProvider playerInputProvider)
+    public GesjaaktPlayerFactory(ILogger<GesjaaktPlayer> playerLogger, IPlayerInputProvider playerInputProvider)
     {
         _playerLogger = playerLogger;
-        _thinkerLogger = thinkerLogger;
         _playerInputProvider = playerInputProvider;
     }
 
@@ -81,7 +79,7 @@ public class GesjaaktPlayerFactory : IPlayerFactory<IGesjaaktPlayer>
     public IGesjaaktPlayer CreateManualPlayer()
     {
         var name = _playerInputProvider.GetPlayerInput($"Next player, what is your name?");
-        var thinker = new ManualGesjaaktThinker(_playerInputProvider, _thinkerLogger, name);
+        var thinker = new ManualGesjaaktThinker(_playerInputProvider, name);
         var player = new GesjaaktPlayer(thinker, _playerLogger, name);
         return player;
     }

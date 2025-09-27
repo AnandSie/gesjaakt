@@ -47,7 +47,6 @@ public class TomasThinker : IGesjaaktThinker
             var diff = Math.Abs(card.Value - gameState.OpenCardValue);
             if (diff == 1)
             {
-                // TODO: Extract to separete method
                 if (isMelking && rondjes == rondjesTippingPoint)
                 {
                     isMelking = false;

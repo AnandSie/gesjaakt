@@ -14,7 +14,7 @@ public class TakeFiveReadOnlyPlayer : ITakeFiveReadOnlyPlayer
 
     public string Name => player.Name;
 
-    // TODO: how can we create an Immutable list..?
+    // REFACTOR: how can we create an Immutable list..?
     public IReadOnlyCollection<TakeFiveCard> PenaltyCards => player.PenaltyCards.ToImmutableList();
 
     public int CardsCount => this.player.CardsCount;

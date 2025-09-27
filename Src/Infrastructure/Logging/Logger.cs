@@ -2,22 +2,15 @@
 
 namespace Infrastructure.Logging;
 
-public class Logger<T> : Domain.Interfaces.ILogger<T>
+public class Logger<T>(ILogger<T> logger) : Domain.Interfaces.ILogger<T>
 {
-    private readonly ILogger<T> _logger;
+    public void LogInformation(string message) => logger.LogInformation(message);
 
-    public Logger(ILogger<T> logger)
-    {
-        _logger = logger;
-    }
+    public void LogWarning(string message) => logger.LogWarning(message);
 
-    public void LogInformation(string message) => _logger.LogInformation(message);
+    public void LogError(string message) => logger.LogError(message);
 
-    public void LogWarning(string message) => _logger.LogWarning(message);
+    public void LogDebug(string message) => logger.LogDebug(message);
 
-    public void LogError(string message) => _logger.LogError(message);
-
-    public void LogDebug(string message) => _logger.LogDebug(message);
-
-    public void LogCritical(string message) => _logger.LogCritical(message);
+    public void LogCritical(string message) => logger.LogCritical(message);
 }
