@@ -1,10 +1,8 @@
 ﻿using Domain.Entities.Components;
 using Domain.Entities.Game.Gesjaakt;
 using Domain.Entities.Thinkers;
-using Domain.Interfaces;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace DomainTests.Players;
 
@@ -16,7 +14,7 @@ public class PlayerTests
     [TestInitialize]
     public void Setup()
     {
-        sut = new GesjaaktPlayer(new GreedyThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object);
+        sut = new GesjaaktPlayer(new GreedyThinker());
     }
 
     [TestMethod]

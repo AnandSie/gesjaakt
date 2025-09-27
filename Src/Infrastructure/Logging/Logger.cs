@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Logging;
 
-public class Logger<T>(ILogger<T> logger) : Domain.Interfaces.ILogger<T>
+public class Logger<T>(ILogger<T> logger) : Application.Interfaces.ILogger<T>
 {
     public void LogInformation(string message) => logger.LogInformation(message);
 

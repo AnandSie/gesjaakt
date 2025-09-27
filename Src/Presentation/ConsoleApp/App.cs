@@ -1,4 +1,5 @@
 ﻿using Application;
+using Application.Interfaces;
 using Domain.Interfaces;
 
 namespace ConsoleApp;

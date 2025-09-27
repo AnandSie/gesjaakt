@@ -10,6 +10,8 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
     public event EventHandler<WarningEvent>? PlayerGesjaakt;
     public event EventHandler<InfoEvent>? SkippedWithCoin;
     public event EventHandler<InfoEvent>? CoinsDivided;
+    public event EventHandler<ErrorEvent>? PlayerDecideError;
+
 
     public GesjaaktGameDealer(IGesjaaktGameState gameState)
     {
@@ -54,7 +56,7 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
         }
         else
         {
-            switch (player.Decide(_gameState.AsReadOnly()))
+            switch (PlayerChoice(player))
             {
                 case GesjaaktTurnOption.TAKECARD:
                     HandleTakeCard(player);
@@ -69,6 +71,20 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
         }
     }
 
+    private GesjaaktTurnOption PlayerChoice(IGesjaaktPlayer player)
+    {
+        try
+        {
+            return player.Decide(_gameState.AsReadOnly());
+        }
+        catch (Exception e)
+        {
+            string message = $"player {player.Name} could not decide. So the he/she skips by playing a coin. The following error occured - {e.Message}";
+            PlayerDecideError?.Invoke(this, new(message));
+            return GesjaaktTurnOption.SKIPWITHCOIN;
+        }
+
+    }
 
     private void OpenFirstCardFromDeck()
     {

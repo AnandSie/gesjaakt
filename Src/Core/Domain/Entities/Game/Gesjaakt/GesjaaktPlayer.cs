@@ -11,30 +11,18 @@ public class GesjaaktPlayer : IGesjaaktPlayer
     private readonly ICollection<ICard> _cards;
     private readonly string? _name;
     private readonly IGesjaaktThinker _thinker;
-    // TODO: replace logger by events
-    private readonly ILogger<GesjaaktPlayer> _logger;
 
-    public GesjaaktPlayer(IGesjaaktThinker thinker, ILogger<GesjaaktPlayer> logger, string? name = null)
+    public GesjaaktPlayer(IGesjaaktThinker thinker, string? name = null)
     {
         _name = name;
         _coins = new HashSet<Coin>();
         _cards = new HashSet<ICard>();
         _thinker = thinker;
-        _logger = logger;
     }
 
     public GesjaaktTurnOption Decide(IGesjaaktReadOnlyGameState gameState)
     {
-        try
-        {
-            return _thinker.Decide(gameState);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("The calculation did not work");
-            _logger.LogError(e.ToString());
-            return GesjaaktTurnOption.SKIPWITHCOIN;
-        }
+        return _thinker.Decide(gameState);
     }
 
     public int CoinsAmount => _coins.Count;
@@ -49,14 +37,12 @@ public class GesjaaktPlayer : IGesjaaktPlayer
         {
             _coins.Add(coin);
         }
-        _logger.LogDebug($"{_name} gains {coins.Count()} coins. New total amount: {_coins.Count}");
     }
 
     public Coin GiveCoin()
     {
         var coin = _coins.First();
         _coins.Remove(coin);
-        _logger.LogDebug($"{_name} plays a coin. Remaining coins: {_coins.Count}");
         return coin;
     }
 
@@ -64,7 +50,6 @@ public class GesjaaktPlayer : IGesjaaktPlayer
     {
         _cards.Add(card);
         var cardValues = string.Join(", ", _cards.OrderBy(c => c.Value).Select(c => c.Value));
-        _logger.LogDebug($"{_name} accepts card {card.Value}. Current cards: {cardValues}");
     }
 
     public int CardPoints()
@@ -88,13 +73,13 @@ public class GesjaaktPlayer : IGesjaaktPlayer
         return CardPoints() - CoinsAmount;
     }
 
-    public override string ToString()
-    {
-        return $"{_name ?? "unkown"}, has {Points()} penalty points, cards [{string.Join(", ", Cards.Select(c => c.Value).OrderBy(c => c))}] and {CoinsAmount} coins";
-    }
-
     public IGesjaaktReadOnlyPlayer AsReadOnly()
     {
         return new GesjaaktReadOnlyPlayer(this);
+    }
+
+    public override string ToString()
+    {
+        return $"{_name ?? "unkown"}, has {Points()} penalty points, cards [{string.Join(", ", Cards.Select(c => c.Value).OrderBy(c => c))}] and {CoinsAmount} coins";
     }
 }

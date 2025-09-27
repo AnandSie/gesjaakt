@@ -1,5 +1,5 @@
-﻿using Domain.Entities.Events;
-using Domain.Interfaces;
+﻿using Application.Interfaces;
+using Domain.Entities.Events;
 using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Application.Gesjaakt;
@@ -17,8 +17,14 @@ public class GesjaaktGameEventOrchestrator(ILogger<GesjaaktGameEventOrchestrator
         gamedealer.PlayerGesjaakt += LogEvent;
         gamedealer.SkippedWithCoin += LogEvent;
         gamedealer.CoinsDivided += LogEvent;
+        gamedealer.PlayerDecideError += LogEvent;
 
         return this;
+    }
+
+    private void LogEvent(object sender, ErrorEvent eventObject)
+    {
+        logger.LogError(eventObject.Message);
     }
 
     private void LogEvent(object sender, WarningEvent eventObject)

@@ -17,9 +17,9 @@ public class GesjaaktGameDealerTests
         var gameStateFactory = () => new GesjaaktGameState();
         var gamesState = gameStateFactory();
 
-        var scaredPlayer1 = new GesjaaktPlayer(new ScaredThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object, "ScaredPlayer One");
-        var scaredPlayer2 = new GesjaaktPlayer(new ScaredThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object, "ScaredPlayer Two");
-        var greedyPlayer = new GesjaaktPlayer(new GreedyThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object, "Greedy");
+        var scaredPlayer1 = new GesjaaktPlayer(new ScaredThinker(), "ScaredPlayer One");
+        var scaredPlayer2 = new GesjaaktPlayer(new ScaredThinker(), "ScaredPlayer Two");
+        var greedyPlayer = new GesjaaktPlayer(new GreedyThinker(), "Greedy");
 
         var sut = new GesjaaktGameDealer(gamesState);
         sut.Add([scaredPlayer1, scaredPlayer2, greedyPlayer]);

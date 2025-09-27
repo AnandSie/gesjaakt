@@ -26,7 +26,7 @@ serviceCollection.AddLogging(config =>
     // TODO: move this to the class which is actually doing something with it? or also show it there?
     config.SetMinimumLevel(loglevel);
 });
-serviceCollection.AddSingleton(typeof(Domain.Interfaces.ILogger<>), typeof(Infrastructure.Logging.Logger<>));
+serviceCollection.AddSingleton(typeof(Application.Interfaces.ILogger<>), typeof(Infrastructure.Logging.Logger<>));
 
 serviceCollection.AddSingleton<IPlayerInputProvider, ConsoleInputService>();
 serviceCollection.AddTransient<GameRunnerFactory>();

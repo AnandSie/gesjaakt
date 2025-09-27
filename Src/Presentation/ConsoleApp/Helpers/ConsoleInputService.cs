@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces;
+﻿using Application.Interfaces;
+using Domain.Interfaces;
 
 namespace Presentation.ConsoleApp.Helpers;
 

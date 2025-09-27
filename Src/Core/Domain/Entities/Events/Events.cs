@@ -11,6 +11,13 @@ public class WarningEvent : BaseEvent
     public WarningEvent(string Message) : base(Message) { }
 
 }
+
+public class ErrorEvent : BaseEvent
+{
+    public ErrorEvent(string Message) : base(Message) { }
+
+}
+
 public class CriticalEvent : BaseEvent
 {
     public CriticalEvent(string Message) : base(Message) { }

@@ -1,11 +1,9 @@
 ﻿using Domain.Entities.Components;
 using Domain.Entities.Game.Gesjaakt;
 using Domain.Entities.Thinkers;
-using Domain.Interfaces;
 using Domain.Interfaces.Games.Gesjaakt;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace DomainTests.GameTests;
 
@@ -19,8 +17,8 @@ public class GesjaaktGameStateTests
     [TestInitialize]
     public void Setup()
     {
-        greedyPlayer = new GesjaaktPlayer(new GreedyThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object);
-        greedyPlayer2 = new GesjaaktPlayer(new GreedyThinker(), new Mock<ILogger<GesjaaktPlayer>>().Object);
+        greedyPlayer = new GesjaaktPlayer(new GreedyThinker());
+        greedyPlayer2 = new GesjaaktPlayer(new GreedyThinker());
 
         sut = new GesjaaktGameState();
 
