@@ -5,10 +5,8 @@ using Domain.Interfaces.Games.BaseGame;
 
 namespace Domain.Interfaces.Games.Gesjaakt;
 
-public interface IGesjaaktGameState: IGameState<IGesjaaktPlayer>
+public interface IGesjaaktGameState: IGameState<IGesjaaktPlayer>, IToReadOnly<IGesjaaktReadOnlyGameState>
 {
-    public IGesjaaktReadOnlyGameState AsReadOnly(); // TODO: Create a ToReadonlyGameState interface (similar to player)
-
     // GameWithRounds    
     public void NextPlayer();
 
@@ -22,7 +20,6 @@ public interface IGesjaaktGameState: IGameState<IGesjaaktPlayer>
     public void DivideCoins(int coinsPerPlayer);
     public void AddCoinToTable(Coin coin);
     public IEnumerable<Coin> TakeCoinsFromTable();
-
 
     // IMPROVE - think, DRY with IGEsjaaktREadonlyGameState
 

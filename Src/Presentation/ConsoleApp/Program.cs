@@ -17,7 +17,7 @@ using Visualization;
 
 var serviceCollection = new ServiceCollection();
 
-var loglevel = LogLevel.Warning;
+var loglevel = LogLevel.Critical;
 serviceCollection.AddLogging(config =>
 {
     config.AddSimpleConsole(options =>
@@ -29,7 +29,7 @@ serviceCollection.AddLogging(config =>
 });
 serviceCollection.AddSingleton(typeof(Application.Interfaces.ILogger<>), typeof(Infrastructure.Logging.Logger<>));
 
-serviceCollection.AddSingleton<IPlayerInputProvider, ConsoleInputService>();
+serviceCollection.AddSingleton<IPlayerInputProvider, CLIPlayerInputProvider>();
 serviceCollection.AddTransient<GameRunnerFactory>();
 serviceCollection.AddTransient<IGameRunnerEventCollector, GameRunnerEventCollector>();
 serviceCollection.AddTransient<IGameEventHandler, Logging.GameEventHandler>();

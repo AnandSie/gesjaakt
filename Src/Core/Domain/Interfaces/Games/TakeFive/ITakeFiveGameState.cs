@@ -3,7 +3,7 @@ using Domain.Interfaces.Games.BaseGame;
 
 namespace Domain.Interfaces.Games.TakeFive;
 
-public interface ITakeFiveGameState: IGameState<ITakeFivePlayer>
+public interface ITakeFiveGameState: IGameState<ITakeFivePlayer>, IToReadOnly<ITakeFiveReadOnlyGameState>
 {
     /// <summary> 
     /// Places a card in the specified row.
@@ -35,5 +35,4 @@ public interface ITakeFiveGameState: IGameState<ITakeFivePlayer>
 
     IEnumerable<IEnumerable<TakeFiveCard>> CardRows { get; }
 
-    public ITakeFiveReadOnlyGameState AsReadOnly(); // TODO: Move to readonly interface
 }

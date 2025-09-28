@@ -1,17 +1,16 @@
 ﻿using Application.Interfaces;
-using Domain.Entities.Events;
-using Domain.Interfaces.Games.BaseGame;
 
 namespace Application;
 
-public class GameRunnerEventCollector(IGameEventHandler gameEventHandler): IGameRunnerEventCollector
+public class GameRunnerEventCollector(IGameEventHandler gameEventHandler) : IGameRunnerEventCollector
 {
-
     public IGameRunnerEventCollector Attach(IGameRunner gameRunner)
     {
-        throw new NotImplementedException();
-        //gameState.CardDrawnFromDeck += gameEventHandler.HandleEvent;
+        gameRunner.GameEnded += gameEventHandler.HandleEvent;
+        gameRunner.GameSimulationStarting += gameEventHandler.HandleEvent;
+        gameRunner.GameSimulationEnded += gameEventHandler.HandleEvent;
+        gameRunner.PlayerCombinationSimulationStarting += gameEventHandler.HandleEvent;
+        gameRunner.PlayerCombinationSimulationEnded += gameEventHandler.HandleEvent;
         return this;
     }
-
 }

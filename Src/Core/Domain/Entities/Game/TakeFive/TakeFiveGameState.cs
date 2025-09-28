@@ -16,8 +16,7 @@ public class TakeFiveGameState : ITakeFiveGameState
         _deck = deckFactory.Create();
         _players = new HashSet<ITakeFivePlayer>();
 
-        var rowsToCreate = 4;// TODO: place into config/rule object
-        _cardRows = Enumerable.Range(0, rowsToCreate)
+        _cardRows = Enumerable.Range(0, TakeFiveRules.NumberOfRows)
             .Select(_ => new List<TakeFiveCard>())
             .ToList();
     }
@@ -30,7 +29,6 @@ public class TakeFiveGameState : ITakeFiveGameState
 
     public IEnumerable<ITakeFivePlayer> Players => _players;
 
-    // FIXME: can't we just inject players in constructor?
     public void AddPlayer(ITakeFivePlayer player)
     {
         _players.Add(player);
@@ -40,14 +38,12 @@ public class TakeFiveGameState : ITakeFiveGameState
     {
         if (_isInitialized) return;
 
-        var rowsToInitalize = 4; // TODO: config/rule object
-
-        for (int i = 0; i < rowsToInitalize; i++)
+        for (int i = 0; i < TakeFiveRules.NumberOfRows; i++)
         {
             var card = _deck.DrawCard();
             _cardRows.ElementAt(i).Add(card);
         }
-        this._isInitialized = true;
+        _isInitialized = true;
     }
 
     public void PlaceCard(TakeFiveCard card, int rowNumber)
@@ -68,12 +64,12 @@ public class TakeFiveGameState : ITakeFiveGameState
     {
         foreach (var player in _players)
         {
-            var drawnCards = DrawCards(cardsPerPlayer);
-            player.AccecptCards(drawnCards);
+            var cards = DrawCards(cardsPerPlayer);
+            player.AccecptCards(cards);
         }
     }
 
-    private List<TakeFiveCard> DrawCards(int count) => 
+    private List<TakeFiveCard> DrawCards(int count) =>
             Enumerable.Range(0, count)
               .Select(_ => _deck.DrawCard())
               .ToList();

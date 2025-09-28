@@ -1,6 +1,6 @@
 ﻿namespace Domain.Interfaces.Games.BaseGame;
 
-public interface IToReadOnlyPlayer<out T> where T : IReadOnlyPlayer
+public interface IToReadOnly<out T>
 {
     public T AsReadOnly();
 }

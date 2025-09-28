@@ -46,8 +46,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
     public void Prepare()
     {
         _gameState.InitializeRowsFromDeck();
-        var startAmount = 10; // TODO: Config/Object Rule
-        _gameState.DealStartingCards(startAmount);
+        _gameState.DealStartingCards(TakeFiveRules.StartNumberOfCards);
     }
 
     public void Play()
@@ -87,7 +86,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
             var rowIndex = matchingRow?.RowIndex ?? player.Decide(_gameState.CardRows);
 
             // Regel 3
-            if (_gameState.CardRows.ElementAt(rowIndex).Count() == 5 || matchingRow == null)
+            if (_gameState.CardRows.ElementAt(rowIndex).Count() == TakeFiveRules.MaxCardsInRowAllowed || matchingRow == null)
             {
                 PlayerTakesCardFromRow(player, rowIndex);
             }
@@ -101,5 +100,4 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
         var cardsToTake = _gameState.GetCards(rowNumber);
         player.AccecptPenaltyCards(cardsToTake);
     }
-
 }

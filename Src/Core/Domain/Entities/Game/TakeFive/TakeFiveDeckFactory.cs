@@ -15,6 +15,6 @@ public class TakeFiveDeckFactory : IDeckFactory<TakeFiveCard>
 
     public IMutableDeck<TakeFiveCard> Create()
     {
-        return new Deck<TakeFiveCard>(1, 104, _cardFactory); // TODO: place this into config/rule object
+        return new Deck<TakeFiveCard>(TakeFiveRules.MinCardValue, TakeFiveRules.MaxCardValue, _cardFactory);
     }
 }

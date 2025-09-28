@@ -1,4 +1,4 @@
-﻿namespace Domain.Interfaces;
+﻿namespace Application.Interfaces;
 
 public interface IPlayerInputProvider
 {

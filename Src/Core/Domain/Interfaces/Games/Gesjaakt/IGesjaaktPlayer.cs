@@ -4,7 +4,11 @@ using Domain.Interfaces.Games.BaseGame;
 
 namespace Domain.Interfaces.Games.Gesjaakt;
 
-public interface IGesjaaktPlayer : INamed, IDecide<IGesjaaktReadOnlyGameState, GesjaaktTurnOption>, IToReadOnlyPlayer<IGesjaaktReadOnlyPlayer>, IGesjaaktPlayerActions
+public interface IGesjaaktPlayer : 
+    INamed, 
+    IDecide<IGesjaaktReadOnlyGameState, GesjaaktTurnOption>, 
+    IToReadOnly<IGesjaaktReadOnlyPlayer>, 
+    IGesjaaktPlayerActions
 {
     int CoinsAmount { get; }
     IEnumerable<ICard> Cards { get; }

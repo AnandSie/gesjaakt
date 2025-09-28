@@ -36,8 +36,6 @@ public class TakeFivePlayerTests
         result.Name.Should().Be(name);
     }
 
-    // TODO: test for other methods
-
     [TestMethod]
     public void PlayerAccecptsEmptyCards()
     {
@@ -135,5 +133,36 @@ public class TakeFivePlayerTests
 
         // Assert
         result.Should().Be(card1);
+    }
+
+    [TestMethod]
+    public void DecideWhichRowToTakeTest()
+    {
+        // Arrange
+        var input = new List<List<TakeFiveCard>>
+        {
+            new(){ new(1,1)},
+            new(){ new(2,1)},
+            new(){ new(3,1)},
+            new(){ new(4,1)},
+        };
+        var expectedResult = 3;
+        _takeFiveThinkerMock.Setup(tft => tft.Decide(input)).Returns(expectedResult);
+
+        // Act
+        var result = _player.Decide(input);
+
+        // Assert
+        result.Should().Be(expectedResult);
+    }
+
+    [TestMethod]
+    public void ReturnsReadonlyPlayerTest()
+    {
+        // Act
+        var result = _player.AsReadOnly();
+
+        // Assert
+        result.GetType().Should().Be(typeof(TakeFiveReadOnlyPlayer));
     }
 }

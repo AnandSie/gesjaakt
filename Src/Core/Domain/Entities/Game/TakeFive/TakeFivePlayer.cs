@@ -33,6 +33,7 @@ public class TakeFivePlayer : ITakeFivePlayer
         _penaltyCards.AddRange(cards);
     }
 
+    // NOTE: This is the main method in the game where the player decides which card to play
     public TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
         var cardValue = _thinker.Decide(gameState);
@@ -49,12 +50,9 @@ public class TakeFivePlayer : ITakeFivePlayer
     {
         var card = _hand.FirstOrDefault(c => c.Value == cardValue);
 
-        if (card == null)
-        {
-            // TODO: Use events
-            Console.WriteLine($"[WARN] Card with value {cardValue} not found. Falling back to first available card.");
-            card = _hand.FirstOrDefault();
-        }
+        // REFACTOR - Consider using events to communicate this situation 
+        // string message = $"[WARN] Card with value {cardValue} not found. Falling back to first available card.";
+        card ??= _hand.FirstOrDefault();
 
         if (card == null)
         { 
@@ -69,5 +67,4 @@ public class TakeFivePlayer : ITakeFivePlayer
     {
         return new TakeFiveReadOnlyPlayer(this);
     }
-
 }

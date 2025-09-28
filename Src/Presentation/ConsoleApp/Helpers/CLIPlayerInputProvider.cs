@@ -1,13 +1,12 @@
 ﻿using Application.Interfaces;
-using Domain.Interfaces;
 
 namespace Presentation.ConsoleApp.Helpers;
 
-internal class ConsoleInputService : IPlayerInputProvider
+internal class CLIPlayerInputProvider : IPlayerInputProvider
 {
-    private readonly ILogger<ConsoleInputService> _logger;
+    private readonly ILogger<CLIPlayerInputProvider> _logger;
 
-    public ConsoleInputService(ILogger<ConsoleInputService> logger)
+    public CLIPlayerInputProvider(ILogger<CLIPlayerInputProvider> logger)
     {
         _logger = logger;
     }

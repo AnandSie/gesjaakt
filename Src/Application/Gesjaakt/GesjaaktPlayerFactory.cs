@@ -1,7 +1,6 @@
 ﻿using Application.Gesjaakt.Thinkers;
 using Application.Interfaces;
 using Domain.Entities.Game.Gesjaakt;
-using Domain.Interfaces;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.Gesjaakt;
 

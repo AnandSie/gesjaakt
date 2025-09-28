@@ -10,7 +10,6 @@ namespace Application;
 
 public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
 {
-    private readonly ILogger<GameRunner<TPlayer>> _logger;
     private readonly IPlayerFactory<TPlayer> _playerFactory;
     private readonly IGame<TPlayer> _game;
     private readonly IStatisticsCreator _visualizer;
@@ -18,19 +17,17 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     private Dictionary<string, int> winsByPlayerName;
 
     public event EventHandler<WarningEvent>? GameEnded;
-    public event EventHandler<InfoEvent>? GameSimulationStarted;
-    public event EventHandler<InfoEvent>? GameSimulationEnded;
-    public event EventHandler<CriticalEvent>? PlayerCombinationSimulationStarted;
+    public event EventHandler<ErrorEvent>? GameSimulationStarting;
+    public event EventHandler<ErrorEvent>? GameSimulationEnded;
+    public event EventHandler<CriticalEvent>? PlayerCombinationSimulationStarting;
     public event EventHandler<CriticalEvent>? PlayerCombinationSimulationEnded;
 
-
-    public GameRunner(ILogger<GameRunner<TPlayer>> logger,
+    public GameRunner(
         IPlayerFactory<TPlayer> playerFactory,
         IGame<TPlayer> game,
         IStatisticsCreator visualizer
     )
     {
-        _logger = logger;
         _playerFactory = playerFactory;
         _game = game;
         _visualizer = visualizer;
@@ -48,13 +45,19 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     {
         foreach (var iter in Enumerable.Range(1, numberOfSimulations))
         {
-            _logger.LogInformation($"------------- Game #{iter} ---------------- ");
+            ShareGameSimulationStarting(numberOfSimulations, iter);
 
             var demoPlayers = _playerFactory.Create().Shuffle();
             RunGameWith(demoPlayers);
         }
 
         ReportSimulationResults(winsByPlayerName);
+    }
+
+    private void ShareGameSimulationStarting(int numberOfSimulations, int iter)
+    {
+        string message = $"Game Simulation Starting #{iter}/numberOfSimulations -  {(iter / numberOfSimulations) * 100}%";
+        GameSimulationStarting?.Invoke(this, new(message));
     }
 
     public void ManualGame(int numberOfPlayers)
@@ -71,52 +74,43 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         var allPlayerFactories = _playerFactory.AllPlayerFactories().ToList();
         var maxPlayers = 7; // REFACTOR: extract from rule object
 
-        var stopwatch = new Stopwatch();
-        double totalElapsedMs = 0;
+        var allPlayerFactoryCombinations = GetCombinations(allPlayerFactories, maxPlayers).ToList();
+        int numberOfCombinations = allPlayerFactoryCombinations.Count;
 
-        var allCombinations = GetCombinations(allPlayerFactories, maxPlayers).ToList();
-        int numberOfCombinations = allCombinations.Count;
-        for (int i = 0; i < numberOfCombinations; i++)
+        var stopwatch = new GameRunnerStopWatch(numberOfSimulations);
+        for (int playerCombiIter = 0; playerCombiIter < numberOfCombinations; playerCombiIter++)
         {
-            stopwatch.Restart();
+            stopwatch.IterationStart();
 
-            // TODO: replace log by events
-            // 27/9 plan 1. Create interface (GameEventOrchestrator) 
+            string startMessage = $"Player Combination Starting #{playerCombiIter}/{numberOfCombinations} - {(playerCombiIter / numberOfCombinations) * 100}%";
+            PlayerCombinationSimulationStarting?.Invoke(this, new(startMessage));
 
-            _logger.LogCritical($"------------- Player Combi #{i}/{numberOfCombinations} - {(i / numberOfCombinations) * 100}% ---------------- ");
-            var players = allCombinations[i].Select(pf => pf.Invoke()).Shuffle();
-
-            foreach (var iter in Enumerable.Range(1, numberOfSimulations))
+            var players = allPlayerFactoryCombinations[playerCombiIter].Select(pf => pf.Invoke()).Shuffle();
+            foreach (var simIter in Enumerable.Range(1, numberOfSimulations))
             {
-                // TODO: replace log by events
-                _logger.LogInformation($"------------- Game #{iter} ---------------- ");
-
-                // TODO: check if we are creating new players (probably not because only call playerfactory once.., so we maybe need to reset them?
+                ShareGameSimulationStarting(numberOfSimulations, simIter);
                 RunGameWith(players);
             }
 
-            stopwatch.Stop();
-            double elapsed = stopwatch.Elapsed.TotalMilliseconds;
-            totalElapsedMs += elapsed;
+            stopwatch.IterationFinished();
+            var estimatedRemainingMinutes = stopwatch.EstimatedRemainingMinutes(playerCombiIter);
 
-            stopwatch.Stop();
-            int remainingIterations = numberOfCombinations - (i + 1);
-            double averageMs = totalElapsedMs / (i + 1);
-            double estimatedRemainingMs = averageMs * remainingIterations;
-
-            _logger.LogCritical($"Iteration {i + 1}/{numberOfCombinations} took {elapsed:F2} ms. Estimated remaining: {estimatedRemainingMs / 1000 / 60:F2} min");
+            string endMessage = $"Player Combination Ended. It took {stopwatch.Elapsed():F2} ms. Estimated remaining time: {estimatedRemainingMinutes:F2} min";
+            PlayerCombinationSimulationEnded?.Invoke(this, new(endMessage));
         }
 
         ReportSimulationResults(winsByPlayerName);
     }
 
+
     private void RunGameWith(IEnumerable<TPlayer> players)
     {
         _game.PlayWith(players);
-        
+
+        // REFACTOR - Create seperate GameResult Object where stuff like winner is in - problem now is that we are calculating winner twice (dangerous). Maybe we want to share some other statistics like amount of events happened
         var playerResults = _game.Results();
         ReportGameResults(playerResults);
-        
+
         var winner = playerResults.First();
         SaveGameResults(winner);
     }
@@ -128,47 +122,41 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
 
     private void ReportGameResults(IOrderedEnumerable<TPlayer> playerResults)
     {
-        var winner = playerResults.First();
+        var message = new StringBuilder();
+        message.AppendLine($"Game Winner: {playerResults.First().Name}");
 
-        var sbGame = new StringBuilder();
+        message.AppendLine($"Results");
         foreach (var player in playerResults)
         {
-            sbGame.Append($"\t- {player}\n");
+            message.AppendLine($"\t- {player}");
         }
 
-        // TODO: replace logger by a gameEventCaptures -> then infrastructure layer can decide if log/ui/api/etc
-        _logger.LogWarning($"Winner of this single game: {winner.Name}");
-        _logger.LogWarning($"Game results per Player");
-        _logger.LogWarning(sbGame.ToString());
+        GameEnded?.Invoke(this, new(message.ToString()));
     }
 
-    // TODO: Voelt dubel op met ReportGameResults
     private void ReportSimulationResults(Dictionary<string, int> resultPerPlayer)
     {
         var numberOfGames = resultPerPlayer.Values.Sum();
 
-        // Don't save wins, save points - or do both
+        // REFACTOR - (Gesjaakt specific) Don't save wins, save points - or do both
         var simlationResultsOrdened = resultPerPlayer.OrderByDescending(entry => entry.Value);
-        var totalWinner = simlationResultsOrdened.FirstOrDefault();
+        var winner = simlationResultsOrdened.FirstOrDefault().Key;
 
-        var sb = new StringBuilder();
+        var message = new StringBuilder();
+        message.AppendLine($"Simulation Winner: {winner}");
+        message.AppendLine($"Results");
         foreach (var player in simlationResultsOrdened)
         {
-            sb.AppendLine($"- {player.Key} - {player.Value} wins -  {(double)player.Value / numberOfGames * 100}%");
+            message.AppendLine($"\t- {player.Key} - {player.Value} wins - {(double)player.Value / numberOfGames * 100}%");
         }
+        var gamesPlayed = simlationResultsOrdened.Select(p => p.Value).Sum();
+        message.AppendLine($"Total Games Played {gamesPlayed}");
 
-        var totGames = simlationResultsOrdened.Select(p => p.Value).Sum();
-        sb.Append($"Total Games Played {totGames}");
-        // TODO: report regarding combinations
-
-        // TODO: replace logger by a gameEventCaptures -> then infrastructure layer can decide if log/ui/api/etc
-        _logger.LogCritical($"----------------------------------------------------------");
-        _logger.LogCritical($"Simulation results per Player");
-        _logger.LogCritical(sb.ToString());
-        _logger.LogCritical($"The winner of the simulation: {totalWinner.Key}");
+        GameSimulationEnded?.Invoke(this, new(message.ToString()));
     }
 
     // REFACTOR: add documentation
+    // Q: wat doet ? moet er ook niet een soort minimum zijn?
     private static IEnumerable<IEnumerable<T>> GetCombinations<T>(List<T> source, int k)
     {
         if (k == 0)
@@ -187,4 +175,39 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         }
     }
 
+    private class GameRunnerStopWatch(int numberOfIterations)
+    {
+        private double totalElapsedMs = 0;
+        private readonly Stopwatch stopwatch = new();
+
+        public void IterationStart()
+        {
+            stopwatch.Restart();
+        }
+
+        public void IterationFinished()
+        {
+            stopwatch.Stop();
+        }
+
+        public double EstimatedRemainingMinutes(int finishedIteration)
+        {
+            totalElapsedMs += Elapsed();
+            return RemainingTimeMs(totalElapsedMs, numberOfIterations, finishedIteration) / 1000 / 60;
+        }
+
+        public double Elapsed()
+        {
+            return stopwatch.Elapsed.TotalMilliseconds;
+        }
+
+
+        private static double RemainingTimeMs(double totalElapsedMs, int totalIteration, int finishedIteration)
+        {
+            int remainingIterations = totalIteration - (finishedIteration + 1);
+            double averageMsPerIteration = totalElapsedMs / (finishedIteration + 1);
+
+            return averageMsPerIteration * remainingIterations;
+        }
+    }
 }

@@ -1,5 +1,5 @@
-﻿using Domain.Entities.Game.Gesjaakt;
-using Domain.Interfaces;
+﻿using Application.Interfaces;
+using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces.Games.Gesjaakt;
 using System.Text;
 

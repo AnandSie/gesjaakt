@@ -11,8 +11,8 @@ public interface IGameRunner
 
     // Events
     public event EventHandler<WarningEvent>? GameEnded;
-    public event EventHandler<InfoEvent>? GameSimulationStarted;
-    public event EventHandler<InfoEvent>? GameSimulationEnded;
-    public event EventHandler<CriticalEvent>? PlayerCombinationSimulationStarted;
+    public event EventHandler<ErrorEvent>? GameSimulationStarting;
+    public event EventHandler<ErrorEvent>? GameSimulationEnded;
+    public event EventHandler<CriticalEvent>? PlayerCombinationSimulationStarting;
     public event EventHandler<CriticalEvent>? PlayerCombinationSimulationEnded;
 }
