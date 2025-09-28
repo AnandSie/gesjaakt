@@ -4,6 +4,7 @@ using Domain.Interfaces;
 using Domain.Interfaces.Games.BaseGame;
 using Extensions;
 using Application.Interfaces;
+using Domain.Entities.Events;
 
 namespace Application;
 
@@ -12,13 +13,21 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     private readonly ILogger<GameRunner<TPlayer>> _logger;
     private readonly IPlayerFactory<TPlayer> _playerFactory;
     private readonly IGame<TPlayer> _game;
-    private readonly IVisualizer _visualizer;
+    private readonly IStatisticsCreator _visualizer;
+
     private Dictionary<string, int> winsByPlayerName;
+
+    public event EventHandler<WarningEvent>? GameEnded;
+    public event EventHandler<InfoEvent>? GameSimulationStarted;
+    public event EventHandler<InfoEvent>? GameSimulationEnded;
+    public event EventHandler<CriticalEvent>? PlayerCombinationSimulationStarted;
+    public event EventHandler<CriticalEvent>? PlayerCombinationSimulationEnded;
+
 
     public GameRunner(ILogger<GameRunner<TPlayer>> logger,
         IPlayerFactory<TPlayer> playerFactory,
         IGame<TPlayer> game,
-        IVisualizer visualizer
+        IStatisticsCreator visualizer
     )
     {
         _logger = logger;
@@ -56,11 +65,11 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
 
     public void SimulateAllPossibleCombis()
     {
-        // TODO: make dynamic or get from method parameter
+        // REFACTOR: make dynamic or get from method parameter
         var numberOfSimulations = 1000;
 
         var allPlayerFactories = _playerFactory.AllPlayerFactories().ToList();
-        var maxPlayers = 7; // TODO: extract from rule object
+        var maxPlayers = 7; // REFACTOR: extract from rule object
 
         var stopwatch = new Stopwatch();
         double totalElapsedMs = 0;
@@ -72,6 +81,8 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
             stopwatch.Restart();
 
             // TODO: replace log by events
+            // 27/9 plan 1. Create interface (GameEventOrchestrator) 
+
             _logger.LogCritical($"------------- Player Combi #{i}/{numberOfCombinations} - {(i / numberOfCombinations) * 100}% ---------------- ");
             var players = allCombinations[i].Select(pf => pf.Invoke()).Shuffle();
 

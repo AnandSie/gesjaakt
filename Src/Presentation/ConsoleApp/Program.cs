@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 
 using Application;
+using Application.Interfaces;
 using Application.Gesjaakt;
 using Application.TakeFive;
 using ConsoleApp;
@@ -30,14 +31,16 @@ serviceCollection.AddSingleton(typeof(Application.Interfaces.ILogger<>), typeof(
 
 serviceCollection.AddSingleton<IPlayerInputProvider, ConsoleInputService>();
 serviceCollection.AddTransient<GameRunnerFactory>();
+serviceCollection.AddTransient<IGameRunnerEventCollector, GameRunnerEventCollector>();
+serviceCollection.AddTransient<IGameEventHandler, Logging.GameEventHandler>();
 
 // Gesjaakt
 serviceCollection.AddSingleton<GameRunner<IGesjaaktPlayer>>();
 serviceCollection.AddTransient<IGame<IGesjaaktPlayer>, GesjaaktGame>();
 serviceCollection.AddSingleton<IPlayerFactory<IGesjaaktPlayer>, GesjaaktPlayerFactory>();
 serviceCollection.AddTransient<IGesjaaktGameDealer, GesjaaktGameDealer>();
-serviceCollection.AddTransient<IVisualizer, GesjaaktVisualizer>();
-serviceCollection.AddTransient<GesjaaktGameEventOrchestrator>();
+serviceCollection.AddTransient<IStatisticsCreator, GesjaaktVisualizer>();
+serviceCollection.AddTransient<IGesjaaktGameEventCollector, GesjaaktGameEventCollector>();
 
 // TakeFive
 serviceCollection.AddSingleton<GameRunner<ITakeFivePlayer>>();
@@ -61,7 +64,7 @@ serviceCollection.AddSingleton(sp => new List<Option>
 });
 
 serviceCollection
-    .AddTransient<App>()
+    .AddTransient<ConsoleApp>()
     .BuildServiceProvider()
-    .GetRequiredService<App>()
+    .GetRequiredService<ConsoleApp>()
     .Start();

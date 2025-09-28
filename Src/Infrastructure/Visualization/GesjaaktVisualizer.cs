@@ -4,7 +4,7 @@ using Domain.Interfaces;
 
 namespace Visualization;
 
-public class GesjaaktVisualizer: IVisualizer
+public class GesjaaktVisualizer: IStatisticsCreator
 {
     private readonly IThinkerPlotter thinkerPlotter;
 

@@ -4,27 +4,31 @@ using Domain.Interfaces;
 
 namespace ConsoleApp;
 
-internal class App
+internal class ConsoleApp
 {
-    readonly ILogger<App> _logger;
-    readonly List<Option> _gameoptions;
-    readonly IPlayerInputProvider _playerInputProvider;
-    readonly GameRunnerFactory _gameRunnerFactory;
+    private readonly ILogger<ConsoleApp> _logger;
+    private readonly List<Option> _gameoptions;
+    private readonly IPlayerInputProvider _playerInputProvider;
+    private readonly GameRunnerFactory _gameRunnerFactory;
+    private readonly IGameRunnerEventCollector _gameEventCollector;
 
-    public App(ILogger<App> logger,
+    public ConsoleApp(ILogger<ConsoleApp> logger,
         List<Option> gameoptions,
         IPlayerInputProvider playerInputProvider,
-        GameRunnerFactory gameRunnerFactory)
+        GameRunnerFactory gameRunnerFactory,
+        IGameRunnerEventCollector gameEventCollector)
     {
         _logger = logger;
         _gameoptions = gameoptions;
         _playerInputProvider = playerInputProvider;
         _gameRunnerFactory = gameRunnerFactory;
+        _gameEventCollector = gameEventCollector;
     }
 
     public void Start()
     {
         IGameRunner _gameRunner = GetGameRunner();
+        _gameEventCollector.Attach(_gameRunner);
 
         // REFACTOR - use class Option to create options
         const string Message = """

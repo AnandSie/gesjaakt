@@ -1,10 +1,11 @@
-﻿using Domain.Entities.Game.Gesjaakt;
+﻿using Application.Interfaces;
+using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Application.Gesjaakt;
 
-public class GesjaaktGame(GesjaaktGameEventOrchestrator gameEventOrchestrator) : IGame<IGesjaaktPlayer>
+public class GesjaaktGame(IGesjaaktGameEventCollector gameEventCollector) : IGame<IGesjaaktPlayer>
 {
     private GesjaaktGameDealer _gameDealer;
 
@@ -16,7 +17,7 @@ public class GesjaaktGame(GesjaaktGameEventOrchestrator gameEventOrchestrator) :
         _gameDealer = new GesjaaktGameDealer(gameState);
         _gameDealer.Add(players);
 
-        gameEventOrchestrator
+        gameEventCollector
             .Attach(gameState)
             .Attach(_gameDealer);
 
