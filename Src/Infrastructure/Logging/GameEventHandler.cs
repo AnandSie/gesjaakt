@@ -3,25 +3,36 @@ using Domain.Entities.Events;
 
 namespace Logging;
 
-public class GameEventHandler(ILogger<GameEventHandler> logger) : IGameEventHandler
+public class GameEventHandler : IGameEventHandler
 {
-    public void HandleEvent(object sender, CriticalEvent eventObject)
+    private readonly ILogger<GameEventHandler> _logger;
+    private EventLevel _minLevel;
+    private readonly Dictionary<EventLevel, Action<string>> _logActions;
+
+    public GameEventHandler(ILogger<GameEventHandler> logger, EventLevel minLevel = EventLevel.Info)
     {
-        logger.LogCritical(eventObject.Message);
+        _logger = logger;
+        _minLevel = minLevel;
+
+        // REFACTOR - consider moving to factory to make this class more closed
+        _logActions = new Dictionary<EventLevel, Action<string>>
+        {
+            [EventLevel.Critical] = _logger.LogCritical,
+            [EventLevel.Error] = _logger.LogError,
+            [EventLevel.Warning] = _logger.LogWarning,
+            [EventLevel.Info] = _logger.LogInformation
+        };
     }
 
-    public void HandleEvent(object sender, ErrorEvent eventObject)
-    {
-        logger.LogError(eventObject.Message);
-    }
+    public void SetMinLevel(EventLevel level) => _minLevel = level;
 
-    public void HandleEvent(object sender, WarningEvent eventObject)
+    public void HandleEvent(object sender, BaseEvent eventObject)
     {
-        logger.LogWarning(eventObject.Message);
-    }
+        if (eventObject.Level < _minLevel) return;
 
-    public void HandleEvent(object sender, InfoEvent eventObject)
-    {
-        logger.LogInformation(eventObject.Message);
+        if (_logActions.TryGetValue(eventObject.Level, out var log))
+        {
+            log.Invoke(eventObject.Message);
+        }
     }
 }

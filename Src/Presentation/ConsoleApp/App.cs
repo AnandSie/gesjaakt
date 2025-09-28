@@ -1,27 +1,31 @@
 ﻿using Application;
 using Application.Interfaces;
+using Domain.Entities.Events;
 
 namespace ConsoleApp;
 
-internal class CLIApp
+internal class App
 {
-    private readonly ILogger<CLIApp> _logger;
-    private readonly List<Option> _gameoptions;
+    private readonly ILogger<App> _logger;
+    private readonly List<IGameOption> _gameoptions;
     private readonly IPlayerInputProvider _playerInputProvider;
     private readonly GameRunnerFactory _gameRunnerFactory;
     private readonly IGameRunnerEventCollector _gameEventCollector;
+    private readonly IGameEventHandler _gameEventHandler;
 
-    public CLIApp(ILogger<CLIApp> logger,
-        List<Option> gameoptions,
+    public App(ILogger<App> logger,
+        List<IGameOption> gameoptions,
         IPlayerInputProvider playerInputProvider,
         GameRunnerFactory gameRunnerFactory,
-        IGameRunnerEventCollector gameEventCollector)
+        IGameRunnerEventCollector gameEventCollector,
+        IGameEventHandler gameEventHandler)
     {
         _logger = logger;
         _gameoptions = gameoptions;
         _playerInputProvider = playerInputProvider;
         _gameRunnerFactory = gameRunnerFactory;
         _gameEventCollector = gameEventCollector;
+        _gameEventHandler = gameEventHandler;
     }
 
     public void Start()
@@ -46,21 +50,24 @@ internal class CLIApp
                 var numberOfSimulations = _playerInputProvider.GetPlayerInputAsIntWithMinMax("How often should we run it", 1, 10000);
                 _logger.LogCritical($"Simulation started with {numberOfSimulations} runs");
 
+                _gameEventHandler.SetMinLevel(EventLevel.Error);
                 _gameRunner.Simulate(numberOfSimulations);
                 break;
 
             case 2:
                 _logger.LogCritical($"Simulation started with all possible combination");
-
+                _gameEventHandler.SetMinLevel(EventLevel.Critical);
                 _gameRunner.SimulateAllPossibleCombis();
                 break;
 
             case 3:
                 var playersToAdd = _playerInputProvider.GetPlayerInputAsInt("How many players do you want to play (3-7)?", new[] { 3, 4, 5, 6, 7 });
+                _gameEventHandler.SetMinLevel(EventLevel.Info);
                 _gameRunner.ManualGame(playersToAdd);
                 break;
 
             case 4:
+                _gameEventHandler.SetMinLevel(EventLevel.Info);
                 _gameRunner.ShowStatistics();
                 break;
         }

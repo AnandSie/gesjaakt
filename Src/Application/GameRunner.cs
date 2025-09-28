@@ -1,10 +1,11 @@
 ﻿using System.Text;
 using System.Diagnostics;
+
+using Application.Interfaces;
+using Domain.Entities.Events;
 using Domain.Interfaces;
 using Domain.Interfaces.Games.BaseGame;
 using Extensions;
-using Application.Interfaces;
-using Domain.Entities.Events;
 
 namespace Application;
 

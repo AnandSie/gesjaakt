@@ -1,5 +1,4 @@
-﻿using Application.Gesjaakt;
-using Domain.Interfaces.Games.Gesjaakt;
+﻿using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Application.Interfaces;
 

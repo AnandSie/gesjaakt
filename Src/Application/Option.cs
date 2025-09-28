@@ -2,7 +2,13 @@
 
 namespace Application;
 
-public class Option
+public interface IOption
+{
+    string Name { get; }
+    Type Type { get; }
+}
+
+public class Option : IOption
 {
     public string Name { get; }
     public Type Type { get; }
@@ -14,8 +20,10 @@ public class Option
     }
 }
 
+public interface IGameOption : IOption { }
 
-public class GameOption<T> : Option where T : IGame
+// TODO: double extensions feels weird- I need the seperate IgameOption (withoutT)
+public class GameOption<T> : Option, IGameOption where T : IGame
 {
     public GameOption() : base(typeof(T).Name, typeof(T))
     { }
