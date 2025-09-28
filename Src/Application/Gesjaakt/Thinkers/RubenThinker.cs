@@ -2,7 +2,7 @@
 using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.Gesjaakt;
 
-namespace Domain.Entities.Thinkers;
+namespace Application.Gesjaakt.Thinkers;
 
 public class RubenTHinker : IGesjaaktThinker
 {
@@ -47,7 +47,7 @@ public class RubenTHinker : IGesjaaktThinker
     {
         foreach (var card in cards)
         {
-            if ((currentCardValue == card.Value - 1) || (currentCardValue == card.Value + 1))
+            if (currentCardValue == card.Value - 1 || currentCardValue == card.Value + 1)
             {
                 return true;
             }

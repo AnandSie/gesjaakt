@@ -1,7 +1,7 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces.Games.Gesjaakt;
 
-namespace Domain.Entities.Thinkers;
+namespace Application.Gesjaakt.Thinkers;
 
 public class BarryBeterThinker : IGesjaaktThinker
 {
@@ -11,7 +11,7 @@ public class BarryBeterThinker : IGesjaaktThinker
     {
         Random rnd = new Random();
 
-        if (isStreet(gameState) && (gameState.Players.Select(p => p.CoinsAmount).Min() <= 2))
+        if (isStreet(gameState) && gameState.Players.Select(p => p.CoinsAmount).Min() <= 2)
         {
             return GesjaaktTurnOption.TAKECARD;
         }
@@ -37,7 +37,7 @@ public class BarryBeterThinker : IGesjaaktThinker
         int openCard = gameState.OpenCardValue;
         foreach (var card in gameState.PlayerOnTurn.Cards)
         {
-            if ((openCard == card.Value - 1) || (openCard == card.Value + 1))
+            if (openCard == card.Value - 1 || openCard == card.Value + 1)
             {
                 return true;
             }

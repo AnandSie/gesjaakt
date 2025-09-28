@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Numerics;
 
-namespace Domain.Entities.Thinkers;
+namespace Application.Gesjaakt.Thinkers;
 
 public class HansThinker_R3 : IGesjaaktThinker
 {

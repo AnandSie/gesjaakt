@@ -1,7 +1,7 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces.Games.Gesjaakt;
 
-namespace Domain.Entities.Thinkers;
+namespace Application.Gesjaakt.Thinkers;
 
 public class MarijnThinker : IGesjaaktThinker
 {
@@ -21,11 +21,11 @@ public class MarijnThinker : IGesjaaktThinker
         var wCoinsOnTable = 0.90;
         var wDealStrength = 0.05;
 
-        var pMyCoins = myCoins < thresholdMyCoins ? (1 / Math.Pow(thresholdMyCoins, 2)) * Math.Pow(myCoins - thresholdMyCoins, 2) : 0;
-        var pCoinsOnTable = tableCoins < tableThreshold2 ? 0 : tableCoins > tableThreshold1 ? 1 : (1 / (tableThreshold2 - tableThreshold1)) * dealStrength - (tableThreshold1 / (tableThreshold2 - tableThreshold1));  //tableCoins - 5;
-        var pDealStrength = dealStrength <= dealT1 ? 1 : dealStrength > dealT2 ? 0 : (1/(dealT1-dealT2))*dealStrength -(dealT2/(dealT1-dealT2));
+        var pMyCoins = myCoins < thresholdMyCoins ? 1 / Math.Pow(thresholdMyCoins, 2) * Math.Pow(myCoins - thresholdMyCoins, 2) : 0;
+        var pCoinsOnTable = tableCoins < tableThreshold2 ? 0 : tableCoins > tableThreshold1 ? 1 : 1 / (tableThreshold2 - tableThreshold1) * dealStrength - tableThreshold1 / (tableThreshold2 - tableThreshold1);  //tableCoins - 5;
+        var pDealStrength = dealStrength <= dealT1 ? 1 : dealStrength > dealT2 ? 0 : 1/(dealT1-dealT2)*dealStrength -dealT2/(dealT1-dealT2);
 
-        var pTotal = (wMyCoins * pMyCoins) + (wCoinsOnTable * pCoinsOnTable) + (wDealStrength * pDealStrength);
+        var pTotal = wMyCoins * pMyCoins + wCoinsOnTable * pCoinsOnTable + wDealStrength * pDealStrength;
 
         var random = new Random();
         if (random.NextDouble() < pTotal)

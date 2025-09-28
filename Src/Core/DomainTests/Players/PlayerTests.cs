@@ -1,6 +1,6 @@
-﻿using Domain.Entities.Components;
+﻿using Application.Gesjaakt.Thinkers;
+using Domain.Entities.Components;
 using Domain.Entities.Game.Gesjaakt;
-using Domain.Entities.Thinkers;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,6 +14,7 @@ public class PlayerTests
     [TestInitialize]
     public void Setup()
     {
+        // REFACTOR - MOQ THINKQER & REMOVE PROJECT REFERENCE TO APPLICATION 
         sut = new GesjaaktPlayer(new GreedyThinker());
     }
 

@@ -2,7 +2,7 @@
 using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces.Games.Gesjaakt;
 
-namespace Domain.Entities.Thinkers;
+namespace Application.Gesjaakt.Thinkers;
 
 public class NilsThinker_R3 : IGesjaaktThinker
 {

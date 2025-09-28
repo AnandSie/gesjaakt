@@ -64,7 +64,7 @@ serviceCollection.AddSingleton(sp => new List<Option>
 });
 
 serviceCollection
-    .AddTransient<ConsoleApp>()
+    .AddTransient<CLIApp>()
     .BuildServiceProvider()
-    .GetRequiredService<ConsoleApp>()
+    .GetRequiredService<CLIApp>()
     .Start();

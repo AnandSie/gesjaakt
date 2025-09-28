@@ -1,7 +1,7 @@
 ﻿using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces.Games.Gesjaakt;
 
-namespace Domain.Entities.Thinkers;
+namespace Application.Gesjaakt.Thinkers;
 
 public class BarryThinker : IGesjaaktThinker
 {
@@ -11,7 +11,7 @@ public class BarryThinker : IGesjaaktThinker
         {
             return GesjaaktTurnOption.TAKECARD;
         }
-        if ((gameState.PlayerOnTurn.Cards.Count == 0) && (gameState.PlayerOnTurn.CoinsAmount <= 1))
+        if (gameState.PlayerOnTurn.Cards.Count == 0 && gameState.PlayerOnTurn.CoinsAmount <= 1)
         {
             return GesjaaktTurnOption.TAKECARD;
         }
@@ -25,7 +25,7 @@ public class BarryThinker : IGesjaaktThinker
         int openCard = gameState.OpenCardValue;
         foreach (var card in gameState.PlayerOnTurn.Cards)
         {
-            if ((openCard == card.Value - 1) || (openCard == card.Value + 1))
+            if (openCard == card.Value - 1 || openCard == card.Value + 1)
             {
                 return true;
             }

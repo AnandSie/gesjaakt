@@ -1,7 +1,8 @@
-﻿using Application.Interfaces;
-using Domain.Entities.Thinkers;
+﻿using Application.Gesjaakt.Thinkers;
+using Application.Interfaces;
 using Domain.Interfaces;
 
+// REFACTOR - ADD INFRASTRUCTURE  to namespace
 namespace Visualization;
 
 public class GesjaaktVisualizer: IStatisticsCreator

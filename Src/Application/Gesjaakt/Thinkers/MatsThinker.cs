@@ -2,7 +2,7 @@
 using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.Gesjaakt;
 
-namespace Domain.Entities.Thinkers;
+namespace Application.Gesjaakt.Thinkers;
 
 public class MatsThinker : IGesjaaktThinker
 {

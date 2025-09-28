@@ -1,9 +1,7 @@
-﻿using Domain.Entities.Game.Gesjaakt;
-using Domain.Entities.Thinkers;
-using Domain.Interfaces;
+﻿using Application.Gesjaakt.Thinkers;
+using Domain.Entities.Game.Gesjaakt;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace DomainTests.GameTests;
 
@@ -17,6 +15,7 @@ public class GesjaaktGameDealerTests
         var gameStateFactory = () => new GesjaaktGameState();
         var gamesState = gameStateFactory();
 
+        // REFACTOR - Project DomainTests has access to application (which is wrong) => mock thinker dependencies instead of injecting application objects
         var scaredPlayer1 = new GesjaaktPlayer(new ScaredThinker(), "ScaredPlayer One");
         var scaredPlayer2 = new GesjaaktPlayer(new ScaredThinker(), "ScaredPlayer Two");
         var greedyPlayer = new GesjaaktPlayer(new GreedyThinker(), "Greedy");

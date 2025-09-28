@@ -4,15 +4,15 @@ using Domain.Interfaces;
 
 namespace ConsoleApp;
 
-internal class ConsoleApp
+internal class CLIApp
 {
-    private readonly ILogger<ConsoleApp> _logger;
+    private readonly ILogger<CLIApp> _logger;
     private readonly List<Option> _gameoptions;
     private readonly IPlayerInputProvider _playerInputProvider;
     private readonly GameRunnerFactory _gameRunnerFactory;
     private readonly IGameRunnerEventCollector _gameEventCollector;
 
-    public ConsoleApp(ILogger<ConsoleApp> logger,
+    public CLIApp(ILogger<CLIApp> logger,
         List<Option> gameoptions,
         IPlayerInputProvider playerInputProvider,
         GameRunnerFactory gameRunnerFactory,
