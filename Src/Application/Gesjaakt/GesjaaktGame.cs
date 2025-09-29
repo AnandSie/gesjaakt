@@ -14,7 +14,7 @@ public class GesjaaktGame(IGesjaaktGameEventCollector gameEventCollector) : IGam
     public void PlayWith(IEnumerable<IGesjaaktPlayer> players)
     {
         var gameState = new GesjaaktGameState();
-        _gameDealer = new GesjaaktGameDealer(gameState);
+        _gameDealer = new GesjaaktGameDealer(gameState); // REFACTOR - DI
         _gameDealer.Add(players);
 
         gameEventCollector

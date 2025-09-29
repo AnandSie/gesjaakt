@@ -1,4 +1,5 @@
 ﻿using Domain.Interfaces.Games.TakeFive;
+using System.Collections.Immutable;
 
 namespace Domain.Entities.Game.TakeFive;
 
@@ -36,6 +37,7 @@ public class TakeFivePlayer : ITakeFivePlayer
     // NOTE: This is the main method in the game where the player decides which card to play
     public TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
+        _thinker.SetState(_hand.ToImmutableList());
         var cardValue = _thinker.Decide(gameState);
         return GetCard(cardValue);
     }
@@ -43,6 +45,7 @@ public class TakeFivePlayer : ITakeFivePlayer
     // NOTE: This method will be called when a player has played a card which does not fit and needs to choose a row to take
     public int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardRows)
     {
+        //Console.WriteLine(); // TODO: maak bericht en later event
         return _thinker.Decide(cardRows);
     }
 
@@ -50,15 +53,14 @@ public class TakeFivePlayer : ITakeFivePlayer
     {
         var card = _hand.FirstOrDefault(c => c.Value == cardValue);
 
-        // REFACTOR - Consider using events to communicate this situation 
+        // TODO (WARNING LEVEL) - Consider using events to communicate this situation 
         // string message = $"[WARN] Card with value {cardValue} not found. Falling back to first available card.";
         card ??= _hand.FirstOrDefault();
 
         if (card == null)
-        { 
+        {
             throw new InvalidOperationException("No cards left in hand.");
         }
-
         _hand.Remove(card);
         return card;
     }
@@ -66,5 +68,16 @@ public class TakeFivePlayer : ITakeFivePlayer
     public ITakeFiveReadOnlyPlayer AsReadOnly()
     {
         return new TakeFiveReadOnlyPlayer(this);
+    }
+
+    public override string ToString()
+    {
+        // REFACTOR - use extension method for the IEnumerable<TakeFiveCard>
+        return $"{_name ?? "unkown"} with {Points()} points - Cards {string.Join(", ", this.PenaltyCards)}";
+    }
+
+    private int Points()
+    {
+        return this.PenaltyCards.Sum(pc => pc.CowHeads);
     }
 }

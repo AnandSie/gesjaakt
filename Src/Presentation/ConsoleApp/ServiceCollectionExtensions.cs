@@ -54,8 +54,8 @@ internal static class ServiceCollectionExtensions
         // Note: to allow user to choose game
         serviceCollection.AddSingleton(sp => new List<IGameOption>
         {
-            new GameOption<GesjaaktGame>(),
-            new GameOption<TakeFiveGame>()
+            new GameOption<GesjaaktGame>(3,7), // REFACTOR - create gesjaakt rule 
+            new GameOption<TakeFiveGame>(TakeFiveRules.MinNumberOfPlayers,TakeFiveRules.MaxNumberOfPlayers)
         });
         return serviceCollection;
     }
@@ -65,9 +65,8 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<GameRunner<IGesjaaktPlayer>>();
         serviceCollection.AddTransient<IGame<IGesjaaktPlayer>, GesjaaktGame>();
         serviceCollection.AddSingleton<IPlayerFactory<IGesjaaktPlayer>, GesjaaktPlayerFactory>();
-        serviceCollection.AddTransient<IGesjaaktGameDealer, GesjaaktGameDealer>();
-        serviceCollection.AddTransient<IStatisticsCreator, GesjaaktVisualizer>();
         serviceCollection.AddTransient<IGesjaaktGameEventCollector, GesjaaktGameEventCollector>();
+        serviceCollection.AddTransient<IStatisticsCreator, GesjaaktVisualizer>();
 
         return serviceCollection;
     }
@@ -77,8 +76,8 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<GameRunner<ITakeFivePlayer>>();
         serviceCollection.AddTransient<IGame<ITakeFivePlayer>, TakeFiveGame>();
         serviceCollection.AddSingleton<IPlayerFactory<ITakeFivePlayer>, TakeFivePlayerFactory>();
+        serviceCollection.AddTransient<ITakeFiveGameDealer, TakeFiveGameDealer>();
+
         return serviceCollection;
     }
-
-
 }

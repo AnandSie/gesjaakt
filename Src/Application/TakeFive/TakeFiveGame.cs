@@ -1,53 +1,37 @@
-﻿using Application.Interfaces;
+﻿using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.TakeFive;
-using System.Text;
 
-namespace Domain.Entities.Game.TakeFive;
+namespace Application.TakeFive;
 
 public class TakeFiveGame : IGame<ITakeFivePlayer>
 {
-    readonly ILogger<TakeFiveGame> _logger;
-    readonly IPlayerInputProvider _playerInputProvider;
-    readonly IPlayerFactory<TakeFivePlayer> _playerFactory;
-    readonly IGameDealer<ITakeFivePlayer> _gameDealer;
-
-    public TakeFiveGame(ILogger<TakeFiveGame> logger,
-                IPlayerInputProvider playerInputProvider,
-                IPlayerFactory<TakeFivePlayer> playerFactory,
-                IGameDealer<ITakeFivePlayer> gameDealer
-        )
-    {
-        _logger = logger;
-        _playerInputProvider = playerInputProvider;
-        _playerFactory = playerFactory;
-        _gameDealer = gameDealer;
-    }
+    private TakeFiveGameDealer _gameDealer;
 
     public static string Name { get; } = "TakeFive";
 
+    // REFACTOR - this whole class is duplicate of GesjaaktGame, only two differences - Name (which is just a marker..). This class pulls in the correct dependencies to make our life easier.., maybe we can create ABC to avoid DRY?
     public void PlayWith(IEnumerable<ITakeFivePlayer> players)
     {
-        throw new NotImplementedException();
+        // REFACTOR - DI/factory (or is this class the factory?)
+        var cardFactory = new TakeFiveCardFactory();
+        var deckFactory = new TakeFiveDeckFactory(cardFactory);
+        var gameState = new TakeFiveGameState(deckFactory);
+        _gameDealer = new TakeFiveGameDealer(gameState); 
+        
+        _gameDealer.Add(players);
+
+        // TODO: add
+        //gameEventCollector
+        //    .Attach(gameState)
+        //    .Attach(_gameDealer);
+
+        _gameDealer.Prepare();
+        _gameDealer.Play();
     }
 
     public IOrderedEnumerable<ITakeFivePlayer> Results()
     {
-        throw new NotImplementedException();
-    }
-
-    public void ShowStatistics()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Simulate()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SimulateAllPossiblePlayerCombinations()
-    {
-        throw new NotImplementedException();
+        return _gameDealer.GetPlayerResults();
     }
 }

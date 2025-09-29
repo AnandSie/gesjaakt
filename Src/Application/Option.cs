@@ -20,11 +20,22 @@ public class Option : IOption
     }
 }
 
-public interface IGameOption : IOption { }
+public interface IGameOption : IOption
+{
+    public int MinNumberOfPlayers { get; }
+    public int MaxNumberOfPlayers { get; }
 
-// TODO: double extensions feels weird- I need the seperate IgameOption (withoutT)
+}
+
+// TODO: double extensions feels weird - I need the seperate IgameOption (withoutT)
 public class GameOption<T> : Option, IGameOption where T : IGame
 {
-    public GameOption() : base(typeof(T).Name, typeof(T))
-    { }
+    public int MinNumberOfPlayers { get; }
+    public int MaxNumberOfPlayers { get; }
+
+    public GameOption(int minNumberOfPlayers, int maxNumberOfPlayers) : base(typeof(T).Name, typeof(T))
+    {
+        MinNumberOfPlayers = minNumberOfPlayers;
+        MaxNumberOfPlayers = maxNumberOfPlayers;
+    }
 }

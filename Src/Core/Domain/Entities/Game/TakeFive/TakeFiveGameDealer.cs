@@ -28,7 +28,6 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
         _gameState = gameState;
     }
 
-
     public IOrderedEnumerable<ITakeFivePlayer> GetPlayerResults()
     {
         return _gameState.Players
@@ -57,6 +56,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
                 .Select(p =>
                 (
                     Player: p,
+                    // TODO: Create a try catch + event if error
                     Card: p.Decide(_gameState.AsReadOnly()))
                 )
                 .OrderBy(pair => pair.Card.Value) // Regel 1
@@ -82,6 +82,9 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
                 .OrderBy(pair => card.Value - pair.LastCardInRow.Value)
                 .FirstOrDefault();
 
+            // IMPROVE - Create Event for Decide2 (for statistics during game)
+
+            // TODO: create try catch around decide2 and share event error
             // Regel 4
             var rowIndex = matchingRow?.RowIndex ?? player.Decide(_gameState.CardRows);
 

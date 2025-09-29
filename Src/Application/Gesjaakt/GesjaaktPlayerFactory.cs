@@ -10,7 +10,7 @@ public class GesjaaktPlayerFactory : IPlayerFactory<IGesjaaktPlayer>
 {
     private readonly IPlayerInputProvider _playerInputProvider;
 
-    public GesjaaktPlayerFactory(ILogger<GesjaaktPlayer> playerLogger, IPlayerInputProvider playerInputProvider)
+    public GesjaaktPlayerFactory(IPlayerInputProvider playerInputProvider)
     {
         _playerInputProvider = playerInputProvider;
     }
@@ -84,11 +84,10 @@ public class GesjaaktPlayerFactory : IPlayerFactory<IGesjaaktPlayer>
     public IEnumerable<IGesjaaktPlayer> CreateManualPlayers(int playersToAdd)
     {
         var players = new List<IGesjaaktPlayer>();
-        foreach (var i in Enumerable.Range(3, playersToAdd))
+        foreach (var i in Enumerable.Range(3, playersToAdd)) // REFACTOR - GESJAAKTRULES
         {
             players.Add(CreateManualPlayer());
         }
         return players;
-
     }
 }

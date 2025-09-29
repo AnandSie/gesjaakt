@@ -1,10 +1,12 @@
 ﻿namespace Domain.Entities.Game.TakeFive;
 
-internal class TakeFiveRules
+public class TakeFiveRules
 {
-    internal static int MinCardValue = 1;
-    internal static int MaxCardValue = 104;
-    internal static int StartNumberOfCards = 10;  
-    internal static int MaxCardsInRowAllowed = 5;
-    internal static int NumberOfRows = 4;
+    public static int MinCardValue = 1;
+    public static int MaxCardValue = 104;
+    public static int StartNumberOfCards = 10;  
+    public static int MaxCardsInRowAllowed = 5;
+    public static int NumberOfRows = 4;
+    public static int MinNumberOfPlayers = 2;
+    public static int MaxNumberOfPlayers = 10;
 }

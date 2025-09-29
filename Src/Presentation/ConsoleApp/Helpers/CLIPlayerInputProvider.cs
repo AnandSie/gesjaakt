@@ -39,7 +39,7 @@ internal class CLIPlayerInputProvider : IPlayerInputProvider
                 return value;
             }
 
-            _logger.LogCritical($"Invalid input. Please enter a valid number from the list {allowedInts}.");
+            _logger.LogCritical($"Invalid input. Please enter a valid number from the list {string.Join(", ", allowedInts)}.");
         }
     }
 

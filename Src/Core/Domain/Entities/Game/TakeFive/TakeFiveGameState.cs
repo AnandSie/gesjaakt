@@ -69,6 +69,11 @@ public class TakeFiveGameState : ITakeFiveGameState
         }
     }
 
+    public override string ToString()
+    {
+        throw new NotImplementedException();
+    }
+
     private List<TakeFiveCard> DrawCards(int count) =>
             Enumerable.Range(0, count)
               .Select(_ => _deck.DrawCard())

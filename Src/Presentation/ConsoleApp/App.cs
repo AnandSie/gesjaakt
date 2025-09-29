@@ -30,7 +30,8 @@ internal class App
 
     public void Start()
     {
-        IGameRunner _gameRunner = GetGameRunner();
+        var gameOption = GetUsersSelectedGameOption();
+        IGameRunner _gameRunner = GetGameRunner(gameOption);
         _gameEventCollector.Attach(_gameRunner);
 
         // REFACTOR - use class Option to create options
@@ -47,36 +48,44 @@ internal class App
         switch (choice)
         {
             case 1:
+                _gameEventHandler.SetMinLevel(EventLevel.Error);
+
                 var numberOfSimulations = _playerInputProvider.GetPlayerInputAsIntWithMinMax("How often should we run it", 1, 10000);
                 _logger.LogCritical($"Simulation started with {numberOfSimulations} runs");
 
-                _gameEventHandler.SetMinLevel(EventLevel.Error);
                 _gameRunner.Simulate(numberOfSimulations);
                 break;
 
             case 2:
-                _logger.LogCritical($"Simulation started with all possible combination");
                 _gameEventHandler.SetMinLevel(EventLevel.Critical);
+
+                _logger.LogCritical($"Simulation started with all possible combination");
                 _gameRunner.SimulateAllPossibleCombis();
                 break;
 
             case 3:
-                var playersToAdd = _playerInputProvider.GetPlayerInputAsInt("How many players do you want to play (3-7)?", new[] { 3, 4, 5, 6, 7 });
                 _gameEventHandler.SetMinLevel(EventLevel.Info);
+
+                string Question = $"With how many players do you want to play ({gameOption.MinNumberOfPlayers}-{gameOption.MaxNumberOfPlayers})?";
+                IEnumerable<int> options = Enumerable.Range(gameOption.MinNumberOfPlayers, gameOption.MaxNumberOfPlayers - gameOption.MinNumberOfPlayers);
+                var playersToAdd = _playerInputProvider.GetPlayerInputAsInt(Question, options);
                 _gameRunner.ManualGame(playersToAdd);
                 break;
 
             case 4:
                 _gameEventHandler.SetMinLevel(EventLevel.Info);
+
                 _gameRunner.ShowStatistics();
                 break;
         }
-
-        _logger.LogCritical($"Press enter to exit");
-        Console.ReadLine();
     }
 
-    private IGameRunner GetGameRunner()
+    private IGameRunner GetGameRunner(IGameOption gameOption)
+    {
+        return _gameRunnerFactory.Create(gameOption.Type);
+    }
+
+    private IGameOption GetUsersSelectedGameOption()
     {
         string question = "Which game do you want to play?\n";
         string options = string.Join("\n", _gameoptions.Select((g, i) => $"{i + 1}. {g.Name}"));
@@ -84,8 +93,6 @@ internal class App
 
         // REFACTOR - give a IEnumerble<MenuOption> MenuOption(string name, Type option) and print name and return option 
         int gameChoice = _playerInputProvider.GetPlayerInputAsInt(message, Enumerable.Range(1, _gameoptions.Count).ToArray());
-        var selected = _gameoptions[gameChoice - 1]; // Note: zero-based index
-
-        return _gameRunnerFactory.Create(selected.Type);
+        return _gameoptions[gameChoice - 1]; // Note: zero-based index
     }
 }

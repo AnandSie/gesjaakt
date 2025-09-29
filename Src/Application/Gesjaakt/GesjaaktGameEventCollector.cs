@@ -13,6 +13,7 @@ public class GesjaaktGameEventCollector(IGameEventHandler gameEventHandler): IGe
 
     public IGesjaaktGameEventCollector Attach(IGesjaaktGameDealer gamedealer)
     {
+        // IMPROVE REFACTOR : sum the amount of "gesjaakt" and share this 
         gamedealer.PlayerGesjaakt += gameEventHandler.HandleEvent;
         gamedealer.SkippedWithCoin += gameEventHandler.HandleEvent;
         gamedealer.CoinsDivided += gameEventHandler.HandleEvent;
