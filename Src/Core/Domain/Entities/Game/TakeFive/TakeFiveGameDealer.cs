@@ -1,5 +1,4 @@
-﻿using Domain.Entities.Events;
-using Domain.Interfaces.Games.TakeFive;
+﻿using Domain.Interfaces.Games.TakeFive;
 
 namespace Domain.Entities.Game.TakeFive;
 
@@ -52,7 +51,6 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
                 .Select(p =>
                 (
                     Player: p,
-                    // TODO: Create a try catch + event if error
                     Card: p.Decide(_gameState.AsReadOnly()))
                 )
                 .OrderBy(pair => pair.Card.Value) // Regel 1

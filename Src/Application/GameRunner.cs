@@ -44,6 +44,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
 
     public void Simulate(int numberOfSimulations)
     {
+        // REFACTOR - parallel
         foreach (var iter in Enumerable.Range(1, numberOfSimulations))
         {
             ShareGameSimulationStarting(numberOfSimulations, iter);
@@ -80,6 +81,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         int numberOfCombinations = allPlayerFactoryCombinations.Count;
 
         var stopwatch = new GameRunnerStopWatch(numberOfSimulations);
+        // REFACTOR - parallel
         for (int playerCombiIter = 0; playerCombiIter < numberOfCombinations; playerCombiIter++)
         {
             stopwatch.IterationStart();
@@ -103,7 +105,6 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
 
         ReportSimulationResults(winsByPlayerName);
     }
-
 
     private void RunGameWith(IEnumerable<TPlayer> players)
     {
@@ -202,7 +203,6 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         {
             return stopwatch.Elapsed.TotalMilliseconds;
         }
-
 
         private static double RemainingTimeMs(double totalElapsedMs, int totalIteration, int finishedIteration)
         {

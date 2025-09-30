@@ -17,6 +17,8 @@ public class GesjaaktPlayerFactory : IPlayerFactory<IGesjaaktPlayer>
 
     public IEnumerable<Func<IGesjaaktPlayer>> AllPlayerFactories()
     {
+        // REFACTOR - use DI/REFLECTION to auto create this
+
         return
         [
             () => new GesjaaktPlayer(new AnandThinker(),  "Anand"),

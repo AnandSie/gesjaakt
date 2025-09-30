@@ -2,7 +2,6 @@
 using Application.TakeFive.Thinkers;
 using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.BaseGame;
-using Domain.Interfaces.Games.Gesjaakt;
 using Domain.Interfaces.Games.TakeFive;
 
 namespace Application.TakeFive;
@@ -18,6 +17,8 @@ public class TakeFivePlayerFactory : IPlayerFactory<ITakeFivePlayer>
 
     public IEnumerable<Func<ITakeFivePlayer>> AllPlayerFactories()
     {
+        // REFACTOR - use DI/REFLECTION to auto create this
+
         throw new NotImplementedException();
     }
 

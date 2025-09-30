@@ -7,7 +7,7 @@ public class DiverTakeFiveThinker() : BaseTakeFiveThinker
 {
     public override int Decide(ITakeFiveReadOnlyGameState gameState)
     {
-        return this._hand.OrderBy(c => c.Value).First().Value;
+        return _hand.OrderBy(c => c.Value).First().Value;
     }
 
     public override int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardsOnTable)

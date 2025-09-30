@@ -22,7 +22,6 @@ public class TakeFiveGame(ITakeFiveGameEventCollector gameEventCollector) : IGam
 
         _gameDealer.Add(players);
 
-        // TODO: add
         gameEventCollector
         //    .Attach(gameState) // TODO
         //    .Attach(_gameDealer); // TODO
