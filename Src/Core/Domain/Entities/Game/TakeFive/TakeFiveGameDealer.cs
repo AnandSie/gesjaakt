@@ -19,10 +19,6 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
 {
     private readonly ITakeFiveGameState _gameState;
 
-    public event EventHandler<WarningEvent>? PlayerGesjaakt;
-    public event EventHandler<InfoEvent>? SkippedWithCoin;
-    public event EventHandler<InfoEvent>? CoinsDivided;
-
     public TakeFiveGameDealer(ITakeFiveGameState gameState)
     {
         _gameState = gameState;
@@ -84,8 +80,10 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
 
             // IMPROVE - Create Event for Decide2 (for statistics during game)
 
-            // TODO: create try catch around decide2 and share event error
             // Regel 4
+
+            // TODO: Give Immutable cards (nested and inner nested)
+            // TODO: check if player.decide returns something which is allowable (not too larger). If not within 0 - 3, throw error event and get first/random/least poitns row. The least points does make the most sense..., this is what 99% people will implement
             var rowIndex = matchingRow?.RowIndex ?? player.Decide(_gameState.CardRows);
 
             // Regel 3

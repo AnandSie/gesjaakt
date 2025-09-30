@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Game.TakeFive;
+﻿using Domain.Entities.Events;
+using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.BaseGame;
 
 namespace Domain.Interfaces.Games.TakeFive;
@@ -14,4 +15,7 @@ public interface ITakeFivePlayer :
     public IReadOnlyCollection<TakeFiveCard> PenaltyCards { get; }
 
     public int CardsCount { get; }
+
+    public event EventHandler<ErrorEvent>? DecideError;
+
 }

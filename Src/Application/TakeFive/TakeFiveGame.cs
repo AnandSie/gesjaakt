@@ -1,10 +1,11 @@
-﻿using Domain.Entities.Game.TakeFive;
+﻿using Application.Interfaces;
+using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.TakeFive;
 
 namespace Application.TakeFive;
 
-public class TakeFiveGame : IGame<ITakeFivePlayer>
+public class TakeFiveGame(ITakeFiveGameEventCollector gameEventCollector) : IGame<ITakeFivePlayer>
 {
     private TakeFiveGameDealer _gameDealer;
 
@@ -17,14 +18,15 @@ public class TakeFiveGame : IGame<ITakeFivePlayer>
         var cardFactory = new TakeFiveCardFactory();
         var deckFactory = new TakeFiveDeckFactory(cardFactory);
         var gameState = new TakeFiveGameState(deckFactory);
-        _gameDealer = new TakeFiveGameDealer(gameState); 
-        
+        _gameDealer = new TakeFiveGameDealer(gameState);
+
         _gameDealer.Add(players);
 
         // TODO: add
-        //gameEventCollector
-        //    .Attach(gameState)
-        //    .Attach(_gameDealer);
+        gameEventCollector
+        //    .Attach(gameState) // TODO
+        //    .Attach(_gameDealer); // TODO
+        .Attach(players);
 
         _gameDealer.Prepare();
         _gameDealer.Play();

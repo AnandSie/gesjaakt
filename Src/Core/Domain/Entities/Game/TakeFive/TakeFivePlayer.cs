@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Games.TakeFive;
+﻿using Domain.Entities.Events;
+using Domain.Interfaces.Games.TakeFive;
 using System.Collections.Immutable;
 
 namespace Domain.Entities.Game.TakeFive;
@@ -9,6 +10,9 @@ public class TakeFivePlayer : ITakeFivePlayer
     private readonly string _name;
     private readonly List<TakeFiveCard> _hand;
     private readonly List<TakeFiveCard> _penaltyCards;
+
+    // TODO: attach to collector
+    public event EventHandler<ErrorEvent>? DecideError;
 
     public string Name => _name;
 
@@ -38,15 +42,39 @@ public class TakeFivePlayer : ITakeFivePlayer
     public TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
         _thinker.SetState(_hand.ToImmutableList());
-        var cardValue = _thinker.Decide(gameState);
+        int cardValue;
+        try
+        {
+            cardValue = _thinker.Decide(gameState);
+        }
+        catch (Exception e)
+        {
+            string message = $"Decide Exception - Player {this.Name} could not decide. So a random card is played. Error message: {e.Message} ";
+            DecideError?.Invoke(this, new(message));
+
+            cardValue = this._hand.First().Value;
+        }
+
         return GetCard(cardValue);
     }
 
     // NOTE: This method will be called when a player has played a card which does not fit and needs to choose a row to take
     public int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardRows)
     {
-        //Console.WriteLine(); // TODO: maak bericht en later event
-        return _thinker.Decide(cardRows);
+        int result;
+        try
+        {
+            result = _thinker.Decide(cardRows);
+        }
+        catch (Exception e)
+        {
+            string message = $"Decide Exception - Player {this.Name} could not decide. So a random row is taken. Error message: {e.Message} ";
+            DecideError?.Invoke(this, new(message));
+
+            result = 0;
+
+        }
+        return result;
     }
 
     private TakeFiveCard GetCard(int cardValue)
@@ -78,6 +106,6 @@ public class TakeFivePlayer : ITakeFivePlayer
 
     private int Points()
     {
-        return this.PenaltyCards.Sum(pc => pc.CowHeads);
+        return PenaltyCards.Sum(pc => pc.CowHeads);
     }
 }

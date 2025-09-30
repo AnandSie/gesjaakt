@@ -12,7 +12,6 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
     public event EventHandler<InfoEvent>? CoinsDivided;
     public event EventHandler<ErrorEvent>? PlayerDecideError;
 
-
     public GesjaaktGameDealer(IGesjaaktGameState gameState)
     {
         _gameState = gameState;
@@ -73,6 +72,7 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
 
     private GesjaaktTurnOption PlayerChoice(IGesjaaktPlayer player)
     {
+        // REFACTOR - move try catch inside player. Player needs to return something sensible.., TakeFive also has this in player
         try
         {
             return player.Decide(_gameState.AsReadOnly());

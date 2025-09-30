@@ -10,6 +10,7 @@ public interface ITakeFiveThinker :
     
     
     IDecide<ITakeFiveReadOnlyGameState, int>,
+    // REFACTOR - change to IMMUTABLE/READONLY 
     IDecide<IEnumerable<IEnumerable<TakeFiveCard>>, int>,
     IStatefull<IImmutableList<TakeFiveCard>>
 { }

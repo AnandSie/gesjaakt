@@ -1,7 +1,5 @@
-﻿using Application.Gesjaakt.Thinkers;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.TakeFive.Thinkers;
-using Domain.Entities.Game.Gesjaakt;
 using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.Gesjaakt;
@@ -25,7 +23,14 @@ public class TakeFivePlayerFactory : IPlayerFactory<ITakeFivePlayer>
 
     public IEnumerable<ITakeFivePlayer> Create()
     {
-        throw new NotImplementedException();
+        return new List<TakeFivePlayer>
+        {
+            // REFACTOR - Consider giving the TakeFiveThinker a "Name" and use this Name for the player as well (then you only have to define everything in one place)
+            new (new LisaTakeFiveThinker(), name: "Lisa"),
+            new (new DiverTakeFiveThinker(), name: "Diver"),
+            new (new BlindTakeFiveThinker(), name: "Blind"),
+        };
+
     }
 
     public ITakeFivePlayer CreateManualPlayer()

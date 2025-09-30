@@ -1,5 +1,4 @@
 ﻿using Domain.Interfaces.Games.BaseGame;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Domain.Entities.Game.TakeFive;
 

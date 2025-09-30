@@ -48,8 +48,8 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         {
             ShareGameSimulationStarting(numberOfSimulations, iter);
 
-            var demoPlayers = _playerFactory.Create().Shuffle();
-            RunGameWith(demoPlayers);
+            var players = _playerFactory.Create().Shuffle();
+            RunGameWith(players);
         }
 
         ReportSimulationResults(winsByPlayerName);
@@ -57,7 +57,8 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
 
     private void ShareGameSimulationStarting(int numberOfSimulations, int iter)
     {
-        string message = $"Game Simulation Starting #{iter}/numberOfSimulations -  {(iter / numberOfSimulations) * 100}%";
+        double progress = (double)iter / numberOfSimulations * 100;
+        string message = $"Game Simulation Starting #{iter}/{numberOfSimulations} -  {progress:F0}%";
         GameSimulationStarting?.Invoke(this, new(message));
     }
 

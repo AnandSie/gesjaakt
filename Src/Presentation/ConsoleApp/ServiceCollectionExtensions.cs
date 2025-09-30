@@ -76,7 +76,8 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<GameRunner<ITakeFivePlayer>>();
         serviceCollection.AddTransient<IGame<ITakeFivePlayer>, TakeFiveGame>();
         serviceCollection.AddSingleton<IPlayerFactory<ITakeFivePlayer>, TakeFivePlayerFactory>();
-        serviceCollection.AddTransient<ITakeFiveGameDealer, TakeFiveGameDealer>();
+        //serviceCollection.AddTransient<ITakeFiveGameDealer, TakeFiveGameDealer>();
+        serviceCollection.AddTransient<ITakeFiveGameEventCollector, TakeFiveGameEventCollector>();
 
         return serviceCollection;
     }
