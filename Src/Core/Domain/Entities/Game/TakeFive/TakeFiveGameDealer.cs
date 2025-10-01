@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Games.TakeFive;
+﻿using Domain.Entities.Events;
+using Domain.Interfaces.Games.TakeFive;
 using System.Collections.Immutable;
 
 namespace Domain.Entities.Game.TakeFive;
@@ -6,6 +7,9 @@ namespace Domain.Entities.Game.TakeFive;
 public class TakeFiveGameDealer : ITakeFiveGameDealer
 {
     private readonly ITakeFiveGameState _gameState;
+
+    public event EventHandler<WarningEvent>? DiverCardIsPlayed;
+    public event EventHandler<WarningEvent>? CardPlayedInFullRow;
 
     public TakeFiveGameDealer(ITakeFiveGameState gameState)
     {
@@ -53,7 +57,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
     {
         foreach ((var player, var card) in cardsFromPlayers)
         {
-            var matchingRow = _gameState.CardRows
+            var rowWhereCardShouldBePlaced = _gameState.CardRows
                 .Select((row, rowIndex) => new
                 {
                     LastCardInRow = row.Last(),
@@ -65,13 +69,9 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
                 .OrderBy(pair => card.Value - pair.LastCardInRow.Value)
                 .FirstOrDefault();
 
-            // Regel 4
-            // TODO: check if player.decide returns something which is allowable (not too larger).
-            // If not within 0 - 3, throw error event and get first/random/least poitns row.
-            // The least points does make the most sense..., this is what 99% people will implement
 
-            var rowIndex = matchingRow?.RowIndex ?? RowChoiceToTake(player);
-            if (DoesCardNotFitInRow(matchingRow) || IsRowFull(rowIndex))
+            var rowIndex = rowWhereCardShouldBePlaced?.RowIndex ?? RowIndexThatPlayerChoose(player);
+            if (IsCardLower(rowWhereCardShouldBePlaced, player, card) || IsRowFull(rowIndex, player, card))
             {
                 PlayerTakesAllCardsFromRow(player, rowIndex);
             }
@@ -79,21 +79,31 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
         }
 
     }
-    private static bool DoesCardNotFitInRow(object? rowWhereCardCanBePlaced)
+    private bool IsCardLower(object? rowWhereCardCanBePlaced, ITakeFivePlayer player, TakeFiveCard card)
     {
-        // TODO: add event
-        return rowWhereCardCanBePlaced is null;
+        bool result = rowWhereCardCanBePlaced is null;
+        if (result)
+        {
+            var message = $"Diver Card - player {player.Name} played card {card.Value} that is lower than all rows.";
+            DiverCardIsPlayed?.Invoke(this, new(message));
+        }
+        return result;
     }
-
 
     // Regel 3
-    private bool IsRowFull(int rowIndex)
+    private bool IsRowFull(int rowIndex, ITakeFivePlayer player, TakeFiveCard card)
     {
-        // TODO: add event
-        return _gameState.CardRows.ElementAt(rowIndex).Count() == TakeFiveRules.MaxCardsInRowAllowed;
+        bool result = _gameState.CardRows.ElementAt(rowIndex).Count() == TakeFiveRules.MaxCardsInRowAllowed;
+        if (result)
+        {
+            var message = $"TAKEFIVE - player {player.Name} played card {card.Value} in row that already is full.";
+            CardPlayedInFullRow?.Invoke(this, new(message));
+        }
+        return result;
     }
 
-    private int RowChoiceToTake(ITakeFivePlayer player)
+    // Regel 4
+    private int RowIndexThatPlayerChoose(ITakeFivePlayer player)
     {
         var immutableCardRows = _gameState.CardRows.Select(inner => inner.ToImmutableList()).ToImmutableList();
         return player.Decide(immutableCardRows);
