@@ -9,16 +9,14 @@ public class LisaTakeFiveThinker() : BaseTakeFiveThinker
 
     public override int Decide(ITakeFiveReadOnlyGameState gameState)
     {
+        round++;
+        
         // Tactic steps
         // 1. First round play the lowest card
         // 2. In first four rounds, if there is a card lower than 20 play it
         // 3. Choose card that has smallest (positive) difference
         // 4. Only consider the row with the least cards
 
-        // TODO:
-        // 5. When you are forced to play in a row of five, play the card with the largest difference
-
-        round++;
         // Step 1
         if (round == 1)
         {
@@ -61,8 +59,6 @@ public class LisaTakeFiveThinker() : BaseTakeFiveThinker
             // Default
             if (!cardsOrdedTactfully.Any())
             {
-                // Default Option - highest/lowest does not matter (with only playing blind/diver)
-                //return HighestCard(); 
                 return LowestCard();
             }
 
@@ -80,12 +76,12 @@ public class LisaTakeFiveThinker() : BaseTakeFiveThinker
         return _hand.OrderBy(c => c.Value).First().Value;
     }
 
-    private int HighestCard()
+    public override int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardsOnTable)
     {
-        return _hand.OrderBy(c => c.Value).Last().Value;
+        return IndexOfRowWithLeastCowHeads(cardsOnTable);
     }
 
-    public override int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardsOnTable)
+    private static int IndexOfRowWithLeastCowHeads(IEnumerable<IEnumerable<TakeFiveCard>> cardsOnTable)
     {
         return cardsOnTable
             .Select((row, index) => new
