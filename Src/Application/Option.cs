@@ -27,7 +27,6 @@ public interface IGameOption : IOption
 
 }
 
-// TODO: double extensions feels weird - I need the seperate IgameOption (withoutT)
 public class GameOption<T> : Option, IGameOption where T : IGame
 {
     public int MinNumberOfPlayers { get; }

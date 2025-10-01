@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain.Entities.Game.TakeFive;
+using Domain.Extensions;
 using Domain.Interfaces.Games.TakeFive;
 using System.Text;
 
@@ -26,9 +27,7 @@ public class ManualTakeFiveThinker(IPlayerInputProvider playerInputProvider, str
     public override int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardsOnTable)
     {
         var question = new StringBuilder();
-
-        // TODO: create extension method to easaly create
-        question.AppendLine(cardsOnTable.ToString());
+        question.AppendLine(cardsOnTable.ToTableString());
         question.AppendLine($"Hi {name}, which row do you want to take?");
 
         var amountOfRows = cardsOnTable.Count();

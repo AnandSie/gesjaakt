@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Game.TakeFive;
+﻿using Domain.Entities.Events;
+using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.BaseGame;
 
 namespace Domain.Interfaces.Games.TakeFive;
@@ -35,4 +36,7 @@ public interface ITakeFiveGameState: IGameState<ITakeFivePlayer>, IToReadOnly<IT
 
     IEnumerable<IEnumerable<TakeFiveCard>> CardRows { get; }
 
+
+    public event EventHandler<InfoEvent>? CardIsPlaced;
+    public event EventHandler<InfoEvent>? RowIsTaken;
 }

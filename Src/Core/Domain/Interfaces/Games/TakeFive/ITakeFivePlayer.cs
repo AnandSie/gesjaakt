@@ -1,13 +1,14 @@
 ﻿using Domain.Entities.Events;
 using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.BaseGame;
+using System.Collections.Immutable;
 
 namespace Domain.Interfaces.Games.TakeFive;
 
 public interface ITakeFivePlayer :
     INamed,
     IDecide<ITakeFiveReadOnlyGameState, TakeFiveCard>,
-    IDecide<IEnumerable<IEnumerable<TakeFiveCard>>, int>,
+    IDecide<ImmutableList<ImmutableList<TakeFiveCard>>, int>,
     IToReadOnly<ITakeFiveReadOnlyPlayer>,
     ITakeFivePlayerActions
 {
@@ -17,5 +18,5 @@ public interface ITakeFivePlayer :
     public int CardsCount { get; }
 
     public event EventHandler<ErrorEvent>? DecideError;
-
+    public event EventHandler<ErrorEvent>? CardNotFound;
 }

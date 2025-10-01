@@ -1,18 +1,7 @@
 ﻿using Domain.Interfaces.Games.TakeFive;
+using System.Collections.Immutable;
 
 namespace Domain.Entities.Game.TakeFive;
-
-// IMPROVE: Try to make generic such that we have one gameDealer
-// e.g. The GameSTate does not have to have two seperate methods (e.g. InitializeRowsFromDeck/DealStartingCards => prepare)
-// => a lot of thing will go to the GameSTate (which is fine (?)). It will probably also be easier if we create rule objeect
-
-// Play {
-// While(!GameRules.GameShouldEnd(gameState)
-// { GameRules.PlayRound(GameState) } 
-
-// Prepare {GameRules.Prepare(GameState)
-
-// Winner {GameRules.Winner(GameStat)
 
 public class TakeFiveGameDealer : ITakeFiveGameDealer
 {
@@ -76,27 +65,43 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
                 .OrderBy(pair => card.Value - pair.LastCardInRow.Value)
                 .FirstOrDefault();
 
-            // IMPROVE - Create Event for Decide2 (for statistics during game)
-
             // Regel 4
+            // TODO: check if player.decide returns something which is allowable (not too larger).
+            // If not within 0 - 3, throw error event and get first/random/least poitns row.
+            // The least points does make the most sense..., this is what 99% people will implement
 
-            // TODO: Give Immutable cards (nested and inner nested)
-            // TODO: check if player.decide returns something which is allowable (not too larger). If not within 0 - 3, throw error event and get first/random/least poitns row. The least points does make the most sense..., this is what 99% people will implement
-            var rowIndex = matchingRow?.RowIndex ?? player.Decide(_gameState.CardRows);
-
-            // Regel 3
-            if (_gameState.CardRows.ElementAt(rowIndex).Count() == TakeFiveRules.MaxCardsInRowAllowed || matchingRow == null)
+            var rowIndex = matchingRow?.RowIndex ?? RowChoiceToTake(player);
+            if (DoesCardNotFitInRow(matchingRow) || IsRowFull(rowIndex))
             {
-                PlayerTakesCardFromRow(player, rowIndex);
+                PlayerTakesAllCardsFromRow(player, rowIndex);
             }
-
             _gameState.PlaceCard(card, rowIndex);
         }
+
+    }
+    private static bool DoesCardNotFitInRow(object? rowWhereCardCanBePlaced)
+    {
+        // TODO: add event
+        return rowWhereCardCanBePlaced is null;
     }
 
-    private void PlayerTakesCardFromRow(ITakeFivePlayer player, int rowNumber)
+
+    // Regel 3
+    private bool IsRowFull(int rowIndex)
+    {
+        // TODO: add event
+        return _gameState.CardRows.ElementAt(rowIndex).Count() == TakeFiveRules.MaxCardsInRowAllowed;
+    }
+
+    private int RowChoiceToTake(ITakeFivePlayer player)
+    {
+        var immutableCardRows = _gameState.CardRows.Select(inner => inner.ToImmutableList()).ToImmutableList();
+        return player.Decide(immutableCardRows);
+    }
+
+    private void PlayerTakesAllCardsFromRow(ITakeFivePlayer player, int rowNumber)
     {
         var cardsToTake = _gameState.GetCards(rowNumber);
-        player.AccecptPenaltyCards(cardsToTake);
+        player.AcceptsPenaltyCards(cardsToTake);
     }
 }

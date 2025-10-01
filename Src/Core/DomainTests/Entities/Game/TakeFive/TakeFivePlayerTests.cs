@@ -5,6 +5,7 @@ using Domain.Interfaces.Games.TakeFive;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Collections.Immutable;
 
 namespace DomainTests.Entities.Game.TakeFive;
 
@@ -71,7 +72,7 @@ public class TakeFivePlayerTests
         var cards = Array.Empty<TakeFiveCard>();
 
         // Act
-        _player.AccecptPenaltyCards(cards);
+        _player.AcceptsPenaltyCards(cards);
         var result = _player.PenaltyCards.Select(c => c.CowHeads).Sum();
 
         // Assert
@@ -89,7 +90,7 @@ public class TakeFivePlayerTests
         };
 
         // Act
-        _player.AccecptPenaltyCards(cards);
+        _player.AcceptsPenaltyCards(cards);
         var result = _player.PenaltyCards.Select(c => c.CowHeads).Sum();
 
         // Assert
@@ -146,11 +147,14 @@ public class TakeFivePlayerTests
             new(){ new(3,1)},
             new(){ new(4,1)},
         };
-        var expectedResult = 3;
-        _takeFiveThinkerMock.Setup(tft => tft.Decide(input)).Returns(expectedResult);
+        var expectedResult = 3; // zero index => row four
+        _takeFiveThinkerMock.Setup(tft => tft.Decide(It.IsAny<ImmutableList<ImmutableList<TakeFiveCard>>>()))
+            .Returns(expectedResult);
 
         // Act
-        var result = _player.Decide(input);
+
+        // REFACTOR -  Create extension method for the inner/outer ToImmutableList call (and do on other places as well)
+        var result = _player.Decide(input.Select(inner => inner.ToImmutableList()).ToImmutableList());
 
         // Assert
         result.Should().Be(expectedResult);

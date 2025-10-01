@@ -7,12 +7,16 @@ public class TakeFiveGameEventCollector(IGameEventHandler gameEventHandler) : IT
 {
     public ITakeFiveGameEventCollector Attach(ITakeFiveGameState gameState)
     {
-        throw new NotImplementedException();
+        gameState.CardIsPlaced += gameEventHandler.HandleEvent;
+        gameState.RowIsTaken += gameEventHandler.HandleEvent;
+        return this;
     }
 
     public ITakeFiveGameEventCollector Attach(ITakeFiveGameDealer gamedealer)
     {
-        throw new NotImplementedException();
+        // TODO
+        //throw new NotImplementedException();
+        return this;
     }
 
     public ITakeFiveGameEventCollector Attach(IEnumerable<ITakeFivePlayer> players)
@@ -20,6 +24,7 @@ public class TakeFiveGameEventCollector(IGameEventHandler gameEventHandler) : IT
         foreach (var player in players)
         {
             player.DecideError += gameEventHandler.HandleEvent;
+            player.CardNotFound += gameEventHandler.HandleEvent;
         }
         return this;
     }

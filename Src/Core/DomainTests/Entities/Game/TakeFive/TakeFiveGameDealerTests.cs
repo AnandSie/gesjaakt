@@ -3,6 +3,7 @@ using Domain.Interfaces.Games.TakeFive;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Collections.Immutable;
 
 namespace DomainTests.Entities.Game.TakeFive;
 
@@ -161,7 +162,7 @@ public class TakeFiveGameDealerTests
         gameStateMock.Verify(gs => gs.PlaceCard(card1, 0));
         gameStateMock.Verify(gs => gs.PlaceCard(card2, 0));
 
-        mockPlayer1.Verify(p => p.AccecptPenaltyCards(fullRow), Times.Once());
+        mockPlayer1.Verify(p => p.AcceptsPenaltyCards(fullRow), Times.Once());
     }
 
     [TestMethod]
@@ -191,11 +192,13 @@ public class TakeFiveGameDealerTests
         var cardRows = new List<List<TakeFiveCard>>
         {
             new(){ new TakeFiveCard(30,2) }, // Row1 -
-            firstRow, // Row0 - 
+            firstRow,                        // Row0 - 
             new(){ new TakeFiveCard(40,2) }, // Row2 - fits card2
             new(){ new TakeFiveCard(80,2) }  // Row3 - 
         };
-        mockPlayer1.Setup(p => p.Decide(cardRows)).Returns(rowIndexToTake);//Chooses first row
+
+        mockPlayer1.Setup(p => p.Decide(It.IsAny<ImmutableList<ImmutableList<TakeFiveCard>>>()))
+            .Returns(rowIndexToTake);//Chooses first row
 
         gameStateMock.Setup(gs => gs.CardRows).Returns(cardRows).Verifiable();
 
@@ -203,7 +206,7 @@ public class TakeFiveGameDealerTests
         gameDealer.Play();
 
         // Assert
-        mockPlayer1.Verify(p => p.AccecptPenaltyCards(firstRow), Times.Once());
+        mockPlayer1.Verify(p => p.AcceptsPenaltyCards(firstRow), Times.Once());
         gameStateMock.Verify(gs => gs.PlaceCard(card1, rowIndexToTake)); // because players decides to plays this row
         gameStateMock.Verify(gs => gs.PlaceCard(card2, 2)); // fits row2 easaly
 

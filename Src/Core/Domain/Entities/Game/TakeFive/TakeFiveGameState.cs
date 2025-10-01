@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Components;
+﻿using Domain.Entities.Events;
+using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.TakeFive;
 
@@ -10,6 +11,9 @@ public class TakeFiveGameState : ITakeFiveGameState
     private readonly HashSet<ITakeFivePlayer> _players;
     private readonly List<List<TakeFiveCard>> _cardRows;
     private bool _isInitialized = false;
+
+    public event EventHandler<InfoEvent>? CardIsPlaced;
+    public event EventHandler<InfoEvent>? RowIsTaken;
 
     public TakeFiveGameState(IDeckFactory<TakeFiveCard> deckFactory)
     {
@@ -49,6 +53,7 @@ public class TakeFiveGameState : ITakeFiveGameState
     public void PlaceCard(TakeFiveCard card, int rowNumber)
     {
         _cardRows.ElementAt(rowNumber).Add(card);
+        this.CardIsPlaced?.Invoke(this, new($"card with value {card.Value} is placed in row {rowNumber + 1}"));
     }
 
     public IEnumerable<TakeFiveCard> GetCards(int rowNumber)
@@ -57,6 +62,8 @@ public class TakeFiveGameState : ITakeFiveGameState
         var result = cardRow.ToHashSet();
 
         cardRow.Clear();
+
+        this.RowIsTaken?.Invoke(this, new($"Cards of row {rowNumber + 1} are taken"));
         return result;
     }
 

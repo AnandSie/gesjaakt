@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Games.TakeFive;
+﻿using Domain.Extensions;
+using Domain.Interfaces.Games.TakeFive;
 using System.Text;
 
 namespace Domain.Entities.Game.TakeFive;
@@ -12,16 +13,6 @@ public class TakeFiveReadOnlyGameState(TakeFiveGameState gameState) : ITakeFiveR
 
     public override string ToString()
     {
-        var sb = new StringBuilder();
-
-        int rowIndex = 1;
-        foreach (var row in CardRows)
-        {
-            sb.Append($"Row {rowIndex}: ");
-            sb.AppendLine(string.Join(", ", row.Select(c => c.ToString())));
-            rowIndex++;
-        }
-
-        return sb.ToString();
+        return CardRows.ToTableString();
     }
 }

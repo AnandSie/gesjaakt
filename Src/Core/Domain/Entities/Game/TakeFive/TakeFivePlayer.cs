@@ -11,8 +11,8 @@ public class TakeFivePlayer : ITakeFivePlayer
     private readonly List<TakeFiveCard> _hand;
     private readonly List<TakeFiveCard> _penaltyCards;
 
-    // TODO: attach to collector
     public event EventHandler<ErrorEvent>? DecideError;
+    public event EventHandler<ErrorEvent>? CardNotFound;
 
     public string Name => _name;
 
@@ -33,7 +33,7 @@ public class TakeFivePlayer : ITakeFivePlayer
         _hand.AddRange(cards);
     }
 
-    public void AccecptPenaltyCards(IEnumerable<TakeFiveCard> cards)
+    public void AcceptsPenaltyCards(IEnumerable<TakeFiveCard> cards)
     {
         _penaltyCards.AddRange(cards);
     }
@@ -59,36 +59,50 @@ public class TakeFivePlayer : ITakeFivePlayer
     }
 
     // NOTE: This method will be called when a player has played a card which does not fit and needs to choose a row to take
-    public int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardRows)
+    public int Decide(ImmutableList<ImmutableList<TakeFiveCard>> cardRows)
     {
+        var backupChoice = 0;
         int result;
         try
         {
             result = _thinker.Decide(cardRows);
+
+            int minAllowed = 0;
+            int maxAllowed = TakeFiveRules.NumberOfRows - 1; // zero index
+            if (result < minAllowed || result > maxAllowed)
+            {
+                string incorrectValueMessage = $"Decide Incorrect Result - Player {this.Name} choice for row to take of {result} is not between {minAllowed} and {maxAllowed}. So a random row is taken";
+                DecideError?.Invoke(this, new(incorrectValueMessage));
+                result = backupChoice;
+            }
         }
         catch (Exception e)
         {
-            string message = $"Decide Exception - Player {this.Name} could not decide. So a random row is taken. Error message: {e.Message} ";
-            DecideError?.Invoke(this, new(message));
+            string excceptionMessage = $"Decide Exception - Player {this.Name} could not decide. So a random row is taken. Error message: {e.Message} ";
+            DecideError?.Invoke(this, new(excceptionMessage));
 
-            result = 0;
-
+            result = backupChoice;
         }
+
         return result;
     }
 
+
     private TakeFiveCard GetCard(int cardValue)
     {
-        var card = _hand.FirstOrDefault(c => c.Value == cardValue);
-
-        // TODO (WARNING LEVEL) - Consider using events to communicate this situation 
-        // string message = $"[WARN] Card with value {cardValue} not found. Falling back to first available card.";
-        card ??= _hand.FirstOrDefault();
-
-        if (card == null)
+        if (_hand.Count == 0)
         {
             throw new InvalidOperationException("No cards left in hand.");
         }
+
+        var card = _hand.FirstOrDefault(c => c.Value == cardValue);
+        if (card == null)
+        {
+            string message = $"Card with value {cardValue} not found. Falling back to first available card.";
+            CardNotFound?.Invoke(this, new(message));
+            card = _hand.First();
+        }
+
         _hand.Remove(card);
         return card;
     }
