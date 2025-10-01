@@ -9,7 +9,7 @@ public interface ITakeFiveThinker :
     // REFACTOR - DRY - Make the two IDecide interfaces one and reuse this in the player and thinker => somethinglike ITakeFiveDecisions
     
     
-    IDecide<ITakeFiveReadOnlyGameState, int>,
+    IDecide<ITakeFiveReadOnlyGameState, TakeFiveCard>,
     // REFACTOR - change to IMMUTABLE/READONLY 
     IDecide<IEnumerable<IEnumerable<TakeFiveCard>>, int>,
     IStatefull<IImmutableList<TakeFiveCard>>

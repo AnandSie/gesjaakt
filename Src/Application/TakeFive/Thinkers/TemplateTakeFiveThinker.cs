@@ -11,7 +11,7 @@ public class TemplateTakeFiveThinker() : BaseTakeFiveThinker
     // 3. In `TakeFivePlayerFactory`, add your thinker
     // 4. Play 
 
-    public override int Decide(ITakeFiveReadOnlyGameState gameState)
+    public override TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
         throw new NotImplementedException();
     }

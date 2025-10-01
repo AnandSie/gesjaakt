@@ -45,14 +45,14 @@ public class TakeFivePlayer : ITakeFivePlayer
         int cardValue;
         try
         {
-            cardValue = _thinker.Decide(gameState);
+            cardValue = _thinker.Decide(gameState).Value;
         }
         catch (Exception e)
         {
-            string message = $"Decide Exception - Player {this.Name} could not decide. So a random card is played. Error message: {e.Message} ";
+            string message = $"Decide Exception - Player {Name} could not decide. So a random card is played. Error message: {e.Message} ";
             DecideError?.Invoke(this, new(message));
 
-            cardValue = this._hand.First().Value;
+            cardValue = _hand.First().Value;
         }
 
         return GetCard(cardValue);

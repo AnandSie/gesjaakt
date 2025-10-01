@@ -1,6 +1,4 @@
-﻿using Domain.Entities.Components;
-using Domain.Entities.Game.TakeFive;
-using Domain.Interfaces.Games.BaseGame;
+﻿using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.TakeFive;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -101,12 +99,11 @@ public class TakeFivePlayerTests
     public void DecideGetsCardFromHandTest()
     {
         // Arrange
-        var cardValue = 1;
-        TakeFiveCard card = new(cardValue, 1);
+        TakeFiveCard card = new(1, 1);
         var cards = new List<TakeFiveCard>() { card };
         _player.AccecptCards(cards);
 
-        _takeFiveThinkerMock.Setup(tft => tft.Decide(gameState.Object)).Returns(cardValue);
+        _takeFiveThinkerMock.Setup(tft => tft.Decide(gameState.Object)).Returns(card);
 
         // Act
         var result = _player.Decide(gameState.Object);
@@ -126,7 +123,7 @@ public class TakeFivePlayerTests
         var cards = new List<TakeFiveCard>() { card1, card2, card3 };
         _player.AccecptCards(cards);
 
-        var cardNotInHand = 4;
+        TakeFiveCard cardNotInHand = new(4, 1);
         _takeFiveThinkerMock.Setup(tft => tft.Decide(gameState.Object)).Returns(cardNotInHand);
 
         // Act

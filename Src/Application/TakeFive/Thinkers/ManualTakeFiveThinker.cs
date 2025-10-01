@@ -8,7 +8,7 @@ namespace Application.TakeFive.Thinkers;
 
 public class ManualTakeFiveThinker(IPlayerInputProvider playerInputProvider, string name) : BaseTakeFiveThinker
 {
-    public override int Decide(ITakeFiveReadOnlyGameState gameState)
+    public override TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
         var question = new StringBuilder();
         question.AppendLine(gameState.ToString());
@@ -21,7 +21,8 @@ public class ManualTakeFiveThinker(IPlayerInputProvider playerInputProvider, str
         var cardValues = this._hand.Select(c => c.Value);
         int choice = playerInputProvider.GetPlayerInputAsInt(question.ToString(), cardValues);
 
-        return choice;
+        var cardChoosen = _hand.Single(c => c.Value == choice);
+        return cardChoosen;
     }
 
     public override int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardsOnTable)

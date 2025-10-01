@@ -5,11 +5,11 @@ namespace Application.TakeFive.Thinkers;
 
 public class BlindTakeFiveThinker() : BaseTakeFiveThinker
 {
-    public override int Decide(ITakeFiveReadOnlyGameState gameState)
+    public override TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
-        int cardCount = _hand.Count();
+        int cardCount = _hand.Count;
         var index = new Random().Next(cardCount - 1);
-        return this._hand[index].Value;
+        return _hand[index];
     }
 
     public override int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardsOnTable)

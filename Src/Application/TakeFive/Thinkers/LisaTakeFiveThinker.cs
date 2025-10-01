@@ -7,10 +7,10 @@ public class LisaTakeFiveThinker() : BaseTakeFiveThinker
 {
     private int round = 0;
 
-    public override int Decide(ITakeFiveReadOnlyGameState gameState)
+    public override TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
         round++;
-        
+
         // Tactic steps
         // 1. First round play the lowest card
         // 2. In first four rounds, if there is a card lower than 20 play it
@@ -32,7 +32,7 @@ public class LisaTakeFiveThinker() : BaseTakeFiveThinker
         {
             // Step 4
             var rowSizeOfRowWithLeastCards = gameState.CardRows.Select(row => row.Count()).Order().First();
-            
+
             var lastCardFromSmallestRows = gameState
                 .CardRows
                 // Step 4
@@ -64,16 +64,15 @@ public class LisaTakeFiveThinker() : BaseTakeFiveThinker
 
             var result = cardsOrdedTactfully
                 .First()
-                .CardFromHand
-                .Value;
+                .CardFromHand;
 
             return result;
         }
     }
 
-    private int LowestCard()
+    private TakeFiveCard LowestCard()
     {
-        return _hand.OrderBy(c => c.Value).First().Value;
+        return _hand.OrderBy(c => c.Value).First();
     }
 
     public override int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardsOnTable)

@@ -18,7 +18,7 @@ public abstract class BaseTakeFiveThinker : ITakeFiveThinker
     /// not its position in the player's hand.
     /// </returns>
     // TODO: consider returning TakeFiveCard instead of int..
-    public abstract int Decide(ITakeFiveReadOnlyGameState gameState);
+    public abstract TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState);
 
     /// <summary>
     /// Determines which card row the thinker wants to take based on the current rows of cards.

@@ -5,9 +5,9 @@ namespace Application.TakeFive.Thinkers;
 
 public class DiverTakeFiveThinker() : BaseTakeFiveThinker
 {
-    public override int Decide(ITakeFiveReadOnlyGameState gameState)
+    public override TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
-        return _hand.OrderBy(c => c.Value).First().Value;
+        return _hand.OrderBy(c => c.Value).First();
     }
 
     public override int Decide(IEnumerable<IEnumerable<TakeFiveCard>> cardsOnTable)
