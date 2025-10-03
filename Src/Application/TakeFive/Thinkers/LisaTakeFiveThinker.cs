@@ -7,6 +7,8 @@ public class LisaTakeFiveThinker() : BaseTakeFiveThinker
 {
     private int round = 0;
 
+    public override string Name => "Lisa";
+
     public override TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
         round++;

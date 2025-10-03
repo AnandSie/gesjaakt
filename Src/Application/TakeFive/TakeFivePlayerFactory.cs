@@ -14,31 +14,34 @@ public class TakeFivePlayerFactory : IPlayerFactory<ITakeFivePlayer>
     {
         _playerInputProvider = playerInputProvider;
     }
-
-    public IEnumerable<Func<ITakeFivePlayer>> AllPlayerFactories()
-    {
-        // REFACTOR - use DI/REFLECTION to auto create this
-
-        throw new NotImplementedException();
-    }
-
     public IEnumerable<ITakeFivePlayer> Create()
     {
         return new List<TakeFivePlayer>
         {
-            // REFACTOR - Consider giving the TakeFiveThinker a "Name" and use this Name for the player as well (then you only have to define everything in one place)
-            new (new LisaTakeFiveThinker(), name: "Lisa"),
-            new (new DiverTakeFiveThinker(), name: "Diver"),
-            new (new BlindTakeFiveThinker(), name: "Blind"),
+            //Max 10 players can be in a game simultaneously
+            //new (new YourThinker()) // ! Uncomment, add your thinker here
+            new (new LisaTakeFiveThinker()),
+            new (new DiverTakeFiveThinker()),
+            new (new BlindTakeFiveThinker()),
         };
+    }
 
+    public IEnumerable<Func<ITakeFivePlayer>> AllPlayerFactories()
+    {
+        // REFACTOR - use DI/REFLECTION to auto create this
+        return new List<Func<TakeFivePlayer>>
+        {
+            () => new (new LisaTakeFiveThinker()),
+            () => new (new DiverTakeFiveThinker()),
+            () => new (new BlindTakeFiveThinker()),
+        };
     }
 
     public ITakeFivePlayer CreateManualPlayer()
     {
         var name = _playerInputProvider.GetPlayerInput($"Next player, what is your name?");
         var thinker = new ManualTakeFiveThinker(_playerInputProvider, name);
-        var player = new TakeFivePlayer(thinker, name);
+        var player = new TakeFivePlayer(thinker);
         return player;
     }
 

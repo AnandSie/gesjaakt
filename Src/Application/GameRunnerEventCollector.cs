@@ -6,6 +6,7 @@ public class GameRunnerEventCollector(IGameEventHandler gameEventHandler) : IGam
 {
     public IGameRunnerEventCollector Attach(IGameRunner gameRunner)
     {
+        // REFACTOR - UNITTESTS
         gameRunner.GameEnded += gameEventHandler.HandleEvent;
         gameRunner.GameSimulationStarting += gameEventHandler.HandleEvent;
         gameRunner.GameSimulationEnded += gameEventHandler.HandleEvent;

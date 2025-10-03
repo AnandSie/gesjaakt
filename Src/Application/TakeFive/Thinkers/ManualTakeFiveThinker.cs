@@ -8,6 +8,8 @@ namespace Application.TakeFive.Thinkers;
 
 public class ManualTakeFiveThinker(IPlayerInputProvider playerInputProvider, string name) : BaseTakeFiveThinker
 {
+    public override string Name => name;
+
     public override TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
         var question = new StringBuilder();

@@ -5,9 +5,16 @@ using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Application.Gesjaakt;
 
-public class GesjaaktGame(IGesjaaktGameEventCollector gameEventCollector) : IGame<IGesjaaktPlayer>
+public class GesjaaktGame : GameOption, IGame<IGesjaaktPlayer>
 {
+    private readonly IGesjaaktGameEventCollector gameEventCollector;
     private GesjaaktGameDealer _gameDealer;
+
+    // REFACTOR: min/max players from config object
+    public GesjaaktGame(IGesjaaktGameEventCollector gameEventCollector) : base(typeof(GesjaaktGame), 3, 7)
+    {
+        this.gameEventCollector = gameEventCollector;
+    }
 
     public static string Name { get; } = "Gejaakt";
 

@@ -8,6 +8,8 @@ public abstract class BaseTakeFiveThinker : ITakeFiveThinker
 {
     protected IImmutableList<TakeFiveCard> _hand = [];
 
+    public abstract string Name { get; }
+
     /// <summary>
     /// Determines which card the thinker wants to play based on the current game state.
     /// </summary>
@@ -17,7 +19,6 @@ public abstract class BaseTakeFiveThinker : ITakeFiveThinker
     /// <b>Important:</b> The returned <c>int</c> represents the card's value, 
     /// not its position in the player's hand.
     /// </returns>
-    // TODO: consider returning TakeFiveCard instead of int..
     public abstract TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState);
 
     /// <summary>

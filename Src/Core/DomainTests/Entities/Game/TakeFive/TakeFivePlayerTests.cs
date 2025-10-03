@@ -18,7 +18,7 @@ public class TakeFivePlayerTests
     public void Setup()
     {
         _takeFiveThinkerMock = new Mock<ITakeFiveThinker>();
-        _player = new TakeFivePlayer(_takeFiveThinkerMock.Object, "player");
+        _player = new TakeFivePlayer(_takeFiveThinkerMock.Object);
         gameState = new Mock<ITakeFiveReadOnlyGameState>();
     }
 
@@ -27,9 +27,10 @@ public class TakeFivePlayerTests
     {
         // Arrange
         var name = "Foo";
+        _takeFiveThinkerMock.Setup(f  => f.Name).Returns(name);
 
         // Act
-        var result = new TakeFivePlayer(_takeFiveThinkerMock.Object, name);
+        var result = new TakeFivePlayer(_takeFiveThinkerMock.Object);
 
         // Assert
         result.Name.Should().Be(name);

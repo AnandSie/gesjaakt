@@ -1,6 +1,8 @@
-﻿using Application.Gesjaakt.Thinkers;
+﻿
+using Application.Gesjaakt.Thinkers;
 using Application.Interfaces;
 using Domain.Entities.Game.Gesjaakt;
+using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.Gesjaakt;
 
@@ -19,58 +21,56 @@ public class GesjaaktPlayerFactory : IPlayerFactory<IGesjaaktPlayer>
     {
         // REFACTOR - use DI/REFLECTION to auto create this
 
-        return
-        [
-            () => new GesjaaktPlayer(new AnandThinker(),  "Anand"),
-            () => new GesjaaktPlayer(new BartThinker(),  "Bart"),
-            //() => new Player(new BarryThinker(),  "Barry"),
-            //() => new Player(new BarryBeterThinker(),  "BarryBeter"),
-            () => new GesjaaktPlayer(new BarryRealThinker(),  "BarryReal"),
-            () => new GesjaaktPlayer(new GerardThinker(),  "Gerard"),
-            //() => new Player(new GreedyThinker(),  "GreedyThinker"),
-            //() => new Player(new HansThinker(),  "Hans"),
-            () => new GesjaaktPlayer(new HansThinker_R3(),  "Hans_R3"),
-            //() => new Player(new JensThinker(),  "Jens"),
-            () => new GesjaaktPlayer(new JensThinker_R3(),  "Jens_R3"),
-            //() => new Player(new JeremyThinker(),  "Jeremy"),
-            () => new GesjaaktPlayer(new Jeremy2Thinker(),  "Jeremy2"),
-            () => new GesjaaktPlayer(new JessieThinker_R3(),  "Jessie_R3"),
-            //() => new Player(new JorritThinker(),  "Jorrit"),
-            () => new GesjaaktPlayer(new JorritThinker_01(),  "Jorrit_01"),
-            () => new GesjaaktPlayer(new JoseThinker(),  "Jose"),
-            () => new GesjaaktPlayer(new MaartenThinker(),  "Maarten"),
-            () => new GesjaaktPlayer(new MarijnThinker(),  "Marijn"),
-            //() => new Player(new MatsThinker(),  "Mats"),
+        return new List<Func<GesjaaktPlayer>>
+        {
+            () => new (new AnandThinker(),  "Anand"),
+            () => new (new BartThinker(),  "Bart"),
+            //() => new (new BarryThinker(),  "Barry"),
+            //() => new (new BarryBeterThinker(),  "BarryBeter"),
+            () => new (new BarryRealThinker(),  "BarryReal"),
+            () => new (new GerardThinker(),  "Gerard"),
+            //() => new (new GreedyThinker(),  "GreedyThinker"),
+            //() => new (new HansThinker(),  "Hans"),
+            () => new (new HansThinker_R3(),  "Hans_R3"),
+            //() => new (new JensThinker(),  "Jens"),
+            () => new (new JensThinker_R3(),  "Jens_R3"),
+            //() => new (new JeremyThinker(),  "Jeremy"),
+            () => new (new Jeremy2Thinker(),  "Jeremy2"),
+            () => new (new JessieThinker_R3(),  "Jessie_R3"),
+            //() => new (new JorritThinker(),  "Jorrit"),
+            () => new (new JorritThinker_01(),  "Jorrit_01"),
+            () => new (new JoseThinker(),  "Jose"),
+            () => new (new MaartenThinker(),  "Maarten"),
+            () => new (new MarijnThinker(),  "Marijn"),
+            //() => new (new MatsThinker(),  "Mats"),
 
-
-            //() => new Player(new MatsThinker_R3(),  "Mats_R3"),
-            //() => new Player(new MelsThinker(),  "Mels"),
-            //() => new Player(new NilsThinker_R3(),  "Nils"),
-            //() => new Player(new OliverThinker(),  "Oliver"),
-            //() => new Player(new RubenTHinker(),  "Ruben"),
-            //() => new Player(new ScaredThinker(),  "ScaredThinker"),
-            //() => new Player(new TomasThinker(),  "Tomas"),
-        ];
+            //() => new (new MatsThinker_R3(),  "Mats_R3"),
+            //() => new (new MelsThinker(),  "Mels"),
+            //() => new (new NilsThinker_R3(),  "Nils"),
+            //() => new (new OliverThinker(),  "Oliver"),
+            //() => new (new RubenTHinker(),  "Ruben"),
+            //() => new (new ScaredThinker(),  "ScaredThinker"),
+            //() => new (new TomasThinker(),  "Tomas"),
+        };
     }
 
     public IEnumerable<IGesjaaktPlayer> Create()
     {
-        var players = new List<IGesjaaktPlayer>
+        var players = new List<GesjaaktPlayer>
         {
             //Max 7 players can be in a game simultaneously
-            new GesjaaktPlayer(new AnandThinker(),  "Anand"),
-            new GesjaaktPlayer(new BarryThinker(),  "Barry"),
-            new GesjaaktPlayer(new BartThinker(),  "Bart"),
-            new GesjaaktPlayer(new MarijnThinker(),  "Marijn"),
-            new GesjaaktPlayer(new MaartenThinker(),  "Maarten"),
-            new GesjaaktPlayer(new JeremyThinker(),  "Jeremy"),
-            //new Player(new YourThinker(),  "YOURNAME") // ! Uncomment, add your thinker and name here
+            new (new AnandThinker(),  "Anand"),
+            new (new BarryThinker(),  "Barry"),
+            new (new BartThinker(),  "Bart"),
+            new (new MarijnThinker(),  "Marijn"),
+            new (new MaartenThinker(),  "Maarten"),
+            new (new JeremyThinker(),  "Jeremy"),
+            //new (new YourThinker(),  "YOURNAME") // ! Uncomment, add your thinker and name here
 
-            //new Player(new TomasThinker(),  "tomas"),
-            //new Player(new JensThinker(),  "jens") ,
-
-            //new Player(new ScaredThinker(),  "ScaredThinker"), 
-            //new Player(new GreedyThinker(),  "GreedyThinker"),
+            //new (new TomasThinker(),  "tomas"),
+            //new (new JensThinker(),  "jens") ,
+            //new (new ScaredThinker(),  "ScaredThinker"), 
+            //new (new GreedyThinker(),  "GreedyThinker"),
         };
         return players;
     }
