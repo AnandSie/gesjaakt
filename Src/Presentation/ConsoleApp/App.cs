@@ -6,34 +6,39 @@ namespace ConsoleApp;
 
 internal class App
 {
-    private readonly ILogger<App> _logger;
     private readonly List<GameOption> _gameoptions;
     private readonly IPlayerInputProvider _playerInputProvider;
     private readonly GameRunnerFactory _gameRunnerFactory;
     private readonly IGameRunnerEventCollector _gameEventCollector;
     private readonly IGameEventHandler _gameEventHandler;
+    private readonly SimulationConfiguration _simulationConfiguration;
 
-    public App(ILogger<App> logger,
+    public App(
         List<GameOption> gameoptions,
         IPlayerInputProvider playerInputProvider,
         GameRunnerFactory gameRunnerFactory,
         IGameRunnerEventCollector gameEventCollector,
-        IGameEventHandler gameEventHandler)
+        IGameEventHandler gameEventHandler,
+        SimulationConfiguration simulationConfiguration)
     {
-        _logger = logger;
         _gameoptions = gameoptions;
         _playerInputProvider = playerInputProvider;
         _gameRunnerFactory = gameRunnerFactory;
         _gameEventCollector = gameEventCollector;
         _gameEventHandler = gameEventHandler;
+        _simulationConfiguration = simulationConfiguration;
     }
 
     public void Start()
     {
-        var gameOption = GetUsersSelectedGameOption();
-        IGameRunner _gameRunner = GetGameRunner(gameOption);
+        var gameOption = SelectGame();
+        IGameRunner _gameRunner = _gameRunnerFactory.Create(gameOption.Type);
         _gameEventCollector.Attach(_gameRunner);
+        SelectGameMode(gameOption, _gameRunner);
+    }
 
+    private void SelectGameMode(GameOption gameOption, IGameRunner _gameRunner)
+    {
         // REFACTOR - use class Option to create options
         const string Message = """
             LETS PLAY!
@@ -49,16 +54,11 @@ internal class App
         {
             case 1:
                 _gameEventHandler.SetMinLevel(EventLevel.Error);
-                var numberOfSimulations = _playerInputProvider.GetPlayerInputAsIntWithMinMax("How often should we run it", 1, 10000);
-                _logger.LogCritical($"Simulation started with {numberOfSimulations} runs");
-
-                _gameRunner.Simulate(numberOfSimulations);
+                _gameRunner.Simulate(_simulationConfiguration.NumberOfGamesPerSimulation);
                 break;
 
             case 2:
                 _gameEventHandler.SetMinLevel(EventLevel.Critical);
-
-                _logger.LogCritical($"Simulation started with all possible combinations");
                 _gameRunner.SimulateAllPossibleCombis();
                 break;
 
@@ -79,12 +79,7 @@ internal class App
         }
     }
 
-    private IGameRunner GetGameRunner(GameOption gameOption)
-    {
-        return _gameRunnerFactory.Create(gameOption.Type);
-    }
-
-    private GameOption GetUsersSelectedGameOption()
+    private GameOption SelectGame()
     {
         string question = "Which game do you want to play?\n";
         string options = string.Join("\n", _gameoptions.Select((g, i) => $"{i + 1}. {g.Name}"));
