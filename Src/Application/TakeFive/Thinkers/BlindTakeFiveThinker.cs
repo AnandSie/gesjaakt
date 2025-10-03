@@ -5,6 +5,8 @@ namespace Application.TakeFive.Thinkers;
 
 public class BlindTakeFiveThinker() : BaseTakeFiveThinker
 {
+    public override string Name => "Blind";
+
     public override TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState)
     {
         int cardCount = _hand.Count;

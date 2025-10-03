@@ -8,6 +8,8 @@ public abstract class BaseTakeFiveThinker : ITakeFiveThinker
 {
     protected IImmutableList<TakeFiveCard> _hand = [];
 
+    public abstract string Name { get; }
+
     /// <summary>
     /// Determines which card the thinker wants to play based on the current game state.
     /// </summary>

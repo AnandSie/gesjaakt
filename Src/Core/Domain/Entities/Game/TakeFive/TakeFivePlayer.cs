@@ -16,10 +16,10 @@ public class TakeFivePlayer : ITakeFivePlayer
 
     public string Name => _name;
 
-    public TakeFivePlayer(ITakeFiveThinker thinker, string name)
+    public TakeFivePlayer(ITakeFiveThinker thinker)
     {
         _thinker = thinker;
-        _name = name;
+        _name = thinker.Name;
         _hand = new List<TakeFiveCard>();
         _penaltyCards = new List<TakeFiveCard>();
     }
@@ -115,10 +115,10 @@ public class TakeFivePlayer : ITakeFivePlayer
     public override string ToString()
     {
         // REFACTOR - use extension method for the IEnumerable<TakeFiveCard>
-        return $"{_name ?? "unkown"} with {Points()} points - Cards {string.Join(", ", this.PenaltyCards)}";
+        return $"{_name ?? "unkown"} with {PenaltyPoints()} points - Cards {string.Join(", ", this.PenaltyCards)}";
     }
 
-    private int Points()
+    private int PenaltyPoints()
     {
         return PenaltyCards.Sum(pc => pc.CowHeads);
     }
