@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Diagnostics;
 
 using Application.Interfaces;
 using Domain.Entities.Events;
@@ -82,8 +81,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     public void SimulateAllPossibleCombis()
     {
         var allPlayerFactories = _playerFactory.AllPlayerFactories().ToList();
-        var maxPlayers = 7; // TODO: extract from rule object (zodat ook voor takefive goed gaat)
-        var allPlayerFactoryCombinations = GetCombinations(allPlayerFactories, maxPlayers).ToList();
+        var allPlayerFactoryCombinations = GetCombinations(allPlayerFactories, _game.MaxNumberOfPlayers).ToList();
 
         int numberOfPlayerCombinations = allPlayerFactoryCombinations.Count;
         var numberOfSimulations = _config.NumberOfSimulationsPerPlayerCombination;
@@ -150,7 +148,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     {
         var numberOfGames = resultPerPlayer.Values.Sum();
 
-        // REFACTOR - (Gesjaakt specific) Don't save wins, save points - or do both
+        // REFACTOR - (Game Gesjaakt specific) Don't save wins, save points - or do both
         var simlationResultsOrdened = resultPerPlayer.OrderByDescending(entry => entry.Value);
         var winner = simlationResultsOrdened.FirstOrDefault().Key;
 

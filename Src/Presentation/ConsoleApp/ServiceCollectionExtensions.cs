@@ -52,11 +52,12 @@ internal static class ServiceCollectionExtensions
             [typeof(GesjaaktGame)] = () => sp.GetRequiredService<GameRunner<IGesjaaktPlayer>>(),
             [typeof(TakeFiveGame)] = () => sp.GetRequiredService<GameRunner<ITakeFivePlayer>>()
         });
-        // Note: to allow user to choose game
-        serviceCollection.AddSingleton(sp => new List<IGameOption>
+
+        // Note: allows user to choose game by injecting this in App.cs
+        serviceCollection.AddSingleton(sp => new List<GameOption>
         {
-            new GameOption<GesjaaktGame>(3,7), // REFACTOR - create gesjaakt rule 
-            new GameOption<TakeFiveGame>(TakeFiveRules.MinNumberOfPlayers,TakeFiveRules.MaxNumberOfPlayers)
+            sp.GetRequiredService<GesjaaktGame>(),
+            sp.GetRequiredService<TakeFiveGame>(),
         });
         return serviceCollection;
     }
@@ -64,9 +65,13 @@ internal static class ServiceCollectionExtensions
     public static IServiceCollection AddGesjaaktGame(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<GameRunner<IGesjaaktPlayer>>();
+
         serviceCollection.AddTransient<IGame<IGesjaaktPlayer>, GesjaaktGame>();
+        serviceCollection.AddTransient<GesjaaktGame>();
+        
         serviceCollection.AddSingleton<IPlayerFactory<IGesjaaktPlayer>, GesjaaktPlayerFactory>();
         serviceCollection.AddTransient<IGesjaaktGameEventCollector, GesjaaktGameEventCollector>();
+        
         serviceCollection.AddTransient<IStatisticsCreator, GesjaaktVisualizer>();
 
         return serviceCollection;
@@ -75,9 +80,12 @@ internal static class ServiceCollectionExtensions
     public static IServiceCollection AddTakeFiveGame(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<GameRunner<ITakeFivePlayer>>();
+
+        // REFACTOR - Only define Game Once - it is now required for the GameOption & GameRunner. Maybe solve this by letting IGame extend GameOption instead of Game
         serviceCollection.AddTransient<IGame<ITakeFivePlayer>, TakeFiveGame>();
+        serviceCollection.AddTransient<TakeFiveGame>();
+        
         serviceCollection.AddSingleton<IPlayerFactory<ITakeFivePlayer>, TakeFivePlayerFactory>();
-        //serviceCollection.AddTransient<ITakeFiveGameDealer, TakeFiveGameDealer>();
         serviceCollection.AddTransient<ITakeFiveGameEventCollector, TakeFiveGameEventCollector>();
 
         return serviceCollection;

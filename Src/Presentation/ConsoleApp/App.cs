@@ -7,14 +7,14 @@ namespace ConsoleApp;
 internal class App
 {
     private readonly ILogger<App> _logger;
-    private readonly List<IGameOption> _gameoptions;
+    private readonly List<GameOption> _gameoptions;
     private readonly IPlayerInputProvider _playerInputProvider;
     private readonly GameRunnerFactory _gameRunnerFactory;
     private readonly IGameRunnerEventCollector _gameEventCollector;
     private readonly IGameEventHandler _gameEventHandler;
 
     public App(ILogger<App> logger,
-        List<IGameOption> gameoptions,
+        List<GameOption> gameoptions,
         IPlayerInputProvider playerInputProvider,
         GameRunnerFactory gameRunnerFactory,
         IGameRunnerEventCollector gameEventCollector,
@@ -79,12 +79,12 @@ internal class App
         }
     }
 
-    private IGameRunner GetGameRunner(IGameOption gameOption)
+    private IGameRunner GetGameRunner(GameOption gameOption)
     {
         return _gameRunnerFactory.Create(gameOption.Type);
     }
 
-    private IGameOption GetUsersSelectedGameOption()
+    private GameOption GetUsersSelectedGameOption()
     {
         string question = "Which game do you want to play?\n";
         string options = string.Join("\n", _gameoptions.Select((g, i) => $"{i + 1}. {g.Name}"));

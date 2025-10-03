@@ -5,9 +5,16 @@ using Domain.Interfaces.Games.TakeFive;
 
 namespace Application.TakeFive;
 
-public class TakeFiveGame(ITakeFiveGameEventCollector gameEventCollector) : IGame<ITakeFivePlayer>
+public class TakeFiveGame : GameOption, IGame<ITakeFivePlayer>
 {
+    private readonly ITakeFiveGameEventCollector gameEventCollector;
     private TakeFiveGameDealer _gameDealer;
+
+    public TakeFiveGame(ITakeFiveGameEventCollector gameEventCollector) : 
+        base(typeof(TakeFiveGame), TakeFiveRules.MinNumberOfPlayers, TakeFiveRules.MaxNumberOfPlayers)
+    {
+        this.gameEventCollector = gameEventCollector;
+    }
 
     public static string Name { get; } = "TakeFive";
 

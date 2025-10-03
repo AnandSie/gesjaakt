@@ -2,6 +2,6 @@
 
 public class SimulationConfiguration
 {
-    public double TargetSimulationDurationSeconds { get; } = 20;
+    public double TargetSimulationDurationSeconds { get; } = 5;
     public int NumberOfSimulationsPerPlayerCombination { get; } = 1000;
 }

@@ -33,7 +33,7 @@ public class TakeFiveGameStateTests
     public void AddPlayers_GetPlayersTest()
     {
         // Arrange
-        var player = new TakeFivePlayer(takeFiveThinkerMock.Object, "player");
+        var player = new TakeFivePlayer(takeFiveThinkerMock.Object);
 
         // Act
         _state.AddPlayer(player);
