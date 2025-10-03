@@ -3,6 +3,7 @@ using Domain.Interfaces.Games.TakeFive;
 
 namespace Application.TakeFive;
 
+// REFACTOR - UNITTESTS
 public class TakeFiveGameEventCollector(IGameEventHandler gameEventHandler) : ITakeFiveGameEventCollector
 {
     public ITakeFiveGameEventCollector Attach(ITakeFiveGameState gameState)

@@ -10,5 +10,4 @@ public interface IGame<TPlayer> : IGame where TPlayer : INamed
 public interface IGame
 {
     public static string Name { get; }
-
 }

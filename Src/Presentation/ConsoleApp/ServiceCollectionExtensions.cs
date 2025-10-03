@@ -37,6 +37,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IPlayerInputProvider, CLIPlayerInputProvider>();
         serviceCollection.AddTransient<IGameRunnerEventCollector, GameRunnerEventCollector>();
         serviceCollection.AddSingleton<IGameEventHandler, GameEventHandler>();
+        serviceCollection.AddTransient<SimulationConfiguration>();
         return serviceCollection;
     }
 

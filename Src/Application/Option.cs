@@ -29,6 +29,7 @@ public interface IGameOption : IOption
 
 public class GameOption<T> : Option, IGameOption where T : IGame
 {
+    // TODO: hoe krijgen we dit in GameRunner
     public int MinNumberOfPlayers { get; }
     public int MaxNumberOfPlayers { get; }
 

@@ -49,7 +49,6 @@ internal class App
         {
             case 1:
                 _gameEventHandler.SetMinLevel(EventLevel.Error);
-
                 var numberOfSimulations = _playerInputProvider.GetPlayerInputAsIntWithMinMax("How often should we run it", 1, 10000);
                 _logger.LogCritical($"Simulation started with {numberOfSimulations} runs");
 
@@ -59,16 +58,16 @@ internal class App
             case 2:
                 _gameEventHandler.SetMinLevel(EventLevel.Critical);
 
-                _logger.LogCritical($"Simulation started with all possible combination");
+                _logger.LogCritical($"Simulation started with all possible combinations");
                 _gameRunner.SimulateAllPossibleCombis();
                 break;
 
             case 3:
                 _gameEventHandler.SetMinLevel(EventLevel.Info);
 
-                string Question = $"With how many players do you want to play ({gameOption.MinNumberOfPlayers}-{gameOption.MaxNumberOfPlayers})?";
+                string question = $"With how many players do you want to play ({gameOption.MinNumberOfPlayers}-{gameOption.MaxNumberOfPlayers})?";
                 IEnumerable<int> options = Enumerable.Range(gameOption.MinNumberOfPlayers, gameOption.MaxNumberOfPlayers - gameOption.MinNumberOfPlayers);
-                var playersToAdd = _playerInputProvider.GetPlayerInputAsInt(Question, options);
+                var playersToAdd = _playerInputProvider.GetPlayerInputAsInt(question, options);
                 _gameRunner.ManualGame(playersToAdd);
                 break;
 

@@ -14,6 +14,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     private readonly IPlayerFactory<TPlayer> _playerFactory;
     private readonly IGame<TPlayer> _game;
     private readonly IStatisticsCreator _visualizer;
+    private readonly SimulationConfiguration _config;
 
     private Dictionary<string, int> winsByPlayerName;
 
@@ -26,12 +27,14 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     public GameRunner(
         IPlayerFactory<TPlayer> playerFactory,
         IGame<TPlayer> game,
-        IStatisticsCreator visualizer
+        IStatisticsCreator visualizer,
+        SimulationConfiguration config
     )
     {
         _playerFactory = playerFactory;
         _game = game;
         _visualizer = visualizer;
+        _config = config;
 
         // REFACTOR - Primitive obsession -> string replace by PlayerName
         winsByPlayerName = new Dictionary<string, int>();
@@ -44,13 +47,20 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
 
     public void Simulate(int numberOfSimulations)
     {
+        var desiredDuration = TimeSpan.FromSeconds(_config.TargetSimulationDurationSeconds);
+        var stopwatch = new LoopStopWatch(numberOfSimulations, desiredDuration);
+
         // REFACTOR - parallel
         foreach (var iter in Enumerable.Range(1, numberOfSimulations))
         {
+            stopwatch.IterationHasStarted();
             ShareGameSimulationStarting(numberOfSimulations, iter);
 
             var players = _playerFactory.Create().Shuffle();
             RunGameWith(players);
+
+            stopwatch.IterationHasFinished();
+            stopwatch.SleepToMatchTargetTime();
         }
 
         ReportSimulationResults(winsByPlayerName);
@@ -71,35 +81,34 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
 
     public void SimulateAllPossibleCombis()
     {
-        // REFACTOR: make dynamic or get from method parameter
-        var numberOfSimulations = 1000;
-
         var allPlayerFactories = _playerFactory.AllPlayerFactories().ToList();
-        var maxPlayers = 7; // REFACTOR: extract from rule object
-
+        var maxPlayers = 7; // TODO: extract from rule object (zodat ook voor takefive goed gaat)
         var allPlayerFactoryCombinations = GetCombinations(allPlayerFactories, maxPlayers).ToList();
-        int numberOfCombinations = allPlayerFactoryCombinations.Count;
 
-        var stopwatch = new GameRunnerStopWatch(numberOfSimulations);
+        int numberOfPlayerCombinations = allPlayerFactoryCombinations.Count;
+        var numberOfSimulations = _config.NumberOfSimulationsPerPlayerCombination;
+        var stopwatch = new LoopStopWatch(numberOfSimulations);
         // REFACTOR - parallel
-        for (int playerCombiIter = 0; playerCombiIter < numberOfCombinations; playerCombiIter++)
+        for (int i = 0; i < numberOfPlayerCombinations; i++)
         {
-            stopwatch.IterationStart();
+            stopwatch.IterationHasStarted();
 
-            string startMessage = $"Player Combination Starting #{playerCombiIter}/{numberOfCombinations} - {(playerCombiIter / numberOfCombinations) * 100}%";
+            string startMessage = $"Player Combination Starting #{i}/{numberOfPlayerCombinations} - {(i / numberOfPlayerCombinations) * 100}%";
             PlayerCombinationSimulationStarting?.Invoke(this, new(startMessage));
 
-            var players = allPlayerFactoryCombinations[playerCombiIter].Select(pf => pf.Invoke()).Shuffle();
+            var players = allPlayerFactoryCombinations[i].Select(pf => pf.Invoke()).Shuffle();
+
+            // REFACTOR - reuse the public simulate
             foreach (var simIter in Enumerable.Range(1, numberOfSimulations))
             {
                 ShareGameSimulationStarting(numberOfSimulations, simIter);
-                RunGameWith(players);
+                RunGameWith(players.Shuffle());
             }
 
-            stopwatch.IterationFinished();
-            var estimatedRemainingMinutes = stopwatch.EstimatedRemainingMinutes(playerCombiIter);
+            stopwatch.IterationHasFinished();
+            var estimatedRemainingMinutes = stopwatch.RemainingMinutes();
 
-            string endMessage = $"Player Combination Ended. It took {stopwatch.Elapsed():F2} ms. Estimated remaining time: {estimatedRemainingMinutes:F2} min";
+            string endMessage = $"Player Combination Ended. It took {stopwatch.IterationDurationMs():F2} ms. Estimated remaining time: {estimatedRemainingMinutes:F2} min";
             PlayerCombinationSimulationEnded?.Invoke(this, new(endMessage));
         }
 
@@ -159,57 +168,21 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     }
 
     // REFACTOR: add documentation
-    // Q: wat doet ? moet er ook niet een soort minimum zijn?
-    private static IEnumerable<IEnumerable<T>> GetCombinations<T>(List<T> source, int k)
+    private static IEnumerable<IEnumerable<T>> GetCombinations<T>(List<T> source, int maxPerCombi)
     {
-        if (k == 0)
+        if (maxPerCombi == 0)
         {
             yield return Enumerable.Empty<T>();
         }
         else
         {
-            for (int i = 0; i <= source.Count - k; i++)
+            for (int i = 0; i <= source.Count - maxPerCombi; i++)
             {
-                foreach (var tail in GetCombinations(source.Skip(i + 1).ToList(), k - 1).ToList())
+                foreach (var tail in GetCombinations(source.Skip(i + 1).ToList(), maxPerCombi - 1).ToList())
                 {
                     yield return new[] { source[i] }.Concat(tail);
                 }
             }
-        }
-    }
-
-    private class GameRunnerStopWatch(int numberOfIterations)
-    {
-        private double totalElapsedMs = 0;
-        private readonly Stopwatch stopwatch = new();
-
-        public void IterationStart()
-        {
-            stopwatch.Restart();
-        }
-
-        public void IterationFinished()
-        {
-            stopwatch.Stop();
-        }
-
-        public double EstimatedRemainingMinutes(int finishedIteration)
-        {
-            totalElapsedMs += Elapsed();
-            return RemainingTimeMs(totalElapsedMs, numberOfIterations, finishedIteration) / 1000 / 60;
-        }
-
-        public double Elapsed()
-        {
-            return stopwatch.Elapsed.TotalMilliseconds;
-        }
-
-        private static double RemainingTimeMs(double totalElapsedMs, int totalIteration, int finishedIteration)
-        {
-            int remainingIterations = totalIteration - (finishedIteration + 1);
-            double averageMsPerIteration = totalElapsedMs / (finishedIteration + 1);
-
-            return averageMsPerIteration * remainingIterations;
         }
     }
 }

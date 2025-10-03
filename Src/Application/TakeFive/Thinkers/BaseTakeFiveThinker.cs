@@ -17,7 +17,6 @@ public abstract class BaseTakeFiveThinker : ITakeFiveThinker
     /// <b>Important:</b> The returned <c>int</c> represents the card's value, 
     /// not its position in the player's hand.
     /// </returns>
-    // TODO: consider returning TakeFiveCard instead of int..
     public abstract TakeFiveCard Decide(ITakeFiveReadOnlyGameState gameState);
 
     /// <summary>
