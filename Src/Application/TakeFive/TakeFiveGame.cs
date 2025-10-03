@@ -18,7 +18,8 @@ public class TakeFiveGame : GameOption, IGame<ITakeFivePlayer>
 
     public static string Name { get; } = "TakeFive";
 
-    // REFACTOR - this whole class is duplicate of GesjaaktGame, only two differences - Name (which is just a marker..). This class pulls in the correct dependencies to make our life easier.., maybe we can create ABC to avoid DRY?
+    // REFACTOR - this whole class is duplicate of GesjaaktGame, only few differences are 1. Name (which is just a marker..), 2. Rules 3. eventCollector
+    // and it pulls in the correct dependencies to make our life easier.., maybe we can create ABC to avoid DRY?
     public void PlayWith(IEnumerable<ITakeFivePlayer> players)
     {
         // REFACTOR - DI/factory (or is this class the factory?)
