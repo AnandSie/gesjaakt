@@ -28,7 +28,7 @@ public class ThinkerPlotter(IGesjaaktThinker thinker): IThinkerPlotter
         var scatTakeCard = plt.Add.Scatter(
             takeCardsXs.ToArray(),
             takeCardsYs.ToArray(),
-            color: Color.FromColor(System.Drawing.Color.Blue)
+            color: ScottPlot.Color.FromColor(System.Drawing.Color.Blue)
             );
         scatTakeCard.LineWidth = 0;
         scatTakeCard.LegendText = "Take Card";
@@ -36,7 +36,7 @@ public class ThinkerPlotter(IGesjaaktThinker thinker): IThinkerPlotter
         var scatSkipCoin = plt.Add.Scatter(
             skipCoinsXs.ToArray(),
             skipCoinsYs.ToArray(),
-            color: Color.FromColor(System.Drawing.Color.Red)
+            color: ScottPlot.Color.FromColor(System.Drawing.Color.Red)
             );
         scatSkipCoin.LegendText = "Skip With Coin";
 

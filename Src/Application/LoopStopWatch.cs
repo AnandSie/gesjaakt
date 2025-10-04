@@ -47,9 +47,9 @@ public class LoopStopWatch
         }
     }
 
-    public double IterationDurationMs()
+    public double IterationDurationSec()
     {
-        return _iterationStopwatch.ElapsedMilliseconds;
+        return _iterationStopwatch.Elapsed.Seconds;
     }
 
     public double LoopElapsedSoFarMs()

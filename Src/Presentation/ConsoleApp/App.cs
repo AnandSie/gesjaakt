@@ -1,6 +1,8 @@
 ﻿using Application;
 using Application.Interfaces;
 using Domain.Entities.Events;
+using UserInterface;
+using WinFormsApplication = System.Windows.Forms.Application;
 
 namespace ConsoleApp;
 
@@ -12,6 +14,7 @@ internal class App
     private readonly IGameRunnerEventCollector _gameEventCollector;
     private readonly IGameEventHandler _gameEventHandler;
     private readonly SimulationConfiguration _simulationConfiguration;
+    private readonly WidgetDisplay _display;
 
     public App(
         List<GameOption> gameoptions,
@@ -19,7 +22,8 @@ internal class App
         GameRunnerFactory gameRunnerFactory,
         IGameRunnerEventCollector gameEventCollector,
         IGameEventHandler gameEventHandler,
-        SimulationConfiguration simulationConfiguration)
+        SimulationConfiguration simulationConfiguration,
+        WidgetDisplay display)
     {
         _gameoptions = gameoptions;
         _playerInputProvider = playerInputProvider;
@@ -27,6 +31,16 @@ internal class App
         _gameEventCollector = gameEventCollector;
         _gameEventHandler = gameEventHandler;
         _simulationConfiguration = simulationConfiguration;
+        _display = display;
+
+        var thread = new Thread(() =>
+        {
+            WinFormsApplication.EnableVisualStyles();
+            WinFormsApplication.SetCompatibleTextRenderingDefault(false);
+            WinFormsApplication.Run(_display);
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
     }
 
     public void Start()
@@ -59,7 +73,7 @@ internal class App
 
             case 2:
                 _gameEventHandler.SetMinLevel(EventLevel.Critical);
-                _gameRunner.SimulateAllPossibleCombis();
+                _gameRunner.SimulateAllPossiblePlayerCombis();
                 break;
 
             case 3:

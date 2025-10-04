@@ -8,6 +8,7 @@ using ConsoleApp;
     .AddGesjaaktGame()
     .AddTakeFiveGame()
     .AddDynamicBehaviourToChooseGame()
+    .AddWinFormsVisualization()
     .BuildServiceProvider()
     .GetRequiredService<App>()
     .Start();

@@ -5,14 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Presentation.ConsoleApp.Helpers;
 using Application.Gesjaakt;
-using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.Gesjaakt;
 using Domain.Interfaces.Games.TakeFive;
 using Application.TakeFive;
 using Domain.Interfaces.Games.BaseGame;
-using Domain.Entities.Game.Gesjaakt;
 using Domain.Interfaces;
 using Visualization;
+using UserInterface;
 
 namespace ConsoleApp;
 
@@ -68,10 +67,10 @@ internal static class ServiceCollectionExtensions
 
         serviceCollection.AddTransient<IGame<IGesjaaktPlayer>, GesjaaktGame>();
         serviceCollection.AddTransient<GesjaaktGame>();
-        
+
         serviceCollection.AddSingleton<IPlayerFactory<IGesjaaktPlayer>, GesjaaktPlayerFactory>();
         serviceCollection.AddTransient<IGesjaaktGameEventCollector, GesjaaktGameEventCollector>();
-        
+
         serviceCollection.AddTransient<IStatisticsCreator, GesjaaktVisualizer>();
 
         return serviceCollection;
@@ -84,10 +83,20 @@ internal static class ServiceCollectionExtensions
         // REFACTOR - Only define Game Once - it is now required for the GameOption & GameRunner. Maybe solve this by letting IGame extend GameOption instead of Game
         serviceCollection.AddTransient<IGame<ITakeFivePlayer>, TakeFiveGame>();
         serviceCollection.AddTransient<TakeFiveGame>();
-        
+
         serviceCollection.AddSingleton<IPlayerFactory<ITakeFivePlayer>, TakeFivePlayerFactory>();
         serviceCollection.AddTransient<ITakeFiveGameEventCollector, TakeFiveGameEventCollector>();
 
         return serviceCollection;
+    }
+
+    public static IServiceCollection AddWinFormsVisualization(this IServiceCollection services)
+    {
+        // The form is a singleton because we want a single dashboard instance
+        services.AddSingleton<WidgetDisplay>();
+        services.AddSingleton<IDisplay>(sp => sp.GetRequiredService<WidgetDisplay>());
+
+
+        return services;
     }
 }
