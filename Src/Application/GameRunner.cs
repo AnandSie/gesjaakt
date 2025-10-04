@@ -1,5 +1,4 @@
 ﻿using System.Text;
-
 using Application.Interfaces;
 using Domain.Entities.Events;
 using Domain.Interfaces;
@@ -18,10 +17,11 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     private Dictionary<string, int> winsByPlayerName;
 
     public event EventHandler<WarningEvent>? GameEnded;
-    public event EventHandler<ErrorEvent>? GameSimulationStarting;
-    public event EventHandler<ErrorEvent>? GameSimulationEnded;
-    public event EventHandler<CriticalEvent>? PlayerCombinationSimulationStarting;
-    public event EventHandler<CriticalEvent>? PlayerCombinationSimulationEnded;
+    public event EventHandler<ErrorEvent>? SimIterStarting;
+    public event EventHandler<WarningEvent>? SimIterEnded;
+    public event EventHandler<ErrorEvent>? AllSimItersEnded;
+    public event EventHandler<CriticalEvent>? PlayerCombinationIterStarting;
+    public event EventHandler<CriticalEvent>? PlayerCombinationIterEnded;
 
     public GameRunner(
         IPlayerFactory<TPlayer> playerFactory,
@@ -38,6 +38,12 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         // REFACTOR - Primitive obsession -> string replace by PlayerName
         winsByPlayerName = new Dictionary<string, int>();
     }
+    
+    public void ManualGame(int numberOfPlayers)
+    {
+        var manualPlayers = _playerFactory.CreateManualPlayers(numberOfPlayers);
+        RunGameWith(manualPlayers);
+    }
 
     public void ShowStatistics()
     {
@@ -53,10 +59,11 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         foreach (var iter in Enumerable.Range(1, numberOfSimulations))
         {
             stopwatch.IterationHasStarted();
-            ShareGameSimulationStarting(numberOfSimulations, iter);
+            ShareGameSimIterStarting(numberOfSimulations, iter);
 
             var players = _playerFactory.Create().Shuffle();
             RunGameWith(players);
+            ShareSimulationEnded();
 
             stopwatch.IterationHasFinished();
             stopwatch.SleepToMatchTargetTime();
@@ -65,20 +72,8 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         ReportSimulationResults(winsByPlayerName);
     }
 
-    private void ShareGameSimulationStarting(int numberOfSimulations, int iter)
-    {
-        double progress = (double)iter / numberOfSimulations * 100;
-        string message = $"Game Simulation Starting #{iter}/{numberOfSimulations} -  {progress:F0}%";
-        GameSimulationStarting?.Invoke(this, new(message));
-    }
 
-    public void ManualGame(int numberOfPlayers)
-    {
-        var manualPlayers = _playerFactory.CreateManualPlayers(numberOfPlayers);
-        RunGameWith(manualPlayers);
-    }
-
-    public void SimulateAllPossibleCombis()
+    public void SimulateAllPossiblePlayerCombis()
     {
         var allPlayerFactories = _playerFactory.AllPlayerFactories().ToList();
         var allPlayerFactoryCombinations = GetCombinations(allPlayerFactories, _game.MaxNumberOfPlayers).ToList();
@@ -90,27 +85,51 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         for (int i = 0; i < numberOfPlayerCombinations; i++)
         {
             stopwatch.IterationHasStarted();
-
             string startMessage = $"Player Combination Starting #{i}/{numberOfPlayerCombinations} - {(i / numberOfPlayerCombinations) * 100}%";
-            PlayerCombinationSimulationStarting?.Invoke(this, new(startMessage));
+            PlayerCombinationIterStarting?.Invoke(this, new(startMessage));
 
             var players = allPlayerFactoryCombinations[i].Select(pf => pf.Invoke()).Shuffle();
 
             // REFACTOR - reuse the public simulate
             foreach (var simIter in Enumerable.Range(1, numberOfSimulations))
             {
-                ShareGameSimulationStarting(numberOfSimulations, simIter);
+                ShareGameSimIterStarting(numberOfSimulations, simIter);
                 RunGameWith(players.Shuffle());
+                ShareSimulationEnded();
             }
 
             stopwatch.IterationHasFinished();
             var estimatedRemainingMinutes = stopwatch.RemainingMinutes();
 
-            string endMessage = $"Player Combination Ended. It took {stopwatch.IterationDurationMs():F2} ms. Estimated remaining time: {estimatedRemainingMinutes:F2} min";
-            PlayerCombinationSimulationEnded?.Invoke(this, new(endMessage));
+            string endMessage = $"Player Combination Ended. It took {stopwatch.IterationDurationSec()} s. Estimated remaining time: {estimatedRemainingMinutes:F2} min";
+            PlayerCombinationIterEnded?.Invoke(this, new(endMessage));
         }
 
         ReportSimulationResults(winsByPlayerName);
+    }
+
+    private void ShareSimulationEnded()
+    {
+        var sb = new StringBuilder();
+        var maxNameLength = winsByPlayerName.Keys.Select(name => name.Length).Max();
+        const int maxWinsLength = 5; // REFACTOR: make dynamic 
+
+        var totalWinsSoFar = winsByPlayerName.Values.Sum();
+        foreach (var kv in winsByPlayerName.OrderByDescending(kvp => kvp.Value))
+        {
+            double percentage = (double)kv.Value / totalWinsSoFar * 100;
+            sb.AppendLine($"{kv.Key.PadRight(maxNameLength)} - {kv.Value,maxWinsLength} wins - {percentage,2:F0}%");
+        }
+
+        var msg = sb.ToString();
+        SimIterEnded?.Invoke(this, new(msg));
+    }
+
+    private void ShareGameSimIterStarting(int numberOfSimulations, int iter)
+    {
+        double progress = (double)iter / numberOfSimulations * 100;
+        string message = $"Game Simulation Starting #{iter}/{numberOfSimulations} -  {progress:F0}%";
+        SimIterStarting?.Invoke(this, new(message));
     }
 
     private void RunGameWith(IEnumerable<TPlayer> players)
@@ -134,7 +153,6 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
     {
         var message = new StringBuilder();
         message.AppendLine($"Game Winner: {playerResults.First().Name}");
-
         message.AppendLine($"Results");
         foreach (var player in playerResults)
         {
@@ -162,12 +180,17 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         var gamesPlayed = simlationResultsOrdened.Select(p => p.Value).Sum();
         message.AppendLine($"Total Games Played {gamesPlayed}");
 
-        GameSimulationEnded?.Invoke(this, new(message.ToString()));
+        AllSimItersEnded?.Invoke(this, new(message.ToString()));
     }
 
     // REFACTOR: add documentation
     private static IEnumerable<IEnumerable<T>> GetCombinations<T>(List<T> source, int maxPerCombi)
     {
+        if (source.Count < maxPerCombi)
+        {
+            throw new ArgumentException($"There are less source elements {source.Count} than is requested per combination {maxPerCombi}");
+        }
+
         if (maxPerCombi == 0)
         {
             yield return Enumerable.Empty<T>();
