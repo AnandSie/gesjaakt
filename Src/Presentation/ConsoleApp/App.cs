@@ -32,15 +32,6 @@ internal class App
         _gameEventHandler = gameEventHandler;
         _simulationConfiguration = simulationConfiguration;
         _display = display;
-
-        var thread = new Thread(() =>
-        {
-            WinFormsApplication.EnableVisualStyles();
-            WinFormsApplication.SetCompatibleTextRenderingDefault(false);
-            WinFormsApplication.Run(_display);
-        });
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
     }
 
     public void Start()
@@ -67,11 +58,15 @@ internal class App
         switch (choice)
         {
             case 1:
+                StartUIWidget();
+
                 _gameEventHandler.SetMinLevel(EventLevel.Error);
                 _gameRunner.Simulate(_simulationConfiguration.NumberOfGamesPerSimulation);
                 break;
 
             case 2:
+                StartUIWidget();
+
                 _gameEventHandler.SetMinLevel(EventLevel.Critical);
                 _gameRunner.SimulateAllPossiblePlayerCombis();
                 break;
@@ -102,5 +97,17 @@ internal class App
         // REFACTOR - give a IEnumerble<MenuOption> MenuOption(string name, Type option) and print name and return option 
         int gameChoice = _playerInputProvider.GetPlayerInputAsInt(message, Enumerable.Range(1, _gameoptions.Count).ToArray());
         return _gameoptions[gameChoice - 1]; // Note: zero-based index
+    }
+
+    private void StartUIWidget()
+    {
+        var thread = new Thread(() =>
+        {
+            WinFormsApplication.EnableVisualStyles();
+            WinFormsApplication.SetCompatibleTextRenderingDefault(false);
+            WinFormsApplication.Run(_display);
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
     }
 }
