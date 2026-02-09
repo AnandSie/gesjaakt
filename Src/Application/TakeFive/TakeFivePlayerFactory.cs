@@ -23,6 +23,7 @@ public class TakeFivePlayerFactory : IPlayerFactory<ITakeFivePlayer>
             new (new LisaTakeFiveThinker()),
             new (new DiverTakeFiveThinker()),
             new (new BlindTakeFiveThinker()),
+            new (new BarryThinker())
         };
     }
 
