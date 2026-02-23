@@ -24,6 +24,7 @@ public class TakeFivePlayerFactory : IPlayerFactory<ITakeFivePlayer>
             new (new DiverTakeFiveThinker()),
             new (new HansTakeFiveThinker()),
             new (new LisaTakeFiveThinker()),
+            new (new BarryThinker())
         };
     }
 
