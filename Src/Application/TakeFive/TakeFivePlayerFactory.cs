@@ -20,9 +20,10 @@ public class TakeFivePlayerFactory : IPlayerFactory<ITakeFivePlayer>
         {
             //Max 10 players can be in a game simultaneously
             //new (new YourThinker()) // ! Uncomment, add your thinker here
-            new (new LisaTakeFiveThinker()),
-            new (new DiverTakeFiveThinker()),
             new (new BlindTakeFiveThinker()),
+            new (new DiverTakeFiveThinker()),
+            new (new HansTakeFiveThinker()),
+            new (new LisaTakeFiveThinker()),
             new (new BarryThinker())
         };
     }
@@ -32,9 +33,10 @@ public class TakeFivePlayerFactory : IPlayerFactory<ITakeFivePlayer>
         // REFACTOR - use DI/REFLECTION to auto create this
         return new List<Func<TakeFivePlayer>>
         {
-            () => new (new LisaTakeFiveThinker()),
-            () => new (new DiverTakeFiveThinker()),
             () => new (new BlindTakeFiveThinker()),
+            () => new (new DiverTakeFiveThinker()),
+            () => new (new HansTakeFiveThinker()),
+            () => new (new LisaTakeFiveThinker()),
         };
     }
 
