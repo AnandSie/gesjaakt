@@ -62,12 +62,6 @@ These rules and tools apply to **both games**.
 - Each bot must conform to the `TemplateThinker` of its respective game (see the game-specific sections below)
 - Please develop your bot on a **new branch** in the repository
 
-### Adding Your Player to the Game
-
-1. Go to the `PlayerFactory.Create()` method
-2. Add your new `Player` with your `Thinker`
-3. A `YourThinker.cs` starter file is already provided — just uncomment the line and give your player a name.
-
 ### Training & Testing
 
 - Test locally against the **default bots** in the repository at any time
