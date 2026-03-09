@@ -6,9 +6,9 @@ Do you like programming and card games? Then join this hackathon! Build your own
 
 ## 📋 Table of Contents
 
-- [How It Works](#how-it-works)
-- [Getting Started](#getting-started)
-- [General Bot Development](#general-bot-development)
+- [How It Works](#-how-it-works)
+- [Getting Started](#-getting-started)
+- [General Bot Development](#-general-bot-development)
 - [Game 1: Gesjaakt 🃏](#-game-1-gesjaakt)
 - [Game 2: Take-5! 🐄](#-game-2-take-5)
 
