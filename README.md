@@ -8,7 +8,7 @@ Do you like programming and card games? Then join this hackathon! Build your own
 
 - [How It Works](#-how-it-works)
 - [Getting Started](#-getting-started)
-- [General Bot Development](#-general-bot-development)
+- [General Bot Development](#general-bot-development)
 - [Game 1: Gesjaakt 🃏](#-game-1-gesjaakt)
 - [Game 2: Take-5! 🐄](#-game-2-take-5)
 
@@ -52,7 +52,7 @@ Which game do you want to play?
 
 ---
 
-## 🛠️ General Bot Development
+## General Bot Development
 
 These rules and tools apply to **both games**.
 
