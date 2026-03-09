@@ -192,7 +192,7 @@ The bot with the **fewest penalty points** at the end wins.
 2. Rename it to something like `YourNameTakeFiveThinker.cs` and place it in the same folder
 3. Implement **both** `Decide()` methods
 4. Add your thinker to `TakeFivePlayerFactory.Create`
-5. Run the game
+5. Run the game. (Don't know how? See the [Getting Started](#-getting-started) section)
 
 > 📄 Template location: `Src\Application\TakeFive\Thinkers\TemplateTakeFiveThinker.cs`
 
