@@ -69,6 +69,8 @@ These rules and tools apply to **both games**.
 
 ### 📊 Gain Insight Into Your Algorithm
 
+NOTE: This section currently only applies for the Gesjaakt Game, not for the Take Five Game
+
 1. Go to the `Visualizer()` constructor
 2. Add your `Thinker` there
 3. Run the console and select the **visualize** option
@@ -87,6 +89,39 @@ Configure the log level in `Program.cs` to balance detail vs. performance:
 > 💡 Using `Warning` or `Critical` makes the app run **faster** by reducing console output.
 
 ---
+
+
+---
+
+# 🐄 Game 2: Take-5!
+
+Take-5! *(also known as 6 nimmt!)* is a fast-paced card game where the goal is to **avoid collecting cards with bull heads**. Choose your cards wisely — and hope your opponents don't ruin your plans!
+
+## Rules
+
+Each round, all players **simultaneously** choose a card from their hand to play. Cards are placed onto one of four rows on the table in ascending order. If your card becomes the **6th card in a row**, you collect the entire row and score its bull heads as **penalty points**.
+
+Your bot decides which card to play each turn. The `Decide()` method receives an `IGameStateReader` containing:
+- Your current hand
+- The current state of all four rows
+- Any other relevant game state
+
+The bot with the **fewest penalty points** at the end wins.
+
+## 🧠 Creating a Take-5! Bot
+
+1. Copy the template. See location below.
+2. Rename it to something like `YourNameTakeFiveThinker.cs` and place it in the same folder
+3. Implement **both** `Decide()` methods
+4. Add your thinker to `TakeFivePlayerFactory.Create`
+5. Run the game. (Don't know how? See the [Getting Started](#-getting-started) section)
+
+> 📄 Template location: `Src\Application\TakeFive\Thinkers\TemplateTakeFiveThinker.cs`
+
+## 📊 Take-5! Results
+
+*Results will be posted here after the tournament.*
+
 
 ---
 
@@ -168,34 +203,3 @@ Each round runs **10,000 games** back-to-back. Scoring is based on **percentage 
 | Tomas         | 467,532    | 0.9%       |
 
 ---
-
----
-
-# 🐄 Game 2: Take-5!
-
-Take-5! *(also known as 6 nimmt!)* is a fast-paced card game where the goal is to **avoid collecting cards with bull heads**. Choose your cards wisely — and hope your opponents don't ruin your plans!
-
-## Rules
-
-Each round, all players **simultaneously** choose a card from their hand to play. Cards are placed onto one of four rows on the table in ascending order. If your card becomes the **6th card in a row**, you collect the entire row and score its bull heads as **penalty points**.
-
-Your bot decides which card to play each turn. The `Decide()` method receives an `IGameStateReader` containing:
-- Your current hand
-- The current state of all four rows
-- Any other relevant game state
-
-The bot with the **fewest penalty points** at the end wins.
-
-## 🧠 Creating a Take-5! Bot
-
-1. Copy the template. See location below.
-2. Rename it to something like `YourNameTakeFiveThinker.cs` and place it in the same folder
-3. Implement **both** `Decide()` methods
-4. Add your thinker to `TakeFivePlayerFactory.Create`
-5. Run the game. (Don't know how? See the [Getting Started](#-getting-started) section)
-
-> 📄 Template location: `Src\Application\TakeFive\Thinkers\TemplateTakeFiveThinker.cs`
-
-## 📊 Take-5! Results
-
-*Results will be posted here after the tournament.*
