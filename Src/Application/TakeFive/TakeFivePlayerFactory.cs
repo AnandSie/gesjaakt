@@ -21,10 +21,11 @@ public class TakeFivePlayerFactory : IPlayerFactory<ITakeFivePlayer>
             //Max 10 players can be in a game simultaneously
             //new (new YourThinker()) // ! Uncomment, add your thinker here
             new (new BlindTakeFiveThinker()),
+            new (new BarryThinker()),
+            new (new RubenTakeFiveThinker())
             new (new DiverTakeFiveThinker()),
             new (new HansTakeFiveThinker()),
-            new (new LisaTakeFiveThinker()),
-            new (new BarryThinker())
+            new (new LisaTakeFiveThinker())
         };
     }
 
