@@ -7,6 +7,7 @@ namespace Domain.Interfaces.Games.TakeFive;
 
 public interface ITakeFivePlayer :
     INamed,
+    IScored,
     IDecide<ITakeFiveReadOnlyGameState, TakeFiveCard>,
     IDecide<ImmutableList<ImmutableList<TakeFiveCard>>, int>,
     IToReadOnly<ITakeFiveReadOnlyPlayer>,

@@ -7,7 +7,7 @@ using Extensions;
 
 namespace Application;
 
-public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
+public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
 {
     private readonly IPlayerFactory<TPlayer> _playerFactory;
     private readonly IGame<TPlayer> _game;
@@ -38,7 +38,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         // REFACTOR - Primitive obsession -> string replace by PlayerName
         winsByPlayerName = new Dictionary<string, int>();
     }
-    
+
     public void ManualGame(int numberOfPlayers)
     {
         var manualPlayers = _playerFactory.CreateManualPlayers(numberOfPlayers);
@@ -140,8 +140,10 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
         var playerResults = _game.Results();
         ReportGameResults(playerResults);
 
+        // REFACOR - maak netter, is wat gebeund
         var winner = playerResults.First();
-        SaveGameResults(winner);
+        var winners = playerResults.Where(p => p.Score == winner.Score).ToList();
+        winners.ForEach(SaveGameResults);
     }
 
     private void SaveGameResults(TPlayer winner)

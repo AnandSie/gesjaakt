@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Events;
+using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.TakeFive;
 using System.Collections.Immutable;
 
@@ -27,6 +28,8 @@ public class TakeFivePlayer : ITakeFivePlayer
     public int CardsCount => _hand.Count;
 
     public IReadOnlyCollection<TakeFiveCard> PenaltyCards => _penaltyCards.AsReadOnly();
+
+    public int Score => PenaltyCards.Sum(pc => pc.CowHeads);
 
     public void AccecptCards(IEnumerable<TakeFiveCard> cards)
     {
@@ -115,11 +118,6 @@ public class TakeFivePlayer : ITakeFivePlayer
     public override string ToString()
     {
         // REFACTOR - use extension method for the IEnumerable<TakeFiveCard>
-        return $"{_name ?? "unkown"} with {PenaltyPoints()} points - Cards {string.Join(", ", this.PenaltyCards)}";
-    }
-
-    private int PenaltyPoints()
-    {
-        return PenaltyCards.Sum(pc => pc.CowHeads);
+        return $"{_name ?? "unkown"} with {Score} points - Cards {string.Join(", ", this.PenaltyCards)}";
     }
 }

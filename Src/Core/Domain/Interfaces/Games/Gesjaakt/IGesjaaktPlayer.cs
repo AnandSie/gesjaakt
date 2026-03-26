@@ -6,6 +6,7 @@ namespace Domain.Interfaces.Games.Gesjaakt;
 
 public interface IGesjaaktPlayer : 
     INamed, 
+    IScored,
     IDecide<IGesjaaktReadOnlyGameState, GesjaaktTurnOption>, 
     IToReadOnly<IGesjaaktReadOnlyPlayer>, 
     IGesjaaktPlayerActions
