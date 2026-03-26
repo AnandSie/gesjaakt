@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Components;
 using Domain.Interfaces.Components;
+using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.Gesjaakt;
 
 namespace Domain.Entities.Game.Gesjaakt;
@@ -29,6 +30,9 @@ public class GesjaaktPlayer : IGesjaaktPlayer
     public IEnumerable<ICard> Cards => _cards;
 
     public string Name => _name ?? "";
+
+    // Refactor: dubbele interface
+    public int Score => Points();
 
     public void AcceptCoins(IEnumerable<Coin> coins)
     {
