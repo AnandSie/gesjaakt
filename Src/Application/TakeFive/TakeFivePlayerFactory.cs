@@ -22,7 +22,7 @@ public class TakeFivePlayerFactory : IPlayerFactory<ITakeFivePlayer>
             //new (new YourThinker()) // ! Uncomment, add your thinker here
             new (new BlindTakeFiveThinker()),
             new (new BarryThinker()),
-            new (new RubenTakeFiveThinker())
+            new (new RubenTakeFiveThinker()),
             new (new DiverTakeFiveThinker()),
             new (new HansTakeFiveThinker()),
             new (new LisaTakeFiveThinker())
