@@ -134,7 +134,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed
 
     private void RunGameWith(IEnumerable<TPlayer> players)
     {
-        _game.PlayWith(players);
+        _game.PlayWith(players.Shuffle());
 
         // REFACTOR - Create seperate GameResult Object where stuff like winner is in - problem now is that we are calculating winner twice (dangerous). Maybe we want to share some other statistics like amount of events happened
         var playerResults = _game.Results();
