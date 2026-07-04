@@ -90,12 +90,10 @@ internal static class ServiceCollectionExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection AddWinFormsVisualization(this IServiceCollection services)
+    public static IServiceCollection AddConsoleVisualization(this IServiceCollection services, bool useLiveDisplay)
     {
-        // The form is a singleton because we want a single dashboard instance
-        services.AddSingleton<WidgetDisplay>();
-        services.AddSingleton<IDisplay>(sp => sp.GetRequiredService<WidgetDisplay>());
-
+        // Singleton because the pinned status line is a single, shared piece of console state
+        services.AddSingleton<IDisplay>(_ => new ConsoleDisplay(useLiveDisplay));
 
         return services;
     }

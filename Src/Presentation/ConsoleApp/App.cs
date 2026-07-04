@@ -1,8 +1,6 @@
 ﻿using Application;
 using Application.Interfaces;
 using Domain.Entities.Events;
-using UserInterface;
-using WinFormsApplication = System.Windows.Forms.Application;
 
 namespace ConsoleApp;
 
@@ -14,7 +12,6 @@ internal class App
     private readonly IGameRunnerEventCollector _gameEventCollector;
     private readonly IGameEventHandler _gameEventHandler;
     private readonly SimulationConfiguration _simulationConfiguration;
-    private readonly WidgetDisplay _display;
 
     public App(
         List<GameOption> gameoptions,
@@ -22,8 +19,7 @@ internal class App
         GameRunnerFactory gameRunnerFactory,
         IGameRunnerEventCollector gameEventCollector,
         IGameEventHandler gameEventHandler,
-        SimulationConfiguration simulationConfiguration,
-        WidgetDisplay display)
+        SimulationConfiguration simulationConfiguration)
     {
         _gameoptions = gameoptions;
         _playerInputProvider = playerInputProvider;
@@ -31,7 +27,6 @@ internal class App
         _gameEventCollector = gameEventCollector;
         _gameEventHandler = gameEventHandler;
         _simulationConfiguration = simulationConfiguration;
-        _display = display;
     }
 
     public void Start()
@@ -58,15 +53,11 @@ internal class App
         switch (choice)
         {
             case 1:
-                StartUIWidget();
-
                 _gameEventHandler.SetMinLevel(EventLevel.Error);
                 _gameRunner.Simulate(_simulationConfiguration.NumberOfGamesPerSimulation);
                 break;
 
             case 2:
-                StartUIWidget();
-
                 _gameEventHandler.SetMinLevel(EventLevel.Critical);
                 _gameRunner.SimulateAllPossiblePlayerCombis();
                 break;
@@ -97,17 +88,5 @@ internal class App
         // REFACTOR - give a IEnumerble<MenuOption> MenuOption(string name, Type option) and print name and return option 
         int gameChoice = _playerInputProvider.GetPlayerInputAsInt(message, Enumerable.Range(1, _gameoptions.Count).ToArray());
         return _gameoptions[gameChoice - 1]; // Note: zero-based index
-    }
-
-    private void StartUIWidget()
-    {
-        var thread = new Thread(() =>
-        {
-            WinFormsApplication.EnableVisualStyles();
-            WinFormsApplication.SetCompatibleTextRenderingDefault(false);
-            WinFormsApplication.Run(_display);
-        });
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
     }
 }
