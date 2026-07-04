@@ -2,10 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-      <!--REFACTOR - using .net8-windows such that we can use windows.forms but this is not crossplatform. -->
-    <TargetFramework>net8.0-windows</TargetFramework>
-      <UseWindowsForms>true</UseWindowsForms>
-      
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
