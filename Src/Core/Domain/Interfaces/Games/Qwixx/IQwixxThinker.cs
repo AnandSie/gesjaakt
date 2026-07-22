@@ -12,4 +12,9 @@ public interface IQwixxThinker : INamed
     // QX-010: called only for the active (rolling) player - decide which one of the
     // candidate colored sums (if any) to mark.
     QwixxMark? DecideColoredMark(IQwixxReadOnlyGameState gameState, QwixxDiceRoll roll);
+
+    // QX-022/QX-023: called only when the mark just chosen (white or colored) is a row's last
+    // number AND the 5-mark lock threshold would be met - locking is a real choice even when
+    // eligible, not automatic.
+    bool DecideToLock(IQwixxReadOnlyGameState gameState, QwixxColor color);
 }

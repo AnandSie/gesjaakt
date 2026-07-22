@@ -187,6 +187,27 @@ public class QwixxPlayerTests
         result.Should().BeNull();
     }
 
+    // QX-022/QX-023: DecideToLock is a pure delegation to the injected thinker.
+    [TestMethod]
+    public void DecideToLock_DelegatesToTheThinker()
+    {
+        thinkerMock.Setup(t => t.DecideToLock(gameStateMock.Object, QwixxColor.Red)).Returns(true);
+
+        var result = player.DecideToLock(gameStateMock.Object, QwixxColor.Red);
+
+        result.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void DecideToLock_CanDeclineToLock()
+    {
+        thinkerMock.Setup(t => t.DecideToLock(gameStateMock.Object, QwixxColor.Red)).Returns(false);
+
+        var result = player.DecideToLock(gameStateMock.Object, QwixxColor.Red);
+
+        result.Should().BeFalse();
+    }
+
     [TestMethod]
     public void ReturnsReadOnlyPlayer()
     {

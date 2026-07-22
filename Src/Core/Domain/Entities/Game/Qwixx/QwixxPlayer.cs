@@ -48,6 +48,13 @@ public class QwixxPlayer : IQwixxPlayer
         throw new NotImplementedException();
     }
 
+    // QX-022/QX-023: delegates to the injected thinker. Only called when the chosen mark
+    // makes locking possible.
+    public bool DecideToLock(IQwixxReadOnlyGameState gameState, QwixxColor color)
+    {
+        throw new NotImplementedException();
+    }
+
     public IQwixxReadOnlyPlayer AsReadOnly()
     {
         throw new NotImplementedException();

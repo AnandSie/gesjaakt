@@ -20,4 +20,7 @@ public interface IQwixxPlayer : INamed, IScored, IToReadOnly<IQwixxReadOnlyPlaye
 
     // QX-010: called only for the active (rolling) player.
     QwixxMark? DecideColoredMark(IQwixxReadOnlyGameState gameState, QwixxDiceRoll roll);
+
+    // QX-022/QX-023: called only when the chosen mark makes locking possible.
+    bool DecideToLock(IQwixxReadOnlyGameState gameState, QwixxColor color);
 }
