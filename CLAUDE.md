@@ -107,3 +107,47 @@ Useful context before extending; not a to-do list.
   inherited instance `Name`; the menu actually shows the type name from `GameOption`.
 - `GesjaaktVisualizer` hard-codes which thinker it plots (`AnandThinker`) in its constructor.
 - Visualization (ScottPlot) exists only for Gesjaakt.
+
+## Improvement backlog
+
+Curated from the `// REFACTOR` comments scattered in the code, plus architecture-level gaps.
+Unlike "Known rough edges" above, these are concrete, actionable items — pick one up if you're
+touching the area anyway, don't fix opportunistically mid-unrelated-task.
+
+**Architecture**
+
+- Infrastructure references `Domain` types directly instead of going only through `Application`'s
+  abstractions (`Logging/GameEventHandler.cs` uses `Domain.Entities.Events.BaseEvent`,
+  `Visualization/GesjaaktVisualizer.cs` uses `Domain.Interfaces`). Breaks the dependency-inversion
+  boundary that would make this closer to pure Clean Architecture instead of "roughly."
+- `Presentation/ConsoleApp/App.cs` uses `Domain.Entities.Events.EventLevel` directly in UI flow
+  logic (not just DI wiring) — the outermost layer reaching two rings in.
+- `GesjaaktVisualizer` `new`s up a concrete `Application.Gesjaakt.Thinkers.AnandThinker` instead
+  of receiving a thinker via DI — Infrastructure constructing an Application-layer concretion.
+- `Core/DomainTests` has a `ProjectReference` to `Application` so tests can construct real
+  Thinkers (`PlayerTests.cs:17`, `GesjaaktGameStateTests.cs:20`, `GesjaaktGameDealerTests.cs:18`
+  all carry `// REFACTOR` markers for this). Should mock `IGesjaaktThinker`/`ITakeFiveThinker`
+  instead and drop the reference.
+- No ports/use-case interface layer: `Domain.Interfaces` is consumed straight through by both
+  Application and Infrastructure, so there's no boundary translation layer, which is what a
+  stricter Clean Architecture would interpose.
+
+**Class-level**
+
+- `GameRunner.cs` carries the most debt in one file: winner is calculated twice (no shared
+  `GameResult` object, `GameRunner.cs:139`), simulation is single-threaded pending a thread-safe
+  `Shuffle` (`GameRunner.cs:58,84`), player identity is a raw `string` (`GameRunner.cs:38`).
+- `TakeFiveGame.cs:21` is a near-duplicate of `GesjaaktGame.cs` — same shape, only name/rules/
+  event-collector differ. Worth extracting the common scaffolding once a third game isn't
+  hypothetical.
+- `GesjaaktGameState.cs:26-27` hard-codes `new CardFactory()` and deck bounds `(3, 35)` inline;
+  Take-5 already solved this with `TakeFiveRules`, Gesjaakt has no equivalent config object.
+- `GesjaaktReadOnlyPlayer`/`GesjaaktReadOnlyGameState` lean on reflection and re-projection per
+  property access (`GesjaaktReadOnlyPlayer.cs:9`, `GesjaaktReadOnlyGameState.cs:13`) — same hot
+  path already called out above, root-caused to the reflection-based approach.
+- `IGameDealer<T>`/`IGameState<T>` have no non-generic base, forcing per-game generic interfaces
+  where a shared base would do (`Domain/Interfaces/Games/BaseGame/IGameDealer.cs:3`,
+  `IGameState.cs:3`).
+- `GesjaaktPlayerFactory`/`TakeFivePlayerFactory` hand-list Thinkers rather than discovering them
+  via DI/reflection (`GesjaaktPlayerFactory.cs:22`, `TakeFivePlayerFactory.cs:34`) — same
+  hand-maintained-list friction noted in "Adding a Thinker" above.
