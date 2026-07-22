@@ -186,4 +186,12 @@ public class QwixxPlayerTests
 
         result.Should().BeNull();
     }
+
+    [TestMethod]
+    public void ReturnsReadOnlyPlayer()
+    {
+        var result = player.AsReadOnly();
+
+        result.GetType().Should().Be(typeof(QwixxReadOnlyPlayer));
+    }
 }

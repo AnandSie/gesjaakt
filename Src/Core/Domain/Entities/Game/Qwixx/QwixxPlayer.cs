@@ -6,7 +6,7 @@ namespace Domain.Entities.Game.Qwixx;
 // Turn-level concerns (QX-012..QX-014: one mark per row per turn, who takes a penalty) are
 // deliberately out of scope here — they belong to whatever orchestrates a turn (QwixxGameDealer),
 // not to the player's own score sheet.
-public class QwixxPlayer
+public class QwixxPlayer : IQwixxPlayer
 {
     public QwixxPlayer(IQwixxThinker thinker)
     {
@@ -44,6 +44,11 @@ public class QwixxPlayer
 
     // QX-010: delegates to the injected thinker. Only called for the active (rolling) player.
     public QwixxMark? DecideColoredMark(IQwixxReadOnlyGameState gameState, QwixxDiceRoll roll)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IQwixxReadOnlyPlayer AsReadOnly()
     {
         throw new NotImplementedException();
     }

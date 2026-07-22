@@ -3,12 +3,14 @@ using Domain.Interfaces.Games.BaseGame;
 
 namespace Domain.Interfaces.Games.Qwixx;
 
-public interface IQwixxReadOnlyGameState : IReadOnlyGameState<IQwixxReadOnlyPlayer>
+public interface IQwixxGameState : IGameState<IQwixxPlayer>, IToReadOnly<IQwixxReadOnlyGameState>
 {
     // QX-007
-    IQwixxReadOnlyPlayer PlayerOnTurn { get; }
+    IQwixxPlayer PlayerOnTurn { get; }
+    void NextPlayer();
 
     // QX-024/QX-025: once any player locks a row, that color is locked for everyone.
+    void LockColor(QwixxColor color);
     bool IsColorLocked(QwixxColor color);
 
     // QX-026

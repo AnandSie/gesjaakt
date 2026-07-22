@@ -10,6 +10,8 @@ public class QwixxRow
 
     public QwixxColor Color => throw new NotImplementedException();
 
+    // Derived from MarkedCount, not separately tracked state: 12 total marks (11 numbers + the
+    // lock cell) is only reachable by having also marked the lock, so IsLocked == (MarkedCount == 12).
     public bool IsLocked => throw new NotImplementedException();
 
     public int MarkedCount => throw new NotImplementedException();
