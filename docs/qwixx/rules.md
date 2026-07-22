@@ -70,3 +70,11 @@ Reviewed against the physical rulebook on 2026-07-22. Outcome of each item raise
 2. **QX-013 / QX-014 (who takes the penalty)** — *confirmed as drafted*. Only the active player is penalized for marking nothing; non-active players are never penalized.
 3. **QX-026 (end condition)** — *confirmed as drafted*. Game ends on 2 rows locked (by anyone) OR any player reaching 4 penalties.
 4. **QX-009 / QX-010 (order of white vs. colored marking, and dice combinations)** — *corrected*. Order is confirmed fixed (white-sum step for all players always resolves before the active player's colored step). Also corrected: the active player has **8** candidate sums to choose from (2 white dice × 4 colors), not 4 — see updated QX-010.
+
+---
+
+## Appendix: Original Source
+
+Official rulebook (publisher: Gamewright): **[Qwixx — Rules of Play](https://gamewright.com/pdfs/Rules/QwixxTM-RULES.pdf)** (PDF, hosted on gamewright.com).
+
+> Note: this appendix intentionally contains a **link only**, not a copy of the rulebook text — the rulebook is copyrighted by the publisher, so it isn't reproduced here. When verifying or extending the `QX-###` rules above, open the PDF directly and compare section-by-section; if a discrepancy is found, correct the relevant `QX-###` entry in this file (in place, per the append-only ID policy) rather than pasting rulebook text into this document.
