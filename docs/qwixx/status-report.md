@@ -22,13 +22,13 @@ We are at the end of step 2 for the whole class breakdown — no real logic has 
 | `QwixxRow` | Done | Per-color marking/locking/scoring. 47 tests (`QX-003,004,016,017,021-024,028,029`), all green |
 | `QwixxDiceRoll` | Done | White sum + per-color candidate sums from a 6-dice roll. 7 tests (`QX-008,009,010`), all green |
 | `QwixxMark` | Done (record) | `(QwixxColor Color, int Number)` — a specific colored-mark candidate |
-| `QwixxPlayer` / `IQwixxPlayer` / `IQwixxReadOnlyPlayer` / `IQwixxThinker` | Stub | Thinker-driven, mirrors `TakeFivePlayer`. 22 tests |
+| `QwixxPlayer` / `IQwixxPlayer` / `IQwixxReadOnlyPlayer` / `IQwixxThinker` | Done | Thinker-driven, mirrors `TakeFivePlayer`. 22 tests, all green |
 | `QwixxReadOnlyPlayer` | Done (pass-through) | No tests — matches how `TakeFiveReadOnlyPlayer`/`GesjaaktReadOnlyPlayer` are untested boilerplate in this repo |
-| `QwixxGameState` / `IQwixxGameState` / `IQwixxReadOnlyGameState` | Stub | Turn rotation + game-over check. 15 tests |
+| `QwixxGameState` / `IQwixxGameState` / `IQwixxReadOnlyGameState` | Done | Turn rotation + game-over check. 12 tests, all green |
 | `QwixxReadOnlyGameState` | Done (pass-through) | Same as above |
 | `QwixxGameDealer` / `IQwixxGameDealer` | Stub | `Add`/`GetPlayerResults` fully specified by tests; `Play()`'s turn logic deliberately left undesigned. 4 tests |
 
-**Test totals:** 100 Qwixx tests, 62 green (`QwixxRules` pinning + `QwixxRow` + `QwixxDiceRoll`), 38 red (`NotImplementedException`, as expected for remaining stubs).
+**Test totals:** 100 Qwixx tests, 96 green (`QwixxRules` pinning + `QwixxRow` + `QwixxDiceRoll` + `QwixxPlayer` + `QwixxGameState`), 4 red (`QwixxGameDealer`, `NotImplementedException` as expected for the remaining stub).
 
 ## Key design decisions made along the way
 

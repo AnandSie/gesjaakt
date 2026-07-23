@@ -8,43 +8,39 @@ namespace Domain.Entities.Game.Qwixx;
 // (QwixxGameDealer), so this class stays dice-agnostic.
 public class QwixxGameState : IQwixxGameState
 {
-    public QwixxGameState()
-    {
-        throw new NotImplementedException();
-    }
+    private readonly List<IQwixxPlayer> _players = new();
+    private readonly HashSet<QwixxColor> _lockedColors = new();
+    private int _playerOnTurnIndex;
 
-    public IEnumerable<IQwixxPlayer> Players => throw new NotImplementedException();
+    public IEnumerable<IQwixxPlayer> Players => _players;
 
     public void AddPlayer(IQwixxPlayer newPlayer)
     {
-        throw new NotImplementedException();
+        _players.Add(newPlayer);
     }
 
     // QX-007: the active roller; passes to the left via NextPlayer().
-    public IQwixxPlayer PlayerOnTurn => throw new NotImplementedException();
+    public IQwixxPlayer PlayerOnTurn => _players[_playerOnTurnIndex];
 
     public void NextPlayer()
     {
-        throw new NotImplementedException();
+        _playerOnTurnIndex = (_playerOnTurnIndex + 1) % _players.Count;
     }
 
     // QX-024/QX-025: once any player locks a row, that color is locked for everyone —
     // called by whoever orchestrates a turn when a player's Row(color).Lock() succeeds.
     public void LockColor(QwixxColor color)
     {
-        throw new NotImplementedException();
+        _lockedColors.Add(color);
     }
 
-    public bool IsColorLocked(QwixxColor color)
-    {
-        throw new NotImplementedException();
-    }
+    public bool IsColorLocked(QwixxColor color) => _lockedColors.Contains(color);
 
     // QX-026: 2+ locked colors, or any player at the penalty limit.
-    public bool IsGameOver => throw new NotImplementedException();
+    public bool IsGameOver => _lockedColors.Count >= QwixxRules.RowsLockedToEndGame || _players.Any(p => p.HasMaxPenalties);
 
     public IQwixxReadOnlyGameState AsReadOnly()
     {
-        throw new NotImplementedException();
+        return new QwixxReadOnlyGameState(this);
     }
 }
