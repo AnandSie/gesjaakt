@@ -3,9 +3,8 @@ using Domain.Interfaces.Games.Qwixx;
 namespace Domain.Entities.Game.Qwixx;
 
 // See docs/qwixx/rules.md for the rule IDs (QX-###) referenced from QwixxPlayerTests.
-// Turn-level concerns (QX-012..QX-014: one mark per row per turn, who takes a penalty) are
-// deliberately out of scope here — they belong to whatever orchestrates a turn (QwixxGameDealer),
-// not to the player's own score sheet.
+// Turn-level concerns (QX-013/QX-014: who takes a penalty) are deliberately out of scope here —
+// they belong to whatever orchestrates a turn (QwixxGameDealer), not to the player's own score sheet.
 public class QwixxPlayer : IQwixxPlayer
 {
     private readonly IQwixxThinker _thinker;

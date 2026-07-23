@@ -22,7 +22,7 @@ Every atomic, testable rule has a stable ID of the form `QX-NNN`. IDs are assign
 - **QX-009**: After the roll, the active player first sums the two white dice together; **every player** (including the active player) may, optionally, mark that white-dice sum in one row of their own choice on their own sheet.
 - **QX-010**: After the white-dice marking step (QX-009) has been resolved for everyone, the active player computes, for each of the two white dice individually, its sum with each of the four colored dice — up to **8 candidate sums** (2 whites × 4 colors: white_a+red, white_b+red, white_a+yellow, white_b+yellow, white_a+green, white_b+green, white_a+blue, white_b+blue). **Only the active player** may mark one resulting number, in the row matching that sum's color, on their own sheet. This step is always resolved strictly after QX-009, never before or in parallel with it.
 - **QX-011**: Marking any number is always optional ("may"), never mandatory — a player may choose to mark nothing available to them on a given turn.
-- **QX-012**: A player may mark at most one number per row per turn, regardless of how many combinations would have allowed marking in that row.
+- **QX-012**: The white-sum step (QX-009) and the colored-sum step (QX-010) are independent opportunities, each producing at most one mark in a row of the player's choice. Nothing prevents the active player's two marks in a single turn from landing in the *same* color-row (e.g., marking red via the white sum, then marking a further-along red number via the colored combination) — each mark just has to individually respect that row's left-to-right ordering (QX-015/QX-016).
 - **QX-013**: If the active player marks nothing at all on their turn (neither the white-sum option nor a colored-sum option), they must take a penalty (see QX-018).
 - **QX-014**: If a non-active player marks nothing using the white-dice sum on a given turn, they take no penalty — penalties for a missed mark apply to the active player only for that turn.
 
@@ -70,6 +70,10 @@ Reviewed against the physical rulebook on 2026-07-22. Outcome of each item raise
 2. **QX-013 / QX-014 (who takes the penalty)** — *confirmed as drafted*. Only the active player is penalized for marking nothing; non-active players are never penalized.
 3. **QX-026 (end condition)** — *confirmed as drafted*. Game ends on 2 rows locked (by anyone) OR any player reaching 4 penalties.
 4. **QX-009 / QX-010 (order of white vs. colored marking, and dice combinations)** — *corrected*. Order is confirmed fixed (white-sum step for all players always resolves before the active player's colored step). Also corrected: the active player has **8** candidate sums to choose from (2 white dice × 4 colors), not 4 — see updated QX-010.
+
+Second pass, 2026-07-23, prompted by a question about whether the active player can really use both the white sum and a colored combination:
+
+5. **QX-012 (one mark per row per turn)** — *corrected*. This was fabricated during initial drafting; the rulebook contains no such restriction. The white-sum step ("cross out the number ... in any (but only one) of the color-rows") and the colored step ("cross out the number corresponding to this sum in the color-row corresponding to the color of the chosen die") are each independently limited to placing their one number in one row — nothing stops the active player from choosing the *same* row for both, which is in fact a known legitimate Qwixx tactic (e.g. white sum marks red 5, then the colored combination marks a further-along red 8 in the same turn). Rewrote QX-012 to state this correctly rather than the invented restriction.
 
 ---
 

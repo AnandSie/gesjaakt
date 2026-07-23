@@ -10,13 +10,15 @@ namespace DomainTests.Entities.Game.Qwixx;
 public class QwixxGameDealerTests
 {
     private Mock<IQwixxGameState> gameStateMock;
+    private Mock<IQwixxDiceRoller> diceRollerMock;
     private QwixxGameDealer dealer;
 
     [TestInitialize]
     public void Setup()
     {
         gameStateMock = new Mock<IQwixxGameState>();
-        dealer = new QwixxGameDealer(gameStateMock.Object);
+        diceRollerMock = new Mock<IQwixxDiceRoller>();
+        dealer = new QwixxGameDealer(gameStateMock.Object, diceRollerMock.Object);
     }
 
     [TestMethod]

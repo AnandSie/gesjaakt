@@ -7,6 +7,11 @@ public class QwixxRules
     public static readonly int NumberOfColoredDice = 4;
     public static readonly int TotalDice = NumberOfWhiteDice + NumberOfColoredDice;
 
+    // QX-001: standard six-sided dice - not separately numbered in rules.md, since it's a
+    // physical property of the dice rather than a Qwixx-specific rule.
+    public static readonly int MinDieValue = 1;
+    public static readonly int MaxDieValue = 6;
+
     // QX-003/QX-004
     public static readonly int MinRowNumber = 2;
     public static readonly int MaxRowNumber = 12;
