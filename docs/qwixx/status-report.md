@@ -19,7 +19,7 @@ We are at the end of step 2 for the whole class breakdown — no real logic has 
 | `docs/qwixx/rules.md` | Done | 33 numbered rules + a link-only appendix to the official Gamewright PDF (no rulebook text reproduced, it's copyrighted) |
 | `QwixxColor` | Done | Enum: Red, Yellow, Green, Blue |
 | `QwixxRules` | Done, real values | Constants transcribed from the spec (dice counts, player range, penalty value, lock threshold, triangular score table). Tests are green — they pin the constants against the spec, not TDD stubs |
-| `QwixxRow` | Stub | Per-color marking/locking/scoring. 45 tests (`QX-003,004,016,017,021-024,028,029`) |
+| `QwixxRow` | Done | Per-color marking/locking/scoring. 47 tests (`QX-003,004,016,017,021-024,028,029`), all green |
 | `QwixxDiceRoll` | Stub | White sum + per-color candidate sums from a 6-dice roll. 7 tests (`QX-008,009,010`) |
 | `QwixxMark` | Done (record) | `(QwixxColor Color, int Number)` — a specific colored-mark candidate |
 | `QwixxPlayer` / `IQwixxPlayer` / `IQwixxReadOnlyPlayer` / `IQwixxThinker` | Stub | Thinker-driven, mirrors `TakeFivePlayer`. 22 tests |
@@ -28,7 +28,7 @@ We are at the end of step 2 for the whole class breakdown — no real logic has 
 | `QwixxReadOnlyGameState` | Done (pass-through) | Same as above |
 | `QwixxGameDealer` / `IQwixxGameDealer` | Stub | `Add`/`GetPlayerResults` fully specified by tests; `Play()`'s turn logic deliberately left undesigned. 4 tests |
 
-**Test totals:** 98 Qwixx tests, 8 green (`QwixxRules` pinning), 90 red (`NotImplementedException`, as expected for stubs).
+**Test totals:** 100 Qwixx tests, 55 green (`QwixxRules` pinning + `QwixxRow`), 45 red (`NotImplementedException`, as expected for remaining stubs).
 
 ## Key design decisions made along the way
 

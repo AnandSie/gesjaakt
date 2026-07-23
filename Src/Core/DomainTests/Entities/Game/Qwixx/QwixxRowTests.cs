@@ -30,6 +30,31 @@ public class QwixxRowTests
         row.CanMark(5).Should().BeTrue();  // 5 comes after 6 in descending order
     }
 
+    // Same as QX003 but for Yellow, the other ascending color — makes the four-color coverage explicit
+    // instead of only inferred from the QX021-024/QX028 DataRow cases.
+    [TestMethod]
+    public void QX003_AscendingRow_Yellow_OrdersNumbersLowToHigh()
+    {
+        var row = new QwixxRow(QwixxColor.Yellow);
+
+        row.Mark(6);
+
+        row.CanMark(5).Should().BeFalse(); // 5 comes before 6 in ascending order
+        row.CanMark(7).Should().BeTrue();  // 7 comes after 6
+    }
+
+    // Same as QX004 but for Blue, the other descending color.
+    [TestMethod]
+    public void QX004_DescendingRow_Blue_OrdersNumbersHighToLow()
+    {
+        var row = new QwixxRow(QwixxColor.Blue);
+
+        row.Mark(6);
+
+        row.CanMark(7).Should().BeFalse(); // 7 comes before 6 in descending order
+        row.CanMark(5).Should().BeTrue();  // 5 comes after 6 in descending order
+    }
+
     // QX-016: once a number is marked, nothing earlier in the row's order can be marked afterward.
     [TestMethod]
     public void QX016_MarkingANumber_MakesEarlierNumbersUnmarkable()
