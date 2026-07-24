@@ -22,7 +22,7 @@ A simple **game engine** has been built for each supported game. Competitors dev
 **Supported games:**
 - [Gesjaakt](#-game-1-gesjaakt)
 - [Take-5!](#-game-2-take-5)
-- [Qwixx](#-game-3-qwixx) *(engine done, not yet wired into the console runner — see note below)*
+- [Qwixx](#-game-3-qwixx)
 
 ---
 
@@ -42,7 +42,7 @@ A simple **game engine** has been built for each supported game. Competitors dev
    git clone https://github.com/AnandSie/gesjaakt.git
    ```
 6. Open the `gesjaakt` folder in VS Code (`Ctrl+K Ctrl+O`)
-7. Open `gesjaakt\Src\Application\GameRunner.cs`
+7. Open `gesjaakt\Src\Presentation\ConsoleApp\Program.cs`
 8. Press `Ctrl+F5` to run, then select **"C#"** → **"C#: Console App"**
 
 You should see:
@@ -50,6 +50,7 @@ You should see:
 Which game do you want to play?
 1. GesjaaktGame
 2. TakeFiveGame
+3. QwixxGame
 ```
 
 ---
@@ -212,18 +213,18 @@ Qwixx is a fast dice game where every player reacts to every roll. On your turn 
 
 Full rule-by-rule spec: [`docs/qwixx/rules.md`](docs/qwixx/rules.md).
 
-> ⚠️ **Status**: the Qwixx game engine (rules, scoring, dice, turn logic) is fully implemented and tested, but it isn't wired into the console `GameRunner`/`Program.cs` yet the way Gesjaakt and Take-5! are — there's no menu option to run it from the console app today. You can already write and unit-test a Qwixx bot against the template below; running it head-to-head through the console app is still to come.
-
 ## 🧠 Creating a Qwixx Bot
 
 1. Copy the template. See location below.
 2. Rename it to something like `YourNameQwixxThinker.cs` and place it in the same folder
 3. Implement all three methods: `DecideWhiteMark`, `DecideColoredMark`, `DecideToLock`
+4. Add your thinker to `QwixxPlayerFactory.Create`
+5. Run the game. (Don't know how? See the [Getting Started](#-getting-started) section)
 
 > 📄 Template location: `Src\Application\Qwixx\Thinkers\TemplateQwixxThinker.cs`
 
 ## 📊 Qwixx Results
 
-*Results will be posted here once Qwixx is wired into the console runner and the tournament format is decided.*
+*Results will be posted here after the tournament.*
 
 ---
