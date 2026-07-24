@@ -31,9 +31,16 @@ public class QwixxGameDealer : IQwixxGameDealer
     // is met, only checking between rounds so a mid-round trigger still lets the round finish (QX-027).
     public void Play()
     {
+        // QX-006
+        var playerCount = _gameState.Players.Count();
+        if (playerCount < QwixxRules.MinNumberOfPlayers || playerCount > QwixxRules.MaxNumberOfPlayers)
+        {
+            throw new InvalidOperationException(
+                $"Qwixx requires between {QwixxRules.MinNumberOfPlayers} and {QwixxRules.MaxNumberOfPlayers} players, but {playerCount} were added.");
+        }
+
         while (!_gameState.IsGameOver)
         {
-            var playerCount = _gameState.Players.Count();
             for (var i = 0; i < playerCount; i++)
             {
                 PlayTurn();

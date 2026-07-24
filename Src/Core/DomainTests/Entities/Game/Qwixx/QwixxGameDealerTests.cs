@@ -37,10 +37,41 @@ public class QwixxGameDealerTests
         return player;
     }
 
-    // Runs Play() for exactly one round (playerCount turns), then stops.
+    // A player stubbed to always decline both marks - used purely to pad a test's player list
+    // up to QwixxRules.MinNumberOfPlayers without affecting the behavior under test.
+    private static Mock<IQwixxPlayer> CreateInertPlayerMock()
+    {
+        var player = CreatePlayerMock();
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<int>())).Returns((QwixxColor?)null);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>())).Returns((QwixxMark?)null);
+        return player;
+    }
+
+    // Runs Play() for exactly one round (playerCount turns), then stops. If fewer than
+    // QwixxRules.MinNumberOfPlayers are given, inert players pad the list out to satisfy that
+    // rule and become active (via PlayerOnTurn) for the round's extra turns, so the given
+    // player(s) stay active for exactly one turn each - callers that already pass a legal
+    // player count keep full control of PlayerOnTurn themselves, unaffected by this.
     private void SetupExactlyOneRound(params IQwixxPlayer[] players)
     {
-        gameStateMock.Setup(gs => gs.Players).Returns(players);
+        if (players.Length < QwixxRules.MinNumberOfPlayers)
+        {
+            var padding = Enumerable.Range(0, QwixxRules.MinNumberOfPlayers - players.Length)
+                .Select(_ => CreateInertPlayerMock().Object);
+            var allPlayers = players.Concat(padding).ToArray();
+
+            gameStateMock.Setup(gs => gs.Players).Returns(allPlayers);
+            var playerOnTurnSequence = gameStateMock.SetupSequence(gs => gs.PlayerOnTurn);
+            foreach (var player in allPlayers)
+            {
+                playerOnTurnSequence = playerOnTurnSequence.Returns(player);
+            }
+        }
+        else
+        {
+            gameStateMock.Setup(gs => gs.Players).Returns(players);
+        }
+
         gameStateMock.SetupSequence(gs => gs.IsGameOver).Returns(false).Returns(true);
     }
 
@@ -91,11 +122,36 @@ public class QwixxGameDealerTests
     [TestMethod]
     public void Play_DoesNothingIfGameIsAlreadyOver()
     {
+        gameStateMock.Setup(gs => gs.Players).Returns([CreatePlayerMock().Object, CreatePlayerMock().Object]);
         gameStateMock.Setup(gs => gs.IsGameOver).Returns(true);
 
         dealer.Play();
 
         gameStateMock.Verify(gs => gs.NextPlayer(), Times.Never);
+    }
+
+    // QX-006: the game supports 2 to 5 players.
+    [TestMethod]
+    public void Play_ThrowsWhenThereAreFewerThanTheMinimumNumberOfPlayers()
+    {
+        gameStateMock.Setup(gs => gs.Players).Returns([CreatePlayerMock().Object]);
+
+        var act = () => dealer.Play();
+
+        act.Should().Throw<InvalidOperationException>();
+    }
+
+    [TestMethod]
+    public void Play_ThrowsWhenThereAreMoreThanTheMaximumNumberOfPlayers()
+    {
+        var tooManyPlayers = Enumerable.Range(0, QwixxRules.MaxNumberOfPlayers + 1)
+            .Select(_ => CreatePlayerMock().Object)
+            .ToArray();
+        gameStateMock.Setup(gs => gs.Players).Returns(tooManyPlayers);
+
+        var act = () => dealer.Play();
+
+        act.Should().Throw<InvalidOperationException>();
     }
 
     // QX-009: every player, including the active one, is offered the white-dice sum.

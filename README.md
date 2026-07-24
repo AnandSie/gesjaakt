@@ -1,6 +1,6 @@
 # 🃏 Bot Building Hackathon
 
-Do you like programming and card games? Then join this hackathon! Build your own bot and let it compete against the bots of other participants. Choose your game, code your strategy, and may the best algorithm win!
+Do you like programming and games? Then join this hackathon! Build your own bot and let it compete against the bots of other participants. Choose your game, code your strategy, and may the best algorithm win!
 
 ---
 
@@ -11,6 +11,7 @@ Do you like programming and card games? Then join this hackathon! Build your own
 - [General Bot Development](#general-bot-development)
 - [Game 1: Gesjaakt 🃏](#-game-1-gesjaakt)
 - [Game 2: Take-5! 🐄](#-game-2-take-5)
+- [Game 3: Qwixx 🎲](#-game-3-qwixx)
 
 ---
 
@@ -21,6 +22,7 @@ A simple **game engine** has been built for each supported game. Competitors dev
 **Supported games:**
 - [Gesjaakt](#-game-1-gesjaakt)
 - [Take-5!](#-game-2-take-5)
+- [Qwixx](#-game-3-qwixx) *(engine done, not yet wired into the console runner — see note below)*
 
 ---
 
@@ -54,7 +56,7 @@ Which game do you want to play?
 
 ## General Bot Development
 
-These rules and tools apply to **both games**.
+These rules and tools apply to **all games**.
 
 ### Language & Structure
 
@@ -201,5 +203,27 @@ Each round runs **10,000 games** back-to-back. Scoring is based on **percentage 
 | Bart          | 994,878    | 2.0%       |
 | ScaredThinker | 990,043    | 2.0%       |
 | Tomas         | 467,532    | 0.9%       |
+
+---
+
+# 🎲 Game 3: Qwixx
+
+Qwixx is a fast dice game where every player reacts to every roll. On your turn you roll 6 dice (2 white, 4 colored) and get two chances to cross out numbers on your own score sheet: everyone may use the white-dice sum, and only you (the active roller) may also combine a white die with a colored die. Cross out numbers in a row strictly left-to-right — skip ahead and you lose access to anything earlier. Reach a row's last number with enough marks and you can lock it, removing that color for everyone, for the rest of the game.
+
+Full rule-by-rule spec: [`docs/qwixx/rules.md`](docs/qwixx/rules.md).
+
+> ⚠️ **Status**: the Qwixx game engine (rules, scoring, dice, turn logic) is fully implemented and tested, but it isn't wired into the console `GameRunner`/`Program.cs` yet the way Gesjaakt and Take-5! are — there's no menu option to run it from the console app today. You can already write and unit-test a Qwixx bot against the template below; running it head-to-head through the console app is still to come.
+
+## 🧠 Creating a Qwixx Bot
+
+1. Copy the template. See location below.
+2. Rename it to something like `YourNameQwixxThinker.cs` and place it in the same folder
+3. Implement all three methods: `DecideWhiteMark`, `DecideColoredMark`, `DecideToLock`
+
+> 📄 Template location: `Src\Application\Qwixx\Thinkers\TemplateQwixxThinker.cs`
+
+## 📊 Qwixx Results
+
+*Results will be posted here once Qwixx is wired into the console runner and the tournament format is decided.*
 
 ---
