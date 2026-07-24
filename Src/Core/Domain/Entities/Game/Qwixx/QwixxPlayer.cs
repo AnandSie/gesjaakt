@@ -40,12 +40,14 @@ public class QwixxPlayer : IQwixxPlayer
     // QX-009: delegates to the injected thinker. Called for every player, every turn.
     public QwixxColor? DecideWhiteMark(IQwixxReadOnlyGameState gameState, int whiteSum)
     {
+        _thinker.SetState(AsReadOnly());
         return _thinker.DecideWhiteMark(gameState, whiteSum);
     }
 
     // QX-010: delegates to the injected thinker. Only called for the active (rolling) player.
     public QwixxMark? DecideColoredMark(IQwixxReadOnlyGameState gameState, QwixxDiceRoll roll)
     {
+        _thinker.SetState(AsReadOnly());
         return _thinker.DecideColoredMark(gameState, roll);
     }
 
@@ -53,6 +55,7 @@ public class QwixxPlayer : IQwixxPlayer
     // makes locking possible.
     public bool DecideToLock(IQwixxReadOnlyGameState gameState, QwixxColor color)
     {
+        _thinker.SetState(AsReadOnly());
         return _thinker.DecideToLock(gameState, color);
     }
 

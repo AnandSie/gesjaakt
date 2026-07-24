@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Application.Qwixx.Thinkers;
 
-public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string name) : IQwixxThinker
+public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string name) : BaseQwixxThinker
 {
-    public string Name => name;
+    public override string Name => name;
 
-    public QwixxColor? DecideWhiteMark(IQwixxReadOnlyGameState gameState, int whiteSum)
+    public override QwixxColor? DecideWhiteMark(IQwixxReadOnlyGameState gameState, int whiteSum)
     {
         var question = new StringBuilder();
         question.AppendLine(RenderMyScoreSheet(gameState));
@@ -27,7 +27,7 @@ public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string
         };
     }
 
-    public QwixxMark? DecideColoredMark(IQwixxReadOnlyGameState gameState, QwixxDiceRoll roll)
+    public override QwixxMark? DecideColoredMark(IQwixxReadOnlyGameState gameState, QwixxDiceRoll roll)
     {
         var candidates = Enum.GetValues<QwixxColor>()
             .SelectMany(color => roll.ColoredSums(color).Select(sum => new QwixxMark(color, sum)))
@@ -47,7 +47,7 @@ public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string
         return choice == skipOption ? null : candidates[choice - 1];
     }
 
-    public bool DecideToLock(IQwixxReadOnlyGameState gameState, QwixxColor color)
+    public override bool DecideToLock(IQwixxReadOnlyGameState gameState, QwixxColor color)
     {
         var question = $"Hi {name}, you can lock the {color} row now. Do you want to lock it?\n1. Yes  2. No";
         var choice = playerInputProvider.GetPlayerInputAsInt(question, [1, 2]);
@@ -56,15 +56,14 @@ public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string
 
     private string RenderMyScoreSheet(IQwixxReadOnlyGameState gameState)
     {
-        var me = gameState.Players.Single(p => p.Name == name);
         var sheet = new StringBuilder();
         sheet.AppendLine("---YOUR SCORE SHEET---");
         foreach (var color in Enum.GetValues<QwixxColor>())
         {
-            var lockNote = me.IsRowLocked(color) ? " (locked)" : gameState.IsColorLocked(color) ? " (locked by another player)" : "";
-            sheet.AppendLine($"{color}: {me.MarkedCount(color)} marks{lockNote}");
+            var lockNote = Me.IsRowLocked(color) ? " (locked)" : gameState.IsColorLocked(color) ? " (locked by another player)" : "";
+            sheet.AppendLine($"{color}: {Me.MarkedCount(color)} marks{lockNote}");
         }
-        sheet.AppendLine($"Penalties: {me.Penalties}");
+        sheet.AppendLine($"Penalties: {Me.Penalties}");
         return sheet.ToString();
     }
 }

@@ -153,6 +153,19 @@ public class QwixxPlayerTests
         result.Should().Be(QwixxColor.Red);
     }
 
+    // The thinker needs to know its own state (e.g. "which numbers have I already marked?")
+    // to decide sensibly - mirrors TakeFivePlayer pushing the hand into its thinker via SetState.
+    [TestMethod]
+    public void QX009_DecideWhiteMark_GivesTheThinkerItsOwnCurrentStateFirst()
+    {
+        player.Row(QwixxColor.Red).Mark(2);
+        thinkerMock.Setup(t => t.DecideWhiteMark(gameStateMock.Object, 8)).Returns((QwixxColor?)null);
+
+        player.DecideWhiteMark(gameStateMock.Object, 8);
+
+        thinkerMock.Verify(t => t.SetState(It.Is<IQwixxReadOnlyPlayer>(p => p.MarkedCount(QwixxColor.Red) == 1)), Times.Once);
+    }
+
     [TestMethod]
     public void QX009_DecideWhiteMark_CanReturnNullToDecline()
     {
@@ -177,6 +190,18 @@ public class QwixxPlayerTests
     }
 
     [TestMethod]
+    public void QX010_DecideColoredMark_GivesTheThinkerItsOwnCurrentStateFirst()
+    {
+        player.Row(QwixxColor.Yellow).Mark(2);
+        var roll = new QwixxDiceRoll(white1: 3, white2: 5, red: 2, yellow: 4, green: 6, blue: 1);
+        thinkerMock.Setup(t => t.DecideColoredMark(gameStateMock.Object, roll)).Returns((QwixxMark?)null);
+
+        player.DecideColoredMark(gameStateMock.Object, roll);
+
+        thinkerMock.Verify(t => t.SetState(It.Is<IQwixxReadOnlyPlayer>(p => p.MarkedCount(QwixxColor.Yellow) == 1)), Times.Once);
+    }
+
+    [TestMethod]
     public void QX010_DecideColoredMark_CanReturnNullToDecline()
     {
         var roll = new QwixxDiceRoll(white1: 3, white2: 5, red: 2, yellow: 4, green: 6, blue: 1);
@@ -196,6 +221,17 @@ public class QwixxPlayerTests
         var result = player.DecideToLock(gameStateMock.Object, QwixxColor.Red);
 
         result.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void DecideToLock_GivesTheThinkerItsOwnCurrentStateFirst()
+    {
+        player.Row(QwixxColor.Green).Mark(11);
+        thinkerMock.Setup(t => t.DecideToLock(gameStateMock.Object, QwixxColor.Red)).Returns(true);
+
+        player.DecideToLock(gameStateMock.Object, QwixxColor.Red);
+
+        thinkerMock.Verify(t => t.SetState(It.Is<IQwixxReadOnlyPlayer>(p => p.MarkedCount(QwixxColor.Green) == 1)), Times.Once);
     }
 
     [TestMethod]

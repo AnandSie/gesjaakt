@@ -1,9 +1,10 @@
 using Domain.Entities.Game.Qwixx;
+using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.BaseGame;
 
 namespace Domain.Interfaces.Games.Qwixx;
 
-public interface IQwixxThinker : INamed
+public interface IQwixxThinker : INamed, IStatefull<IQwixxReadOnlyPlayer>
 {
     // QX-009: called for every player, every turn - decide which row (if any) to mark
     // using the fixed white-dice sum.
