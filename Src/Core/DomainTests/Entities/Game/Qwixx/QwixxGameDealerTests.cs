@@ -89,7 +89,7 @@ public class QwixxGameDealerTests
 
     // QX-032: the player with the highest score comes first.
     [TestMethod]
-    public void GetPlayerResults_OrdersPlayersByScoreDescending()
+    public void QX032_GetPlayerResults_OrdersPlayersByScoreDescending()
     {
         var lowScorer = new Mock<IQwixxPlayer>();
         lowScorer.Setup(p => p.Score).Returns(10);
@@ -105,7 +105,7 @@ public class QwixxGameDealerTests
 
     // QX-033: tied players are both kept in the results, neither dropped.
     [TestMethod]
-    public void GetPlayerResults_KeepsTiedPlayersInTheResults()
+    public void QX033_GetPlayerResults_KeepsTiedPlayersInTheResults()
     {
         var player1 = new Mock<IQwixxPlayer>();
         player1.Setup(p => p.Score).Returns(30);
@@ -277,8 +277,9 @@ public class QwixxGameDealerTests
     }
 
     // QX-022: locking a row on the same mark that reaches it, when the thinker agrees to lock.
+    // QX-025: the LockColor call is what closes that color for every player, not just this one.
     [TestMethod]
-    public void Play_Locking_WhenCanLockAndThinkerAgrees_LocksRowAndNotifiesGameState()
+    public void QX022_QX025_Play_Locking_WhenCanLockAndThinkerAgrees_LocksRowAndNotifiesGameState()
     {
         var player = CreatePlayerMock();
         var redRow = player.Object.Row(QwixxColor.Red);
@@ -323,7 +324,7 @@ public class QwixxGameDealerTests
 
     // QX-013: only the active player is penalized, and only if they marked nothing at all this turn.
     [TestMethod]
-    public void Play_Penalty_WhenActivePlayerMarksNothing_IsPenalized()
+    public void QX013_Play_Penalty_WhenActivePlayerMarksNothing_IsPenalized()
     {
         var player = CreatePlayerMock();
         player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<int>())).Returns((QwixxColor?)null);
@@ -354,7 +355,7 @@ public class QwixxGameDealerTests
 
     // QX-014: a non-active player is never penalized, even if they decline the white mark.
     [TestMethod]
-    public void Play_Penalty_IsNeverAppliedToANonActivePlayer()
+    public void QX014_Play_Penalty_IsNeverAppliedToANonActivePlayer()
     {
         var activePlayer = CreatePlayerMock();
         var otherPlayer = CreatePlayerMock();
@@ -373,7 +374,7 @@ public class QwixxGameDealerTests
     // QX-012 regression: the active player may mark the same row via both the white sum and
     // the colored combination in one turn - this used to be (incorrectly) blocked.
     [TestMethod]
-    public void Play_ActivePlayer_CanMarkTheSameRowTwiceInOneTurn()
+    public void QX012_Play_ActivePlayer_CanMarkTheSameRowTwiceInOneTurn()
     {
         var player = CreatePlayerMock();
         player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), 5)).Returns(QwixxColor.Red);
@@ -392,7 +393,7 @@ public class QwixxGameDealerTests
     // QX-027: the round in progress always finishes (every player gets a turn) even though
     // IsGameOver is only re-checked between rounds, not after each individual turn.
     [TestMethod]
-    public void Play_CompletesTheFullRoundBeforeCheckingGameOverAgain()
+    public void QX027_Play_CompletesTheFullRoundBeforeCheckingGameOverAgain()
     {
         var player1 = CreatePlayerMock();
         var player2 = CreatePlayerMock();
