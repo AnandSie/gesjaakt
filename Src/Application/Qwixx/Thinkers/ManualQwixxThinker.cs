@@ -15,7 +15,7 @@ public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string
     public override QwixxColor? DecideWhiteMark(IQwixxReadOnlyGameState gameState, int whiteSum)
     {
         // ILogger strips ANSI color codes from message content (see IPlayerInputProvider below),
-        // so the colored score sheet is written straight to the console instead.
+        // so anything colored is written straight to the console instead.
         Console.WriteLine(Me.ToScoreSheetString(gameState));
 
         // Only offer rows where whiteSum is actually markable right now - otherwise the menu
@@ -25,6 +25,7 @@ public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string
             .ToList();
 
         var lines = new StringBuilder();
+        lines.AppendLine($"{Greeting(gameState)}, the white-dice sum is {whiteSum}. Which row do you want to mark it in?");
         for (var i = 0; i < options.Count; i++)
         {
             lines.AppendLine($"{i + 1}. {options[i].AnsiColorCode()}{options[i]}{Reset}");
@@ -33,8 +34,7 @@ public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string
         lines.AppendLine($"{skipOption}. Skip");
         Console.WriteLine(lines.ToString());
 
-        var question = $"Hi {name}, the white-dice sum is {whiteSum}. Which row do you want to mark it in (or {skipOption} to skip)?";
-        var choice = playerInputProvider.GetPlayerInputAsInt(question, Enumerable.Range(1, skipOption));
+        var choice = playerInputProvider.GetPlayerInputAsInt("Enter your choice:", Enumerable.Range(1, skipOption));
         return choice == skipOption ? null : options[choice - 1];
     }
 
@@ -51,6 +51,7 @@ public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string
 
         Console.WriteLine(Me.ToScoreSheetString(gameState));
         var candidateLines = new StringBuilder();
+        candidateLines.AppendLine($"{Greeting(gameState)}, pick a colored combination to mark, or skip:");
         for (var i = 0; i < candidates.Count; i++)
         {
             candidateLines.AppendLine($"{i + 1}. {candidates[i].Color.AnsiColorCode()}{candidates[i].Color} {candidates[i].Number}{Reset}");
@@ -59,17 +60,23 @@ public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string
         candidateLines.AppendLine($"{skipOption}. Skip");
         Console.WriteLine(candidateLines.ToString());
 
-        var question = $"Hi {name}, pick a colored combination to mark, or {skipOption} to skip:";
-        var choice = playerInputProvider.GetPlayerInputAsInt(question, Enumerable.Range(1, skipOption));
+        var choice = playerInputProvider.GetPlayerInputAsInt("Enter your choice:", Enumerable.Range(1, skipOption));
         return choice == skipOption ? null : candidates[choice - 1];
     }
 
     public override bool DecideToLock(IQwixxReadOnlyGameState gameState, QwixxColor color)
     {
         Console.WriteLine(Me.ToScoreSheetString(gameState));
+        Console.WriteLine($"{Greeting(gameState)}, you can lock the {color.AnsiColorCode()}{color}{Reset} row now. Do you want to lock it?\n1. Yes  2. No");
 
-        var question = $"Hi {name}, you can lock the {color} row now. Do you want to lock it?\n1. Yes  2. No";
-        var choice = playerInputProvider.GetPlayerInputAsInt(question, [1, 2]);
+        var choice = playerInputProvider.GetPlayerInputAsInt("Enter your choice:", [1, 2]);
         return choice == 1;
+    }
+
+    // A colored "Hi <name>" greeting - the name always gets the same color as this player's own
+    // score sheet header, so it's easy to tell whose turn a block of console output belongs to.
+    private string Greeting(IQwixxReadOnlyGameState gameState)
+    {
+        return $"Hi {Me.AnsiNameColorCode(gameState)}{name}{Reset}";
     }
 }

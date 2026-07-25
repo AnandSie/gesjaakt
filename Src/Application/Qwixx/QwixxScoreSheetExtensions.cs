@@ -19,6 +19,17 @@ public static class QwixxScoreSheetExtensions
     private const string Dim = "\x1b[2m";
     private const string Strikethrough = "\x1b[9m";
 
+    // A different palette from the row colors (red/yellow/green/blue), so a player's name is
+    // never confused with a row when both appear in the same line.
+    private static readonly string[] PlayerNameColors =
+    {
+        "\x1b[95m", // magenta
+        "\x1b[96m", // cyan
+        "\x1b[97m", // white
+        "\x1b[90m", // gray
+        "\x1b[35m", // magenta (dim) - covers the 5th seat, QwixxRules.MaxNumberOfPlayers
+    };
+
     public static string AnsiColorCode(this QwixxColor color) => color switch
     {
         QwixxColor.Red => "\x1b[91m",
@@ -27,6 +38,15 @@ public static class QwixxScoreSheetExtensions
         QwixxColor.Blue => "\x1b[94m",
         _ => "",
     };
+
+    // A distinct, stable color per player, based on their seat position in gameState.Players -
+    // the same player keeps the same color for the whole game, and no two players (up to the
+    // 5-player max) share one.
+    public static string AnsiNameColorCode(this IQwixxReadOnlyPlayer player, IQwixxReadOnlyGameState gameState)
+    {
+        var seatIndex = gameState.Players.ToList().FindIndex(p => p.Name == player.Name);
+        return PlayerNameColors[Math.Max(seatIndex, 0) % PlayerNameColors.Length];
+    }
 
     // Mirrors exactly what QwixxGameDealer.TryMark checks, so a caller can filter out choices
     // that would silently be rejected if picked.
@@ -40,10 +60,11 @@ public static class QwixxScoreSheetExtensions
     // cell and penalty boxes.
     public static string ToScoreSheetString(this IQwixxReadOnlyPlayer player, IQwixxReadOnlyGameState gameState)
     {
+        var nameColor = player.AnsiNameColorCode(gameState);
         var sheet = new StringBuilder();
         var rule = new string('=', 46);
         sheet.AppendLine(rule);
-        sheet.AppendLine($" {Bold}🎲 {player.Name}'s Score Sheet{Reset}  —  Score: {Bold}{player.Score}{Reset}");
+        sheet.AppendLine($" 🎲 {Bold}{nameColor}{player.Name}{Reset}{Bold}'s Score Sheet{Reset}  —  Score: {Bold}{player.Score}{Reset}");
         sheet.AppendLine(rule);
 
         foreach (var color in Enum.GetValues<QwixxColor>())
