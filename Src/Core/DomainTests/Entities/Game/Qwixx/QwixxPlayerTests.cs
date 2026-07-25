@@ -317,6 +317,37 @@ public class QwixxPlayerTests
         messages.Should().ContainSingle();
     }
 
+    // The results block at the end of a game prints players directly, so without this it shows
+    // the type name instead of anything useful about the player.
+    [TestMethod]
+    public void ToString_DescribesTheNameScoreMarksAndPenalties()
+    {
+        thinkerMock.Setup(t => t.Name).Returns("Alice");
+        player.Row(QwixxColor.Red).Mark(5);
+        player.Row(QwixxColor.Red).Mark(7);
+        player.AddPenalty();
+
+        var result = player.ToString();
+
+        result.Should().Contain("Alice");
+        result.Should().Contain(player.Score.ToString());
+        result.Should().Contain("Red 2");
+        result.Should().Contain("1 penalties");
+    }
+
+    [TestMethod]
+    public void ToString_MentionsEveryRowEvenWhenUnmarked()
+    {
+        thinkerMock.Setup(t => t.Name).Returns("Alice");
+
+        var result = player.ToString();
+
+        foreach (var color in Enum.GetValues<QwixxColor>())
+        {
+            result.Should().Contain($"{color} 0");
+        }
+    }
+
     private List<string> CaptureDecideErrors()
     {
         var messages = new List<string>();

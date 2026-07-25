@@ -64,6 +64,15 @@ public class QwixxPlayer : IQwixxPlayer
         return new QwixxReadOnlyPlayer(this);
     }
 
+    // Plain text, no ANSI: this is the self-description that ends up in the results block and in
+    // log/debugger output, so it must stay readable outside a terminal. The colored, card-style
+    // render for a human player lives in Application.Qwixx.QwixxScoreSheetExtensions instead.
+    public override string ToString()
+    {
+        var rows = string.Join(", ", Enum.GetValues<QwixxColor>().Select(color => $"{color} {_rows[color].MarkedCount}"));
+        return $"{Name}, has {Score} points, marks [{rows}] and {Penalties} penalties";
+    }
+
     // A thinker is hackathon-participant code, so every call into one is an untrusted boundary -
     // the same reason TakeFivePlayer.Decide wraps its own thinker calls. Each fallback is the
     // "do nothing" answer, which is always legal: declining a mark is a normal Qwixx move

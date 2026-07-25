@@ -66,7 +66,10 @@ internal class App
                 _gameEventHandler.SetMinLevel(EventLevel.Info);
 
                 string question = $"With how many players do you want to play ({gameOption.MinNumberOfPlayers}-{gameOption.MaxNumberOfPlayers})?";
-                IEnumerable<int> options = Enumerable.Range(gameOption.MinNumberOfPlayers, gameOption.MaxNumberOfPlayers - gameOption.MinNumberOfPlayers);
+                // Range's second argument is a count, not an end value - without the +1 the
+                // maximum is never offered, so the question above advertised a player count
+                // (e.g. 5 for Qwixx, 7 for Gesjaakt, 10 for Take-5!) that was then rejected.
+                IEnumerable<int> options = Enumerable.Range(gameOption.MinNumberOfPlayers, gameOption.MaxNumberOfPlayers - gameOption.MinNumberOfPlayers + 1);
                 var playersToAdd = _playerInputProvider.GetPlayerInputAsInt(question, options);
                 _gameRunner.ManualGame(playersToAdd);
                 break;
