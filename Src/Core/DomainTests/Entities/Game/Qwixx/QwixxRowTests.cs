@@ -58,7 +58,7 @@ public class QwixxRowTests
     // QX-015/QX-016: numbers are marked in the row's printed left-to-right order, so once a
     // number is marked, nothing earlier in that order can be marked afterward.
     [TestMethod]
-    public void QX016_MarkingANumber_MakesEarlierNumbersUnmarkable()
+    public void QX015_QX016_MarkingANumber_MakesEarlierNumbersUnmarkable()
     {
         var row = new QwixxRow(QwixxColor.Red);
 
@@ -270,7 +270,7 @@ public class QwixxRowTests
     [DataRow(QwixxColor.Yellow, 2, 3, 4, 5, 12)]
     [DataRow(QwixxColor.Green, 12, 11, 10, 9, 2)]
     [DataRow(QwixxColor.Blue, 12, 11, 10, 9, 2)]
-    public void QX028_Score_WhenLockedWithMinimumFiveMarks_CountsLockAsSixthMark(QwixxColor color, int m1, int m2, int m3, int m4, int lastNumber)
+    public void QX005_QX028_Score_WhenLockedWithMinimumFiveMarks_CountsLockAsSixthMark(QwixxColor color, int m1, int m2, int m3, int m4, int lastNumber)
     {
         var row = new QwixxRow(color);
         row.Mark(m1);

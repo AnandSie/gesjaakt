@@ -168,7 +168,7 @@ public class QwixxPlayerTests
 
     // QX-011: marking is always optional, never mandatory - declining is a legal move.
     [TestMethod]
-    public void QX009_DecideWhiteMark_CanReturnNullToDecline()
+    public void QX009_QX011_DecideWhiteMark_CanReturnNullToDecline()
     {
         thinkerMock.Setup(t => t.DecideWhiteMark(gameStateMock.Object, 8)).Returns((QwixxColor?)null);
 
@@ -204,7 +204,7 @@ public class QwixxPlayerTests
 
     // QX-011: marking is always optional here too, for the active player's colored combination.
     [TestMethod]
-    public void QX010_DecideColoredMark_CanReturnNullToDecline()
+    public void QX010_QX011_DecideColoredMark_CanReturnNullToDecline()
     {
         var roll = new QwixxDiceRoll(white1: 3, white2: 5, red: 2, yellow: 4, green: 6, blue: 1);
         thinkerMock.Setup(t => t.DecideColoredMark(gameStateMock.Object, roll)).Returns((QwixxMark?)null);
