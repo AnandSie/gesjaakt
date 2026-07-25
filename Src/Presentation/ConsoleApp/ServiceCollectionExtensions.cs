@@ -8,6 +8,8 @@ using Application.Gesjaakt;
 using Domain.Interfaces.Games.Gesjaakt;
 using Domain.Interfaces.Games.TakeFive;
 using Application.TakeFive;
+using Application.Qwixx;
+using Domain.Interfaces.Games.Qwixx;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces;
 using Visualization;
@@ -49,7 +51,8 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton(sp => new Dictionary<Type, Func<IGameRunner>>
         {
             [typeof(GesjaaktGame)] = () => sp.GetRequiredService<GameRunner<IGesjaaktPlayer>>(),
-            [typeof(TakeFiveGame)] = () => sp.GetRequiredService<GameRunner<ITakeFivePlayer>>()
+            [typeof(TakeFiveGame)] = () => sp.GetRequiredService<GameRunner<ITakeFivePlayer>>(),
+            [typeof(QwixxGame)] = () => sp.GetRequiredService<GameRunner<IQwixxPlayer>>()
         });
 
         // Note: allows user to choose game by injecting this in App.cs
@@ -57,6 +60,7 @@ internal static class ServiceCollectionExtensions
         {
             sp.GetRequiredService<GesjaaktGame>(),
             sp.GetRequiredService<TakeFiveGame>(),
+            sp.GetRequiredService<QwixxGame>(),
         });
         return serviceCollection;
     }
@@ -86,6 +90,19 @@ internal static class ServiceCollectionExtensions
 
         serviceCollection.AddSingleton<IPlayerFactory<ITakeFivePlayer>, TakeFivePlayerFactory>();
         serviceCollection.AddTransient<ITakeFiveGameEventCollector, TakeFiveGameEventCollector>();
+
+        return serviceCollection;
+    }
+
+    public static IServiceCollection AddQwixxGame(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddSingleton<GameRunner<IQwixxPlayer>>();
+
+        serviceCollection.AddTransient<IGame<IQwixxPlayer>, QwixxGame>();
+        serviceCollection.AddTransient<QwixxGame>();
+
+        serviceCollection.AddSingleton<IPlayerFactory<IQwixxPlayer>, QwixxPlayerFactory>();
+        serviceCollection.AddTransient<IQwixxGameEventCollector, QwixxGameEventCollector>();
 
         return serviceCollection;
     }

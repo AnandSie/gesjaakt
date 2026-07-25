@@ -1,6 +1,6 @@
 # 🃏 Bot Building Hackathon
 
-Do you like programming and card games? Then join this hackathon! Build your own bot and let it compete against the bots of other participants. Choose your game, code your strategy, and may the best algorithm win!
+Do you like programming and games? Then join this hackathon! Build your own bot and let it compete against the bots of other participants. Choose your game, code your strategy, and may the best algorithm win!
 
 ---
 
@@ -11,6 +11,7 @@ Do you like programming and card games? Then join this hackathon! Build your own
 - [General Bot Development](#general-bot-development)
 - [Game 1: Gesjaakt 🃏](#-game-1-gesjaakt)
 - [Game 2: Take-5! 🐄](#-game-2-take-5)
+- [Game 3: Qwixx 🎲](#-game-3-qwixx)
 
 ---
 
@@ -21,6 +22,7 @@ A simple **game engine** has been built for each supported game. Competitors dev
 **Supported games:**
 - [Gesjaakt](#-game-1-gesjaakt)
 - [Take-5!](#-game-2-take-5)
+- [Qwixx](#-game-3-qwixx)
 
 ---
 
@@ -40,7 +42,7 @@ A simple **game engine** has been built for each supported game. Competitors dev
    git clone https://github.com/AnandSie/gesjaakt.git
    ```
 6. Open the `gesjaakt` folder in VS Code (`Ctrl+K Ctrl+O`)
-7. Open `gesjaakt\Src\Application\GameRunner.cs`
+7. Open `gesjaakt\Src\Presentation\ConsoleApp\Program.cs`
 8. Press `Ctrl+F5` to run, then select **"C#"** → **"C#: Console App"**
 
 You should see:
@@ -48,13 +50,14 @@ You should see:
 Which game do you want to play?
 1. GesjaaktGame
 2. TakeFiveGame
+3. QwixxGame
 ```
 
 ---
 
 ## General Bot Development
 
-These rules and tools apply to **both games**.
+These rules and tools apply to **all games**.
 
 ### Language & Structure
 
@@ -201,5 +204,31 @@ Each round runs **10,000 games** back-to-back. Scoring is based on **percentage 
 | Bart          | 994,878    | 2.0%       |
 | ScaredThinker | 990,043    | 2.0%       |
 | Tomas         | 467,532    | 0.9%       |
+
+---
+
+# 🎲 Game 3: Qwixx
+
+Qwixx is a fast dice game where every player reacts to every roll. On your turn you roll 6 dice (2 white, 4 colored) and get two chances to cross out numbers on your own score sheet: everyone may use the white-dice sum, and only you (the active roller) may also combine a white die with a colored die. Cross out numbers in a row strictly left-to-right — skip ahead and you lose access to anything earlier. Reach a row's last number with enough marks and you can lock it, removing that color for everyone, for the rest of the game.
+
+Full rule-by-rule spec: [`docs/qwixx/rules.md`](docs/qwixx/rules.md).
+
+## 🧠 Creating a Qwixx Bot
+
+1. Copy the template. See location below.
+2. Rename it to something like `YourNameQwixxThinker.cs` and place it in the same folder
+3. Implement all three methods: `DecideWhiteMark`, `DecideColoredMark`, `DecideToLock`. The inherited `Me` property is your own score sheet — use it to check what you have already marked before deciding.
+4. Add your thinker to `QwixxPlayerFactory.Create`
+5. Run the game. (Don't know how? See the [Getting Started](#-getting-started) section)
+
+> 📄 Template location: `Src\Application\Qwixx\Thinkers\TemplateQwixxThinker.cs`
+
+> 💥 **If your thinker throws, the game does not crash.** The exception is caught, logged as an error, and that decision is treated as "mark nothing" — so a broken bot quietly loses points (and collects penalties) instead of ending everyone's game. If your bot seems to be doing nothing, check the log for `Decide Exception - Player <name> could not decide`.
+
+> 🚫 **An illegal mark is rejected, not applied.** Your mark is checked before it lands: the row has to actually allow that number (QX-015/QX-016), the color must not already be locked by someone else (QX-024), and for a colored mark the number has to be one of that roll's real candidate sums (QX-010). A `QwixxColor` you invented by casting an out-of-range number is rejected too. Any of these is logged as `Mark Rejected - player <name> ...` and your turn continues as if you had marked nothing — so if you were the active player, expect a penalty.
+
+## 📊 Qwixx Results
+
+*Results will be posted here after the tournament.*
 
 ---

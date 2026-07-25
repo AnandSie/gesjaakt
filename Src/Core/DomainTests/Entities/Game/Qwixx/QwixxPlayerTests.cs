@@ -1,0 +1,359 @@
+using Domain.Entities.Game.Qwixx;
+using Domain.Interfaces.Games.Qwixx;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+
+namespace DomainTests.Entities.Game.Qwixx;
+
+[TestClass]
+public class QwixxPlayerTests
+{
+    private Mock<IQwixxThinker> thinkerMock;
+    private QwixxPlayer player;
+    private Mock<IQwixxReadOnlyGameState> gameStateMock;
+
+    [TestInitialize]
+    public void Setup()
+    {
+        thinkerMock = new Mock<IQwixxThinker>();
+        player = new QwixxPlayer(thinkerMock.Object);
+        gameStateMock = new Mock<IQwixxReadOnlyGameState>();
+    }
+
+    // The player's name is whatever its thinker reports — the thinker is the bot
+    // implementation hackathon participants write and compete with.
+    [TestMethod]
+    public void HasNameFromThinker()
+    {
+        thinkerMock.Setup(t => t.Name).Returns("Foo");
+
+        var result = new QwixxPlayer(thinkerMock.Object);
+
+        result.Name.Should().Be("Foo");
+    }
+
+    // QX-002: a player has one row per color.
+    [TestMethod]
+    [DataRow(QwixxColor.Red)]
+    [DataRow(QwixxColor.Yellow)]
+    [DataRow(QwixxColor.Green)]
+    [DataRow(QwixxColor.Blue)]
+    public void QX002_Row_ReturnsARowOfTheRequestedColor(QwixxColor color)
+    {
+        player.Row(color).Color.Should().Be(color);
+    }
+
+    // Row(color) must return the same instance every call, otherwise marks made through one
+    // call would be invisible through the next.
+    [TestMethod]
+    public void QX002_Row_ReturnsTheSameInstanceOnEachCall()
+    {
+        player.Row(QwixxColor.Red).Mark(2);
+
+        player.Row(QwixxColor.Red).MarkedCount.Should().Be(1);
+    }
+
+    // QX-018: penalties start at zero and accumulate one at a time.
+    [TestMethod]
+    public void QX018_NewPlayer_StartsWithZeroPenalties()
+    {
+        player.Penalties.Should().Be(0);
+    }
+
+    [TestMethod]
+    public void QX018_AddPenalty_IncrementsPenaltiesByOne()
+    {
+        player.AddPenalty();
+
+        player.Penalties.Should().Be(1);
+    }
+
+    [TestMethod]
+    public void QX018_AddPenalty_AccumulatesAcrossMultipleCalls()
+    {
+        player.AddPenalty();
+        player.AddPenalty();
+        player.AddPenalty();
+
+        player.Penalties.Should().Be(3);
+    }
+
+    // QX-020: the game-ending penalty threshold is 4.
+    [TestMethod]
+    public void QX020_HasMaxPenalties_IsFalseBelowFourPenalties()
+    {
+        player.AddPenalty();
+        player.AddPenalty();
+        player.AddPenalty();
+
+        player.HasMaxPenalties.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void QX020_HasMaxPenalties_IsTrueAtFourPenalties()
+    {
+        player.AddPenalty();
+        player.AddPenalty();
+        player.AddPenalty();
+        player.AddPenalty();
+
+        player.HasMaxPenalties.Should().BeTrue();
+    }
+
+    // QX-031: a fresh player (no marks, no penalties) scores zero.
+    [TestMethod]
+    public void QX031_NewPlayer_ScoresZero()
+    {
+        player.Score.Should().Be(0);
+    }
+
+    // QX-030: each penalty subtracts 5 points from the total score.
+    [TestMethod]
+    public void QX030_Penalties_SubtractFivePointsEach()
+    {
+        player.AddPenalty();
+        player.AddPenalty();
+
+        player.Score.Should().Be(-10);
+    }
+
+    // QX-031: score is the sum of all 4 row scores.
+    [TestMethod]
+    public void QX031_Score_SumsAllFourRowScores()
+    {
+        player.Row(QwixxColor.Red).Mark(2);
+        player.Row(QwixxColor.Red).Mark(3);
+        player.Row(QwixxColor.Red).Mark(4); // 3 marks -> 6 points
+
+        player.Score.Should().Be(6);
+    }
+
+    // QX-031: row scores and the penalty deduction combine into one total.
+    [TestMethod]
+    public void QX031_Score_CombinesRowScoresAndPenaltyDeduction()
+    {
+        player.Row(QwixxColor.Red).Mark(2);
+        player.Row(QwixxColor.Red).Mark(3);
+        player.Row(QwixxColor.Red).Mark(4); // 6 points
+        player.Row(QwixxColor.Yellow).Mark(2); // 1 point
+        player.AddPenalty(); // -5 points
+
+        player.Score.Should().Be(6 + 1 - 5);
+    }
+
+    // QX-009: DecideWhiteMark is a pure delegation to the injected thinker.
+    [TestMethod]
+    public void QX009_DecideWhiteMark_DelegatesToTheThinker()
+    {
+        thinkerMock.Setup(t => t.DecideWhiteMark(gameStateMock.Object, 8)).Returns(QwixxColor.Red);
+
+        var result = player.DecideWhiteMark(gameStateMock.Object, 8);
+
+        result.Should().Be(QwixxColor.Red);
+    }
+
+    // The thinker needs to know its own state (e.g. "which numbers have I already marked?")
+    // to decide sensibly - mirrors TakeFivePlayer pushing the hand into its thinker via SetState.
+    [TestMethod]
+    public void QX009_DecideWhiteMark_GivesTheThinkerItsOwnCurrentStateFirst()
+    {
+        player.Row(QwixxColor.Red).Mark(2);
+        thinkerMock.Setup(t => t.DecideWhiteMark(gameStateMock.Object, 8)).Returns((QwixxColor?)null);
+
+        player.DecideWhiteMark(gameStateMock.Object, 8);
+
+        thinkerMock.Verify(t => t.SetState(It.Is<IQwixxReadOnlyPlayer>(p => p.MarkedCount(QwixxColor.Red) == 1)), Times.Once);
+    }
+
+    // QX-011: marking is always optional, never mandatory - declining is a legal move.
+    [TestMethod]
+    public void QX009_QX011_DecideWhiteMark_CanReturnNullToDecline()
+    {
+        thinkerMock.Setup(t => t.DecideWhiteMark(gameStateMock.Object, 8)).Returns((QwixxColor?)null);
+
+        var result = player.DecideWhiteMark(gameStateMock.Object, 8);
+
+        result.Should().BeNull();
+    }
+
+    // QX-010: DecideColoredMark is a pure delegation to the injected thinker.
+    [TestMethod]
+    public void QX010_DecideColoredMark_DelegatesToTheThinker()
+    {
+        var roll = new QwixxDiceRoll(white1: 3, white2: 5, red: 2, yellow: 4, green: 6, blue: 1);
+        var expectedMark = new QwixxMark(QwixxColor.Red, 7);
+        thinkerMock.Setup(t => t.DecideColoredMark(gameStateMock.Object, roll)).Returns(expectedMark);
+
+        var result = player.DecideColoredMark(gameStateMock.Object, roll);
+
+        result.Should().Be(expectedMark);
+    }
+
+    [TestMethod]
+    public void QX010_DecideColoredMark_GivesTheThinkerItsOwnCurrentStateFirst()
+    {
+        player.Row(QwixxColor.Yellow).Mark(2);
+        var roll = new QwixxDiceRoll(white1: 3, white2: 5, red: 2, yellow: 4, green: 6, blue: 1);
+        thinkerMock.Setup(t => t.DecideColoredMark(gameStateMock.Object, roll)).Returns((QwixxMark?)null);
+
+        player.DecideColoredMark(gameStateMock.Object, roll);
+
+        thinkerMock.Verify(t => t.SetState(It.Is<IQwixxReadOnlyPlayer>(p => p.MarkedCount(QwixxColor.Yellow) == 1)), Times.Once);
+    }
+
+    // QX-011: marking is always optional here too, for the active player's colored combination.
+    [TestMethod]
+    public void QX010_QX011_DecideColoredMark_CanReturnNullToDecline()
+    {
+        var roll = new QwixxDiceRoll(white1: 3, white2: 5, red: 2, yellow: 4, green: 6, blue: 1);
+        thinkerMock.Setup(t => t.DecideColoredMark(gameStateMock.Object, roll)).Returns((QwixxMark?)null);
+
+        var result = player.DecideColoredMark(gameStateMock.Object, roll);
+
+        result.Should().BeNull();
+    }
+
+    // QX-022/QX-023: DecideToLock is a pure delegation to the injected thinker.
+    [TestMethod]
+    public void DecideToLock_DelegatesToTheThinker()
+    {
+        thinkerMock.Setup(t => t.DecideToLock(gameStateMock.Object, QwixxColor.Red)).Returns(true);
+
+        var result = player.DecideToLock(gameStateMock.Object, QwixxColor.Red);
+
+        result.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void DecideToLock_GivesTheThinkerItsOwnCurrentStateFirst()
+    {
+        player.Row(QwixxColor.Green).Mark(11);
+        thinkerMock.Setup(t => t.DecideToLock(gameStateMock.Object, QwixxColor.Red)).Returns(true);
+
+        player.DecideToLock(gameStateMock.Object, QwixxColor.Red);
+
+        thinkerMock.Verify(t => t.SetState(It.Is<IQwixxReadOnlyPlayer>(p => p.MarkedCount(QwixxColor.Green) == 1)), Times.Once);
+    }
+
+    [TestMethod]
+    public void DecideToLock_CanDeclineToLock()
+    {
+        thinkerMock.Setup(t => t.DecideToLock(gameStateMock.Object, QwixxColor.Red)).Returns(false);
+
+        var result = player.DecideToLock(gameStateMock.Object, QwixxColor.Red);
+
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void ReturnsReadOnlyPlayer()
+    {
+        var result = player.AsReadOnly();
+
+        result.GetType().Should().Be(typeof(QwixxReadOnlyPlayer));
+    }
+
+    // A thinker is hackathon-participant code: a broken one must not take the whole game down,
+    // mirroring how TakeFivePlayer.Decide contains its own thinker's exceptions.
+    [TestMethod]
+    public void DecideWhiteMark_WhenTheThinkerThrows_DeclinesInsteadOfPropagating()
+    {
+        thinkerMock.Setup(t => t.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<int>())).Throws(new Exception("boom"));
+
+        var result = player.DecideWhiteMark(gameStateMock.Object, 8);
+
+        result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public void DecideWhiteMark_WhenTheThinkerThrows_ReportsTheErrorWithTheThinkersMessage()
+    {
+        thinkerMock.Setup(t => t.Name).Returns("Broken");
+        thinkerMock.Setup(t => t.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<int>())).Throws(new Exception("boom"));
+        var messages = CaptureDecideErrors();
+
+        player.DecideWhiteMark(gameStateMock.Object, 8);
+
+        messages.Should().ContainSingle().Which.Should().Contain("Broken").And.Contain("boom");
+    }
+
+    [TestMethod]
+    public void DecideColoredMark_WhenTheThinkerThrows_DeclinesInsteadOfPropagating()
+    {
+        var roll = new QwixxDiceRoll(white1: 3, white2: 5, red: 2, yellow: 4, green: 6, blue: 1);
+        thinkerMock.Setup(t => t.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>())).Throws(new Exception("boom"));
+        var messages = CaptureDecideErrors();
+
+        var result = player.DecideColoredMark(gameStateMock.Object, roll);
+
+        result.Should().BeNull();
+        messages.Should().ContainSingle();
+    }
+
+    // QX-023: locking is irreversible and closes the color for everyone, so the safe fallback
+    // for a thinker that can't answer is to leave the row open rather than to lock it.
+    [TestMethod]
+    public void DecideToLock_WhenTheThinkerThrows_LeavesTheRowUnlocked()
+    {
+        thinkerMock.Setup(t => t.DecideToLock(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxColor>())).Throws(new Exception("boom"));
+        var messages = CaptureDecideErrors();
+
+        var result = player.DecideToLock(gameStateMock.Object, QwixxColor.Red);
+
+        result.Should().BeFalse();
+        messages.Should().ContainSingle();
+    }
+
+    // A participant may implement IQwixxThinker directly instead of extending BaseQwixxThinker,
+    // so SetState is just as untrusted as the Decide methods themselves.
+    [TestMethod]
+    public void DecideWhiteMark_WhenSetStateThrows_DeclinesInsteadOfPropagating()
+    {
+        thinkerMock.Setup(t => t.SetState(It.IsAny<IQwixxReadOnlyPlayer>())).Throws(new Exception("boom"));
+        var messages = CaptureDecideErrors();
+
+        var result = player.DecideWhiteMark(gameStateMock.Object, 8);
+
+        result.Should().BeNull();
+        messages.Should().ContainSingle();
+    }
+
+    // The results block at the end of a game prints players directly, so without this it shows
+    // the type name instead of anything useful about the player.
+    [TestMethod]
+    public void ToString_DescribesTheNameScoreMarksAndPenalties()
+    {
+        thinkerMock.Setup(t => t.Name).Returns("Alice");
+        player.Row(QwixxColor.Red).Mark(5);
+        player.Row(QwixxColor.Red).Mark(7);
+        player.AddPenalty();
+
+        var result = player.ToString();
+
+        result.Should().Contain("Alice");
+        result.Should().Contain(player.Score.ToString());
+        result.Should().Contain("Red 2");
+        result.Should().Contain("1 penalties");
+    }
+
+    [TestMethod]
+    public void ToString_MentionsEveryRowEvenWhenUnmarked()
+    {
+        thinkerMock.Setup(t => t.Name).Returns("Alice");
+
+        var result = player.ToString();
+
+        foreach (var color in Enum.GetValues<QwixxColor>())
+        {
+            result.Should().Contain($"{color} 0");
+        }
+    }
+
+    private List<string> CaptureDecideErrors()
+    {
+        var messages = new List<string>();
+        player.DecideError += (_, e) => messages.Add(e.Message);
+        return messages;
+    }
+}
