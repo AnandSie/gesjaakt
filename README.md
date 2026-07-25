@@ -217,11 +217,13 @@ Full rule-by-rule spec: [`docs/qwixx/rules.md`](docs/qwixx/rules.md).
 
 1. Copy the template. See location below.
 2. Rename it to something like `YourNameQwixxThinker.cs` and place it in the same folder
-3. Implement all three methods: `DecideWhiteMark`, `DecideColoredMark`, `DecideToLock`
+3. Implement all three methods: `DecideWhiteMark`, `DecideColoredMark`, `DecideToLock`. The inherited `Me` property is your own score sheet — use it to check what you have already marked before deciding.
 4. Add your thinker to `QwixxPlayerFactory.Create`
 5. Run the game. (Don't know how? See the [Getting Started](#-getting-started) section)
 
 > 📄 Template location: `Src\Application\Qwixx\Thinkers\TemplateQwixxThinker.cs`
+
+> 💥 **If your thinker throws, the game does not crash.** The exception is caught, logged as an error, and that decision is treated as "mark nothing" — so a broken bot quietly loses points (and collects penalties) instead of ending everyone's game. If your bot seems to be doing nothing, check the log for `Decide Exception - Player <name> could not decide`.
 
 ## 📊 Qwixx Results
 
