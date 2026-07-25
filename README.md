@@ -225,6 +225,8 @@ Full rule-by-rule spec: [`docs/qwixx/rules.md`](docs/qwixx/rules.md).
 
 > 💥 **If your thinker throws, the game does not crash.** The exception is caught, logged as an error, and that decision is treated as "mark nothing" — so a broken bot quietly loses points (and collects penalties) instead of ending everyone's game. If your bot seems to be doing nothing, check the log for `Decide Exception - Player <name> could not decide`.
 
+> 🚫 **An illegal mark is rejected, not applied.** Your mark is checked before it lands: the row has to actually allow that number (QX-015/QX-016), the color must not already be locked by someone else (QX-024), and for a colored mark the number has to be one of that roll's real candidate sums (QX-010). A `QwixxColor` you invented by casting an out-of-range number is rejected too. Any of these is logged as `Mark Rejected - player <name> ...` and your turn continues as if you had marked nothing — so if you were the active player, expect a penalty.
+
 ## 📊 Qwixx Results
 
 *Results will be posted here after the tournament.*

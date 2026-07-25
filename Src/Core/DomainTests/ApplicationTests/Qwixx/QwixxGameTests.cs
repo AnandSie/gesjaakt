@@ -33,6 +33,43 @@ public class QwixxGameTests
             .ToList();
     }
 
+    // Returns a QwixxColor value the enum never defined - the mistake a participant makes by
+    // casting an out-of-bounds index, not by trying to break anything.
+    private class UndefinedColorThinker(bool viaWhiteMark) : BaseQwixxThinker
+    {
+        public override string Name => "Rogue";
+
+        public override QwixxColor? DecideWhiteMark(IQwixxReadOnlyGameState gameState, int whiteSum)
+            => viaWhiteMark ? (QwixxColor)99 : null;
+
+        public override QwixxMark? DecideColoredMark(IQwixxReadOnlyGameState gameState, QwixxDiceRoll roll)
+            => viaWhiteMark ? null : new QwixxMark((QwixxColor)99, roll.WhiteSum);
+
+        public override bool DecideToLock(IQwixxReadOnlyGameState gameState, QwixxColor color) => false;
+    }
+
+    // The whole-engine version of the dealer's own guard tests: with real QwixxPlayers behind
+    // it, an undefined color reaches a per-color dictionary lookup and a switch that each throw.
+    // One participant's bot must not be able to take down a whole tournament run.
+    [TestMethod]
+    [DataRow(true, DisplayName = "via DecideWhiteMark")]
+    [DataRow(false, DisplayName = "via DecideColoredMark")]
+    public void PlayWith_WhenAThinkerReturnsAnUndefinedColor_FinishesTheGameAnyway(bool viaWhiteMark)
+    {
+        var players = new List<IQwixxPlayer>
+        {
+            new QwixxPlayer(new UndefinedColorThinker(viaWhiteMark)),
+            new QwixxPlayer(new GreedyQwixxThinker("Greedy")),
+        };
+
+        var act = () => game.PlayWith(players);
+
+        act.Should().NotThrow();
+        // QX-026: and it really ended, rather than being abandoned somewhere mid-round.
+        var lockedColors = Enum.GetValues<QwixxColor>().Count(color => players.Any(p => p.Row(color).IsLocked));
+        (lockedColors >= QwixxRules.RowsLockedToEndGame || players.Any(p => p.HasMaxPenalties)).Should().BeTrue();
+    }
+
     [TestMethod]
     public void ExposesTheQwixxPlayerCountLimits()
     {

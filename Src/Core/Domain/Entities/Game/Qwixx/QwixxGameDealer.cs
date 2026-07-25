@@ -118,6 +118,16 @@ public class QwixxGameDealer : IQwixxGameDealer
             return;
         }
 
+        // Checked before the candidate-sum guard below, not after: that guard asks the roll for
+        // this color's sums, and the roll has no answer for a color that doesn't exist - so
+        // without this the validation meant to contain a rogue thinker is itself what throws.
+        if (!Enum.IsDefined(mark.Color))
+        {
+            var unknownColorMessage = $"Mark Rejected - player {activePlayer.Name} chose {(int)mark.Color} {mark.Number}, which is not a Qwixx color.";
+            MarkRejected?.Invoke(this, new(unknownColorMessage));
+            return;
+        }
+
         // A thinker is hackathon-participant code - guard against a number that isn't actually one
         // of this roll's candidate sums for the color it claims.
         if (!roll.ColoredSums(mark.Color).Contains(mark.Number))
@@ -134,6 +144,17 @@ public class QwixxGameDealer : IQwixxGameDealer
     // before applying a mark, and offers the lock decision when the mark makes it possible.
     private bool TryMark(IQwixxPlayer player, IQwixxReadOnlyGameState readOnlyState, QwixxColor color, int number)
     {
+        // A C# enum holds any value of its underlying type, so a color that came from a thinker
+        // is not guaranteed to be one of the four that exist - and every per-color lookup below
+        // (starting with the player's own rows) throws on one that isn't. Checked first, so an
+        // undefined color is rejected like any other illegal mark instead of ending the game.
+        if (!Enum.IsDefined(color))
+        {
+            var unknownColorMessage = $"Mark Rejected - player {player.Name} tried to mark {(int)color} {number}, which is not a Qwixx color.";
+            MarkRejected?.Invoke(this, new(unknownColorMessage));
+            return false;
+        }
+
         if (_gameState.IsColorLocked(color))
         {
             var lockedMessage = $"Mark Rejected - player {player.Name} tried to mark {color} {number}, but {color} is already locked for every player.";

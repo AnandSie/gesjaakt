@@ -260,6 +260,93 @@ public class QwixxGameDealerTests
         player.Object.Row(QwixxColor.Red).MarkedCount.Should().Be(0);
     }
 
+    // A C# enum accepts any underlying int, so a participant thinker can hand back a QwixxColor
+    // value that was never defined - by mistake far more easily than by malice (an index that
+    // overran, an uninitialised cast). That has to be rejected like any other illegal mark:
+    // the dealer looks colors up in a per-color dictionary and switch, both of which throw on
+    // an unknown one, and an escaping exception would end everyone's game, not just this bot's.
+    [TestMethod]
+    public void Play_WhiteMark_WhenColorIsNotADefinedQwixxColor_IsRejected()
+    {
+        var player = CreatePlayerMock();
+        player.Setup(p => p.Name).Returns("Rogue");
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<int>())).Returns((QwixxColor)99);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>())).Returns((QwixxMark?)null);
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 2, white2: 3, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+
+        var act = () => dealer.Play();
+
+        act.Should().NotThrow();
+        AllRowsOf(player).Should().OnlyContain(row => row.MarkedCount == 0);
+    }
+
+    [TestMethod]
+    public void Play_MarkRejected_IsRaisedWhenTheWhiteMarkColorIsNotADefinedQwixxColor()
+    {
+        var player = CreatePlayerMock();
+        player.Setup(p => p.Name).Returns("Rogue");
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<int>())).Returns((QwixxColor)99);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>())).Returns((QwixxMark?)null);
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 2, white2: 3, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+        var messages = CaptureMarkRejected();
+
+        dealer.Play();
+
+        // Offered to every player on every turn of the round, so this fires once per turn -
+        // what matters is that none of them go silent.
+        messages.Should().NotBeEmpty().And.OnlyContain(m => m.Contains("Rogue") && m.Contains("not a Qwixx color"));
+    }
+
+    // The colored path needs its own guard: the candidate-sum check that catches a fabricated
+    // *number* asks the roll for that color's sums, so an undefined color throws inside the
+    // very validation meant to contain a rogue thinker.
+    [TestMethod]
+    public void Play_ColoredMark_WhenColorIsNotADefinedQwixxColor_IsRejected()
+    {
+        var player = CreatePlayerMock();
+        player.Setup(p => p.Name).Returns("Rogue");
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<int>())).Returns((QwixxColor?)null);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>()))
+            .Returns(new QwixxMark((QwixxColor)99, 5));
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 2, white2: 3, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+
+        var act = () => dealer.Play();
+
+        act.Should().NotThrow();
+        AllRowsOf(player).Should().OnlyContain(row => row.MarkedCount == 0);
+    }
+
+    [TestMethod]
+    public void Play_MarkRejected_IsRaisedWhenTheColoredMarkColorIsNotADefinedQwixxColor()
+    {
+        var player = CreatePlayerMock();
+        player.Setup(p => p.Name).Returns("Rogue");
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<int>())).Returns((QwixxColor?)null);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>()))
+            .Returns(new QwixxMark((QwixxColor)99, 5));
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 2, white2: 3, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+        var messages = CaptureMarkRejected();
+
+        dealer.Play();
+
+        messages.Should().ContainSingle().Which.Should().Contain("Rogue").And.Contain("not a Qwixx color");
+    }
+
+    // Every real row of a player mock, for asserting a rejected mark landed nowhere at all
+    // rather than just nowhere in the one color a test happened to name.
+    private static IEnumerable<QwixxRow> AllRowsOf(Mock<IQwixxPlayer> player)
+    {
+        return Enum.GetValues<QwixxColor>().Select(color => player.Object.Row(color));
+    }
+
     [TestMethod]
     public void Play_Mark_WhenColorIsLocked_IsRejected()
     {
