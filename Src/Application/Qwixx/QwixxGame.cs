@@ -1,17 +1,19 @@
+using Application.Interfaces;
 using Domain.Entities.Game.Qwixx;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.Qwixx;
 
 namespace Application.Qwixx;
 
-// No event collector is attached here, unlike GesjaaktGame/TakeFiveGame - QwixxGameDealer
-// deliberately raises no console/UI events yet (see docs/qwixx/status-report.md open items).
 public class QwixxGame : GameOption, IGame<IQwixxPlayer>
 {
+    private readonly IQwixxGameEventCollector gameEventCollector;
     private QwixxGameDealer _gameDealer;
 
-    public QwixxGame() : base(typeof(QwixxGame), QwixxRules.MinNumberOfPlayers, QwixxRules.MaxNumberOfPlayers)
+    public QwixxGame(IQwixxGameEventCollector gameEventCollector)
+        : base(typeof(QwixxGame), QwixxRules.MinNumberOfPlayers, QwixxRules.MaxNumberOfPlayers)
     {
+        this.gameEventCollector = gameEventCollector;
     }
 
     public static string Name { get; } = "Qwixx";
@@ -21,6 +23,12 @@ public class QwixxGame : GameOption, IGame<IQwixxPlayer>
         var gameState = new QwixxGameState();
         _gameDealer = new QwixxGameDealer(gameState, new QwixxDiceRoller());
         _gameDealer.Add(players);
+
+        // Nothing is attached to gameState: unlike GesjaaktGameState/TakeFiveGameState it raises
+        // no events of its own (see IQwixxGameEventCollector).
+        gameEventCollector
+            .Attach(_gameDealer)
+            .Attach(players);
 
         _gameDealer.Prepare();
         _gameDealer.Play();

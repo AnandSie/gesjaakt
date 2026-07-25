@@ -422,4 +422,168 @@ public class QwixxGameDealerTests
         player2.Verify(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>()), Times.Once);
         player3.Verify(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>()), Times.Once);
     }
+
+    // QX-024/QX-025: locking closes the color for everyone, which is exactly the kind of
+    // table-wide moment the other two dealers report to the console via events.
+    [TestMethod]
+    public void Play_ColorLocked_IsRaisedWhenARowIsLocked()
+    {
+        var player = CreatePlayerMock();
+        player.Setup(p => p.Name).Returns("Locker");
+        var redRow = player.Object.Row(QwixxColor.Red);
+        redRow.Mark(2);
+        redRow.Mark(3);
+        redRow.Mark(4);
+        redRow.Mark(5); // marking 12 next is the 5th mark, so CanLock becomes true.
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), 12)).Returns(QwixxColor.Red);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>())).Returns((QwixxMark?)null);
+        player.Setup(p => p.DecideToLock(It.IsAny<IQwixxReadOnlyGameState>(), QwixxColor.Red)).Returns(true);
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 6, white2: 6, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+        var messages = CaptureColorLocked();
+
+        dealer.Play();
+
+        messages.Should().ContainSingle().Which.Should().Contain("Locker").And.Contain("Red");
+    }
+
+    [TestMethod]
+    public void Play_ColorLocked_IsNotRaisedWhenTheThinkerDeclinesToLock()
+    {
+        var player = CreatePlayerMock();
+        var redRow = player.Object.Row(QwixxColor.Red);
+        redRow.Mark(2);
+        redRow.Mark(3);
+        redRow.Mark(4);
+        redRow.Mark(5);
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), 12)).Returns(QwixxColor.Red);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>())).Returns((QwixxMark?)null);
+        player.Setup(p => p.DecideToLock(It.IsAny<IQwixxReadOnlyGameState>(), QwixxColor.Red)).Returns(false);
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 6, white2: 6, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+        var messages = CaptureColorLocked();
+
+        dealer.Play();
+
+        messages.Should().BeEmpty();
+    }
+
+    // QX-013: a penalty is a scoring-relevant surprise for the player, so it gets reported too.
+    [TestMethod]
+    public void Play_PenaltyTaken_IsRaisedWhenTheActivePlayerMarksNothing()
+    {
+        var player = CreatePlayerMock();
+        player.Setup(p => p.Name).Returns("Unlucky");
+        player.Setup(p => p.Penalties).Returns(1);
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<int>())).Returns((QwixxColor?)null);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>())).Returns((QwixxMark?)null);
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 2, white2: 3, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+        var messages = CapturePenaltyTaken();
+
+        dealer.Play();
+
+        // The inert padding player is active for this round's other turn and takes its own
+        // penalty, so only the messages naming this player are this test's business.
+        messages.Should().ContainSingle(m => m.Contains("Unlucky"));
+    }
+
+    [TestMethod]
+    public void Play_PenaltyTaken_IsNotRaisedWhenTheActivePlayerMarksSomething()
+    {
+        var player = CreatePlayerMock();
+        player.Setup(p => p.Name).Returns("Marker");
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), 5)).Returns(QwixxColor.Red);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>())).Returns((QwixxMark?)null);
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 2, white2: 3, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+        var messages = CapturePenaltyTaken();
+
+        dealer.Play();
+
+        messages.Should().NotContain(m => m.Contains("Marker"));
+    }
+
+    // Rejections used to be dropped silently, which is what made an unmarkable menu option so
+    // hard to diagnose - a thinker gets no return value telling it the mark didn't land.
+    [TestMethod]
+    public void Play_MarkRejected_IsRaisedWhenTheColorIsLocked()
+    {
+        var player = CreatePlayerMock();
+        player.Setup(p => p.Name).Returns("Hopeful");
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), 5)).Returns(QwixxColor.Red);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>())).Returns((QwixxMark?)null);
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        gameStateMock.Setup(gs => gs.IsColorLocked(QwixxColor.Red)).Returns(true);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 2, white2: 3, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+        var messages = CaptureMarkRejected();
+
+        dealer.Play();
+
+        // The white mark is offered to every player on every turn of the round, so this player's
+        // doomed Red choice is rejected once per turn - all that matters is that none go silent.
+        messages.Should().NotBeEmpty().And.OnlyContain(m => m.Contains("Hopeful") && m.Contains("locked"));
+    }
+
+    [TestMethod]
+    public void Play_MarkRejected_IsRaisedWhenTheRowDoesNotAllowTheNumber()
+    {
+        var player = CreatePlayerMock();
+        // Red is ascending and already marked at 6, so the white sum of 5 can never land there.
+        player.Object.Row(QwixxColor.Red).Mark(6);
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), 5)).Returns(QwixxColor.Red);
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>())).Returns((QwixxMark?)null);
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 2, white2: 3, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+        var messages = CaptureMarkRejected();
+
+        dealer.Play();
+
+        messages.Should().NotBeEmpty().And.OnlyContain(m => m.Contains("Red 5"));
+    }
+
+    [TestMethod]
+    public void Play_MarkRejected_IsRaisedWhenTheNumberIsNotAnActualCandidateSum()
+    {
+        var player = CreatePlayerMock();
+        player.Setup(p => p.DecideWhiteMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<int>())).Returns((QwixxColor?)null);
+        // roll: white1=2, white2=3, red=1 -> real red candidate sums are 3 and 4, not 99.
+        player.Setup(p => p.DecideColoredMark(It.IsAny<IQwixxReadOnlyGameState>(), It.IsAny<QwixxDiceRoll>()))
+            .Returns(new QwixxMark(QwixxColor.Red, 99));
+        gameStateMock.Setup(gs => gs.PlayerOnTurn).Returns(player.Object);
+        diceRollerMock.Setup(dr => dr.Roll()).Returns(new QwixxDiceRoll(white1: 2, white2: 3, red: 1, yellow: 1, green: 1, blue: 1));
+        SetupExactlyOneRound(player.Object);
+        var messages = CaptureMarkRejected();
+
+        dealer.Play();
+
+        messages.Should().ContainSingle().Which.Should().Contain("candidate sums");
+    }
+
+    private List<string> CaptureColorLocked()
+    {
+        var messages = new List<string>();
+        dealer.ColorLocked += (_, e) => messages.Add(e.Message);
+        return messages;
+    }
+
+    private List<string> CapturePenaltyTaken()
+    {
+        var messages = new List<string>();
+        dealer.PenaltyTaken += (_, e) => messages.Add(e.Message);
+        return messages;
+    }
+
+    private List<string> CaptureMarkRejected()
+    {
+        var messages = new List<string>();
+        dealer.MarkRejected += (_, e) => messages.Add(e.Message);
+        return messages;
+    }
 }

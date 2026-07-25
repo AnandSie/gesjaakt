@@ -94,8 +94,6 @@ internal static class ServiceCollectionExtensions
         return serviceCollection;
     }
 
-    // No event collector is registered here - QwixxGameDealer deliberately raises no
-    // console/UI events yet (see docs/qwixx/status-report.md open items).
     public static IServiceCollection AddQwixxGame(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<GameRunner<IQwixxPlayer>>();
@@ -104,6 +102,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddTransient<QwixxGame>();
 
         serviceCollection.AddSingleton<IPlayerFactory<IQwixxPlayer>, QwixxPlayerFactory>();
+        serviceCollection.AddTransient<IQwixxGameEventCollector, QwixxGameEventCollector>();
 
         return serviceCollection;
     }
