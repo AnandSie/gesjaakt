@@ -24,4 +24,6 @@ public class QwixxReadOnlyPlayer : IQwixxReadOnlyPlayer
     public bool IsRowLocked(QwixxColor color) => _player.Row(color).IsLocked;
 
     public bool CanMark(QwixxColor color, int number) => _player.Row(color).CanMark(number);
+
+    public bool IsMarked(QwixxColor color, int number) => _player.Row(color).IsMarked(number);
 }

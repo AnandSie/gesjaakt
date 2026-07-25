@@ -89,6 +89,52 @@ public class QwixxRowTests
         row.CanMark(9).Should().BeTrue();
     }
 
+    // IsMarked distinguishes an actually-marked number from a merely-skipped one - both become
+    // permanently unmarkable (QX-017), but only one was really crossed out on the sheet.
+    [TestMethod]
+    public void IsMarked_ForAFreshRow_IsFalseForEveryNumber()
+    {
+        var row = new QwixxRow(QwixxColor.Red);
+
+        row.IsMarked(6).Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void IsMarked_ForTheNumberJustMarked_IsTrue()
+    {
+        var row = new QwixxRow(QwixxColor.Red);
+
+        row.Mark(6);
+
+        row.IsMarked(6).Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void IsMarked_ForASkippedNumber_IsFalse()
+    {
+        var row = new QwixxRow(QwixxColor.Red);
+
+        row.Mark(6); // skips 2, 3, 4, 5
+
+        row.IsMarked(4).Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void IsMarked_ReflectsEveryNumberMarkedSoFar()
+    {
+        var row = new QwixxRow(QwixxColor.Red);
+
+        row.Mark(4);
+        row.Mark(6);
+        row.Mark(9);
+
+        row.IsMarked(4).Should().BeTrue();
+        row.IsMarked(6).Should().BeTrue();
+        row.IsMarked(9).Should().BeTrue();
+        row.IsMarked(5).Should().BeFalse(); // skipped between 4 and 6
+        row.IsMarked(7).Should().BeFalse(); // skipped between 6 and 9
+    }
+
     // QX-021: the row's last number has no 5-mark prerequisite — it's markable like any other number.
     [TestMethod]
     [DataRow(QwixxColor.Red, 12)]

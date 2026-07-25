@@ -14,4 +14,5 @@ public interface IQwixxReadOnlyPlayer : IReadOnlyPlayer, IScored
     int MarkedCount(QwixxColor color);
     bool IsRowLocked(QwixxColor color);
     bool CanMark(QwixxColor color, int number);
+    bool IsMarked(QwixxColor color, int number);
 }

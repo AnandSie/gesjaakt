@@ -4,6 +4,7 @@ namespace Domain.Entities.Game.Qwixx;
 public class QwixxRow
 {
     private readonly bool _ascending;
+    private readonly HashSet<int> _markedNumbers = new();
     private int? _lastMarkedNumber;
     private int _numbersMarkedCount;
     private bool _locked;
@@ -49,7 +50,12 @@ public class QwixxRow
 
         _lastMarkedNumber = number;
         _numbersMarkedCount++;
+        _markedNumbers.Add(number);
     }
+
+    // Distinguishes an actually-marked number from one that was skipped over (QX-017): both
+    // become permanently unmarkable, but only a marked one was really crossed out.
+    public bool IsMarked(int number) => _markedNumbers.Contains(number);
 
     // QX-022: only true once the row's last number is marked and total marks (including it) is >= 5.
     public bool CanLock()

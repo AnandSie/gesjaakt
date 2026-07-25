@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Application.Qwixx;
 using Domain.Entities.Game.Qwixx;
 using Domain.Interfaces.Games.Qwixx;
 using System.Text;
@@ -7,63 +8,68 @@ namespace Application.Qwixx.Thinkers;
 
 public class ManualQwixxThinker(IPlayerInputProvider playerInputProvider, string name) : BaseQwixxThinker
 {
+    private const string Reset = "\x1b[0m";
+
     public override string Name => name;
 
     public override QwixxColor? DecideWhiteMark(IQwixxReadOnlyGameState gameState, int whiteSum)
     {
-        var question = new StringBuilder();
-        question.AppendLine(RenderMyScoreSheet(gameState));
-        question.AppendLine($"Hi {name}, the white-dice sum is {whiteSum}. Which row do you want to mark it in?");
-        question.AppendLine("1. Red  2. Yellow  3. Green  4. Blue  5. Skip");
+        // ILogger strips ANSI color codes from message content (see IPlayerInputProvider below),
+        // so the colored score sheet is written straight to the console instead.
+        Console.WriteLine(Me.ToScoreSheetString(gameState));
 
-        var choice = playerInputProvider.GetPlayerInputAsInt(question.ToString(), [1, 2, 3, 4, 5]);
-        return choice switch
+        // Only offer rows where whiteSum is actually markable right now - otherwise the menu
+        // lists a "choice" that silently does nothing when picked, which is just confusing.
+        var options = Enum.GetValues<QwixxColor>()
+            .Where(color => Me.CanReallyMark(gameState, color, whiteSum))
+            .ToList();
+
+        var lines = new StringBuilder();
+        for (var i = 0; i < options.Count; i++)
         {
-            1 => QwixxColor.Red,
-            2 => QwixxColor.Yellow,
-            3 => QwixxColor.Green,
-            4 => QwixxColor.Blue,
-            _ => null,
-        };
+            lines.AppendLine($"{i + 1}. {options[i].AnsiColorCode()}{options[i]}{Reset}");
+        }
+        var skipOption = options.Count + 1;
+        lines.AppendLine($"{skipOption}. Skip");
+        Console.WriteLine(lines.ToString());
+
+        var question = $"Hi {name}, the white-dice sum is {whiteSum}. Which row do you want to mark it in (or {skipOption} to skip)?";
+        var choice = playerInputProvider.GetPlayerInputAsInt(question, Enumerable.Range(1, skipOption));
+        return choice == skipOption ? null : options[choice - 1];
     }
 
     public override QwixxMark? DecideColoredMark(IQwixxReadOnlyGameState gameState, QwixxDiceRoll roll)
     {
+        // Same filtering as DecideWhiteMark - and de-duplicated, since a double white roll can
+        // legitimately produce the same candidate sum twice (QX-010), which would otherwise show
+        // as two identical-looking options.
         var candidates = Enum.GetValues<QwixxColor>()
             .SelectMany(color => roll.ColoredSums(color).Select(sum => new QwixxMark(color, sum)))
+            .Where(mark => Me.CanReallyMark(gameState, mark.Color, mark.Number))
+            .Distinct()
             .ToList();
 
-        var question = new StringBuilder();
-        question.AppendLine(RenderMyScoreSheet(gameState));
-        question.AppendLine($"Hi {name}, pick a colored combination to mark, or skip:");
+        Console.WriteLine(Me.ToScoreSheetString(gameState));
+        var candidateLines = new StringBuilder();
         for (var i = 0; i < candidates.Count; i++)
         {
-            question.AppendLine($"{i + 1}. {candidates[i].Color} {candidates[i].Number}");
+            candidateLines.AppendLine($"{i + 1}. {candidates[i].Color.AnsiColorCode()}{candidates[i].Color} {candidates[i].Number}{Reset}");
         }
         var skipOption = candidates.Count + 1;
-        question.AppendLine($"{skipOption}. Skip");
+        candidateLines.AppendLine($"{skipOption}. Skip");
+        Console.WriteLine(candidateLines.ToString());
 
-        var choice = playerInputProvider.GetPlayerInputAsInt(question.ToString(), Enumerable.Range(1, skipOption));
+        var question = $"Hi {name}, pick a colored combination to mark, or {skipOption} to skip:";
+        var choice = playerInputProvider.GetPlayerInputAsInt(question, Enumerable.Range(1, skipOption));
         return choice == skipOption ? null : candidates[choice - 1];
     }
 
     public override bool DecideToLock(IQwixxReadOnlyGameState gameState, QwixxColor color)
     {
+        Console.WriteLine(Me.ToScoreSheetString(gameState));
+
         var question = $"Hi {name}, you can lock the {color} row now. Do you want to lock it?\n1. Yes  2. No";
         var choice = playerInputProvider.GetPlayerInputAsInt(question, [1, 2]);
         return choice == 1;
-    }
-
-    private string RenderMyScoreSheet(IQwixxReadOnlyGameState gameState)
-    {
-        var sheet = new StringBuilder();
-        sheet.AppendLine("---YOUR SCORE SHEET---");
-        foreach (var color in Enum.GetValues<QwixxColor>())
-        {
-            var lockNote = Me.IsRowLocked(color) ? " (locked)" : gameState.IsColorLocked(color) ? " (locked by another player)" : "";
-            sheet.AppendLine($"{color}: {Me.MarkedCount(color)} marks{lockNote}");
-        }
-        sheet.AppendLine($"Penalties: {Me.Penalties}");
-        return sheet.ToString();
     }
 }
