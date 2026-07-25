@@ -166,6 +166,7 @@ public class QwixxPlayerTests
         thinkerMock.Verify(t => t.SetState(It.Is<IQwixxReadOnlyPlayer>(p => p.MarkedCount(QwixxColor.Red) == 1)), Times.Once);
     }
 
+    // QX-011: marking is always optional, never mandatory - declining is a legal move.
     [TestMethod]
     public void QX009_DecideWhiteMark_CanReturnNullToDecline()
     {
@@ -201,6 +202,7 @@ public class QwixxPlayerTests
         thinkerMock.Verify(t => t.SetState(It.Is<IQwixxReadOnlyPlayer>(p => p.MarkedCount(QwixxColor.Yellow) == 1)), Times.Once);
     }
 
+    // QX-011: marking is always optional here too, for the active player's colored combination.
     [TestMethod]
     public void QX010_DecideColoredMark_CanReturnNullToDecline()
     {

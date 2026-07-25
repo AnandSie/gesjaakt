@@ -55,7 +55,8 @@ public class QwixxRowTests
         row.CanMark(5).Should().BeTrue();  // 5 comes after 6 in descending order
     }
 
-    // QX-016: once a number is marked, nothing earlier in the row's order can be marked afterward.
+    // QX-015/QX-016: numbers are marked in the row's printed left-to-right order, so once a
+    // number is marked, nothing earlier in that order can be marked afterward.
     [TestMethod]
     public void QX016_MarkingANumber_MakesEarlierNumbersUnmarkable()
     {
@@ -261,8 +262,9 @@ public class QwixxRowTests
         row.Score.Should().Be(expectedScore);
     }
 
-    // QX-028: locking counts as one more mark on top of the numbers marked, e.g. the minimum
-    // 5 numbers plus the lock cell makes 6 total marks, worth 21 points.
+    // QX-005/QX-028: the lock cell that sits after a row's final number is itself markable, so
+    // locking counts as one more mark on top of the numbers marked - the minimum 5 numbers plus
+    // the lock cell makes 6 total marks, worth 21 points.
     [TestMethod]
     [DataRow(QwixxColor.Red, 2, 3, 4, 5, 12)]
     [DataRow(QwixxColor.Yellow, 2, 3, 4, 5, 12)]
