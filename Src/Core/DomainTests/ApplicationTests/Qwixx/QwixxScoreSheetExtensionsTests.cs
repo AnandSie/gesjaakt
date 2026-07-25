@@ -81,6 +81,34 @@ public class QwixxScoreSheetExtensionsTests
         secondCall.Should().Be(firstCall);
     }
 
+    // Manual players type their own names, so nothing stops two of them entering the same one.
+    // Seats still have to be told apart - colouring by name would hand them the same color and
+    // quietly undo the one thing this method exists for.
+    [TestMethod]
+    public void AnsiNameColorCode_GivesTwoPlayersWithTheSameNameDifferentColors()
+    {
+        var namesake = CreatePlayer("Alice"); // the player created in Setup is also called Alice
+        gameState.AddPlayer(namesake);
+
+        var firstSeat = player.AsReadOnly().AnsiNameColorCode(ReadOnlyState);
+        var secondSeat = namesake.AsReadOnly().AnsiNameColorCode(ReadOnlyState);
+
+        secondSeat.Should().NotBe(firstSeat);
+    }
+
+    // A player who isn't seated in this game has no seat color to give. Falling back to the
+    // first seat's color would silently disguise them as the first player.
+    [TestMethod]
+    public void AnsiNameColorCode_ForAPlayerNotInTheGame_IsNotAnySeatsColor()
+    {
+        var outsider = CreatePlayer("Nobody");
+
+        var code = outsider.AsReadOnly().AnsiNameColorCode(ReadOnlyState);
+
+        var seatColors = gameState.Players.Select(p => p.AsReadOnly().AnsiNameColorCode(ReadOnlyState));
+        seatColors.Should().NotContain(code);
+    }
+
     // The name color palette must not collide with the row colors, or a name reads as a row.
     [TestMethod]
     public void AnsiNameColorCode_NeverReusesARowColor()

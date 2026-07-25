@@ -42,10 +42,21 @@ public static class QwixxScoreSheetExtensions
     // A distinct, stable color per player, based on their seat position in gameState.Players -
     // the same player keeps the same color for the whole game, and no two players (up to the
     // 5-player max) share one.
+    //
+    // Seats are matched by identity, not by name: manual players type their own names, so two
+    // of them can genuinely be called the same thing, and name-matching would then paint both
+    // seats the same color. QwixxPlayer.AsReadOnly() hands back one view per player for exactly
+    // this reason. A player who isn't seated in this game gets no color rather than the first
+    // seat's, which would disguise them as another player.
     public static string AnsiNameColorCode(this IQwixxReadOnlyPlayer player, IQwixxReadOnlyGameState gameState)
     {
-        var seatIndex = gameState.Players.ToList().FindIndex(p => p.Name == player.Name);
-        return PlayerNameColors[Math.Max(seatIndex, 0) % PlayerNameColors.Length];
+        var seatIndex = gameState.Players.ToList().FindIndex(seated => ReferenceEquals(seated, player));
+        if (seatIndex < 0)
+        {
+            return "";
+        }
+
+        return PlayerNameColors[seatIndex % PlayerNameColors.Length];
     }
 
     // Mirrors exactly what QwixxGameDealer.TryMark checks, so a caller can filter out choices

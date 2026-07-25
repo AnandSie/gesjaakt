@@ -17,10 +17,10 @@ public class QwixxRow
 
     public QwixxColor Color { get; }
 
-    // Derived from MarkedCount, not separately tracked state: 12 total marks (11 numbers + the
-    // lock cell) is only reachable by having also marked the lock, so IsLocked == (MarkedCount == 12).
     public bool IsLocked => _locked;
 
+    // The lock cell counts as a mark of its own (QX-005/QX-028), on top of the numbers marked -
+    // so a fully marked and locked row is 11 numbers + 1 lock cell = 12.
     public int MarkedCount => _numbersMarkedCount + (_locked ? 1 : 0);
 
     public int Score => QwixxRules.RowScoreByMarkedCount[MarkedCount];
@@ -28,6 +28,13 @@ public class QwixxRow
     // QX-015/QX-016/QX-017/QX-021: whether `number` can still be marked given what's already marked.
     public bool CanMark(int number)
     {
+        // QX-003/QX-004: every row lists 2..12 and nothing else, so anything outside that was
+        // never printed on the sheet and can't be crossed out however the row currently stands.
+        if (number < QwixxRules.MinRowNumber || number > QwixxRules.MaxRowNumber)
+        {
+            return false;
+        }
+
         if (_locked)
         {
             return false;

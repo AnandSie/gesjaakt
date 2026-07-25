@@ -10,6 +10,7 @@ public class QwixxPlayer : IQwixxPlayer
 {
     private readonly IQwixxThinker _thinker;
     private readonly Dictionary<QwixxColor, QwixxRow> _rows;
+    private readonly IQwixxReadOnlyPlayer _readOnlyView;
     private int _penalties;
 
     public event EventHandler<ErrorEvent>? DecideError;
@@ -18,6 +19,7 @@ public class QwixxPlayer : IQwixxPlayer
     {
         _thinker = thinker;
         _rows = Enum.GetValues<QwixxColor>().ToDictionary(color => color, color => new QwixxRow(color));
+        _readOnlyView = new QwixxReadOnlyPlayer(this);
     }
 
     public string Name => _thinker.Name;
@@ -59,9 +61,13 @@ public class QwixxPlayer : IQwixxPlayer
         return DecisionOrFallback(() => _thinker.DecideToLock(gameState, color), false, "the row is left unlocked");
     }
 
+    // One view per player, for the life of the player. It holds no state of its own - every
+    // member reads straight through to this instance - so there is nothing to go stale, and
+    // handing back the same object means callers can tell two seats apart by identity even
+    // when the players behind them share a name.
     public IQwixxReadOnlyPlayer AsReadOnly()
     {
-        return new QwixxReadOnlyPlayer(this);
+        return _readOnlyView;
     }
 
     // Plain text, no ANSI: this is the self-description that ends up in the results block and in

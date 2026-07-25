@@ -149,6 +149,48 @@ public class QwixxRowTests
         row.CanMark(lastNumber).Should().BeTrue();
     }
 
+    // QX-003/QX-004: a row lists 2..12 and nothing else, so a number that was never printed on it
+    // can never be marked. The dealer already vets every number before it gets here, but the row
+    // is what owns its own range - it should not depend on being called correctly to stay sane.
+    [TestMethod]
+    [DataRow(QwixxColor.Red, 1)]
+    [DataRow(QwixxColor.Red, 13)]
+    [DataRow(QwixxColor.Yellow, 0)]
+    [DataRow(QwixxColor.Green, -1)]
+    [DataRow(QwixxColor.Blue, 99)]
+    public void QX003_QX004_CanMark_IsFalseForANumberThatIsNotPrintedOnTheRow(QwixxColor color, int number)
+    {
+        var row = new QwixxRow(color);
+
+        row.CanMark(number).Should().BeFalse();
+    }
+
+    [TestMethod]
+    [DataRow(QwixxColor.Red, 13)]
+    [DataRow(QwixxColor.Green, 1)]
+    public void QX003_QX004_Mark_ThrowsForANumberThatIsNotPrintedOnTheRow(QwixxColor color, int number)
+    {
+        var row = new QwixxRow(color);
+
+        var act = () => row.Mark(number);
+
+        act.Should().Throw<InvalidOperationException>();
+    }
+
+    // Both ends of the printed range stay markable - the bound rejects what is outside 2..12,
+    // not the boundary numbers themselves.
+    [TestMethod]
+    [DataRow(QwixxColor.Red, 2)]
+    [DataRow(QwixxColor.Red, 12)]
+    [DataRow(QwixxColor.Green, 2)]
+    [DataRow(QwixxColor.Green, 12)]
+    public void QX003_QX004_CanMark_IsTrueAtBothEndsOfThePrintedRange(QwixxColor color, int number)
+    {
+        var row = new QwixxRow(color);
+
+        row.CanMark(number).Should().BeTrue();
+    }
+
     // QX-022: locking requires the last number marked AND at least 5 total marks in the row.
     // Ascending (Red/Yellow: 2,3,4,5..12) and descending (Green/Blue: 12,11,10,9..2) rows use a
     // different, literal sequence of numbers here — spelled out per row rather than computed,

@@ -60,6 +60,18 @@ Every atomic, testable rule has a stable ID of the form `QX-NNN`. IDs are assign
 - **QX-032**: The player with the highest final score wins.
 - **QX-033**: If two or more players tie for the highest final score, all tied players are recorded as winners.
 
+## 8. Engine notes (not rulebook rules)
+
+These are **not** numbered `QX-###` rules — they describe where this engine's behavior is narrower than the physical game, because a program has to do sequentially what people around a table do at once. They're recorded here rather than only in the status report because they're visible to a bot author and can affect strategy.
+
+- **The QX-009 white-sum step is resolved one player at a time, in seat order.** At the table everyone marks the white sum simultaneously; here `QwixxGameDealer` walks `GameState.Players` from seat 0 and fully resolves each player's mark — including a lock — before moving to the next.
+
+  The consequence is that a lock can land *in the middle* of the white step. If seat 0 uses the white sum to mark a row's last number and locks it (QX-022), that color is closed for everyone (QX-024) before seats 1..n are asked, so their white mark in that color is rejected on the very same roll they should have been able to use it for. The order is absolute, not rotating with the active player, so seat 0 wins every such race for the whole game.
+
+  This is rare — it needs a white sum equal to a row's last number (2 or 12, so both white dice showing the same extreme) plus a player already holding at least four marks in that row — but it is a genuine, systematic seat advantage rather than a wash. Anyone measuring bot strength over many games should keep seating randomized across runs so it can't be mistaken for skill.
+
+- **QX-010 is unaffected.** The active player's colored mark is always resolved strictly after the entire white step, which is what QX-010 requires anyway.
+
 ---
 
 ## Verification log

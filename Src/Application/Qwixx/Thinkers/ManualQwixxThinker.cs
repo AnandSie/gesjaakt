@@ -1,5 +1,4 @@
 using Application.Interfaces;
-using Application.Qwixx;
 using Domain.Entities.Game.Qwixx;
 using Domain.Interfaces.Games.Qwixx;
 using System.Text;
