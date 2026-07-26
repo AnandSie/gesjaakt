@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace UserInterface;
 
@@ -60,6 +61,49 @@ public static class Ansi
         }
 
         return length;
+    }
+
+    // Cuts a string to a visible width. Slicing on the raw index instead (text[..width])
+    // is wrong twice over on a styled string: escape sequences eat the budget so far
+    // fewer columns survive than asked for, and the cut drops the trailing reset, which
+    // bleeds the last colour across everything printed after it. Sequences are copied
+    // through whole and a reset is re-appended when one was left open.
+    public static string TruncateVisible(string text, int width)
+    {
+        if (width <= 0) return string.Empty;
+        if (VisibleLength(text) <= width) return text;
+
+        var kept = new StringBuilder();
+        int visible = 0;
+        bool inEscape = false;
+        bool styled = false;
+
+        foreach (char c in text)
+        {
+            if (inEscape)
+            {
+                kept.Append(c);
+                if (c == 'm') inEscape = false;
+                continue;
+            }
+
+            if (c == '\u001b')
+            {
+                kept.Append(c);
+                inEscape = true;
+                styled = true;
+                continue;
+            }
+
+            if (visible == width) break;
+
+            kept.Append(c);
+            visible++;
+        }
+
+        if (styled) kept.Append(Reset);
+
+        return kept.ToString();
     }
 
     public static string PadVisibleRight(string text, int width)

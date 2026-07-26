@@ -21,7 +21,7 @@ The solution lives in `Src/`, not the repo root:
 ```bash
 cd Src
 dotnet build Gesjaakt.sln
-dotnet test  Gesjaakt.sln          # DomainTests (320). NB: ExtensionsTests is not in the .sln
+dotnet test  Gesjaakt.sln          # DomainTests (320) + ExtensionsTests (5)
 dotnet run --project Presentation/ConsoleApp
 dotnet run --project Presentation/ConsoleApp -- --simple-console   # no cursor tricks
 ```
@@ -148,7 +148,8 @@ table. Check which list you actually need before editing.
 
 Useful context before extending; not a to-do list.
 
-- ~44 build warnings (mostly CS8618/CS8622 nullability, some dead fields). Build is otherwise clean.
+- ~81 build warnings (102 CS8618 + 42 CS8622 nullability across the two TFM passes, plus a
+  handful of CS0108/CS8602/dead fields). Build is otherwise clean.
 - No CI workflow and no `dotnet format`/analyzer enforcement.
 - No tests above the Domain layer: `GameRunner`, the factories, and the thinkers are untested.
 - Simulation is single-threaded (`// REFACTOR - parallel`). `EnumerableExtensions.Shuffle` uses a

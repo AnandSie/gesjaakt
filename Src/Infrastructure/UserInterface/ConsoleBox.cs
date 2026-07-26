@@ -57,11 +57,14 @@ public static class ConsoleBox
     // Only the caller knows which it is holding, hence the flag.
     //
     // A row carrying escape sequences is truncated either way, since splitting one
-    // mid-sequence would bleed colour across the rest of the box.
+    // mid-sequence would bleed colour across the rest of the box. The truncation
+    // goes through Ansi.TruncateVisible rather than a raw slice: cutting on the raw
+    // index drops columns the caller paid for AND leaves the last colour unclosed,
+    // which bleeds it over the box border and everything after it.
     private static IEnumerable<string> Fit(string row, int inner, bool wrapLongRows)
     {
         if (Ansi.VisibleLength(row) <= inner) return [row];
-        if (!wrapLongRows || Ansi.VisibleLength(row) != row.Length) return [row[..inner]];
+        if (!wrapLongRows || Ansi.VisibleLength(row) != row.Length) return [Ansi.TruncateVisible(row, inner)];
 
         return Wrap(row, inner);
     }

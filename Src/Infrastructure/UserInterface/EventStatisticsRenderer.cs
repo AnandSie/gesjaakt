@@ -15,6 +15,13 @@ public class EventStatisticsRenderer
     private const int NameWidth = 26;
     private const int NumberWidth = 10;
 
+    // What ConsoleBox.Draw spends on the frame either side of a row.
+    private const int BoxOverhead = 4;
+
+    // An event kind stays recognisable this narrow; below it the column is not
+    // worth keeping and the box may as well truncate.
+    private const int MinNameWidth = 12;
+
     // The per-player table drops the bar column, so its event names get the space
     // the bars used to take.
     private const int KindWidth = 26;
@@ -30,13 +37,15 @@ public class EventStatisticsRenderer
             return;
         }
 
-        var rows = BuildRows(report);
+        var layout = FittingLayout();
+
+        var rows = BuildRows(report, layout);
         rows.Add(null);
         rows.Add(Ansi.Dim($"{report.TotalGameEvents:N0} events across {report.GameStatistics.Count} kinds"));
 
         Console.WriteLine();
         ConsoleBox.Draw($"Event summary over {report.GamesObserved} game(s)", rows,
-            minWidth: MinTableWidth, maxWidth: MaxTableWidth);
+            minWidth: layout.Width + BoxOverhead, maxWidth: MaxTableWidth);
 
         RenderPlayerBreakdown(report);
         Console.WriteLine();
@@ -174,34 +183,80 @@ public class EventStatisticsRenderer
         }
     }
 
-    private static List<string?> BuildRows(EventStatisticsReport report)
+    // Which columns the console has room for. Dropping a whole column is the only
+    // honest way to be narrow: letting ConsoleBox truncate the row instead cuts the
+    // right-hand columns mid-number with nothing to say it happened.
+    //
+    // Added most-useful-first. COUNT is the point of the table and EVENT names it,
+    // so those two always survive - the name column gives up its own width before
+    // the table gives up a column. MEAN/MIN/MAX come as a block: a header reading
+    // "MEAN MIN" with the MAX cut off is worse than no value columns at all. The
+    // bar is decoration and goes last.
+    private readonly record struct TableLayout(int NameWidth, bool PerGame, bool Values, bool Bar)
+    {
+        public int Width => (Bar ? BarWidth + 1 : 0)
+            + NameWidth
+            + NumberWidth
+            + (PerGame ? NumberWidth : 0)
+            + (Values ? 3 * NumberWidth : 0);
+    }
+
+    private static TableLayout FittingLayout()
+    {
+        int available = Math.Min(MaxTableWidth, ConsoleWidth()) - BoxOverhead;
+
+        var layout = new TableLayout(
+            Math.Clamp(available - NumberWidth, MinNameWidth, NameWidth),
+            PerGame: false,
+            Values: false,
+            Bar: false);
+
+        if (layout.Width + NumberWidth <= available) layout = layout with { PerGame = true };
+        if (layout.Width + (3 * NumberWidth) <= available) layout = layout with { Values = true };
+        if (layout.Width + BarWidth + 1 <= available) layout = layout with { Bar = true };
+
+        return layout;
+    }
+
+    private static List<string?> BuildRows(EventStatisticsReport report, TableLayout layout)
     {
         long busiest = report.GameStatistics.Max(s => s.Count);
 
-        var header = string.Concat(
-            "".PadRight(BarWidth + 1),
-            "EVENT".PadRight(NameWidth),
-            "COUNT".PadLeft(NumberWidth),
-            "/GAME".PadLeft(NumberWidth),
-            "MEAN".PadLeft(NumberWidth),
-            "MIN".PadLeft(NumberWidth),
-            "MAX".PadLeft(NumberWidth));
+        var header = new StringBuilder();
+        if (layout.Bar) header.Append("".PadRight(BarWidth + 1));
+        header.Append("EVENT".PadRight(layout.NameWidth));
+        header.Append("COUNT".PadLeft(NumberWidth));
+        if (layout.PerGame) header.Append("/GAME".PadLeft(NumberWidth));
+        if (layout.Values)
+        {
+            header.Append("MEAN".PadLeft(NumberWidth));
+            header.Append("MIN".PadLeft(NumberWidth));
+            header.Append("MAX".PadLeft(NumberWidth));
+        }
 
-        var rows = new List<string?> { Ansi.Dim(header) };
+        var rows = new List<string?> { Ansi.Dim(header.ToString()) };
 
         foreach (var statistic in report.GameStatistics)
         {
-            var bar = Bar(statistic.Count, busiest, statistic.Importance, statistic.Category);
-            var name = EventTheme.Colored(Fit(statistic.Kind, NameWidth - 1), statistic.Importance, statistic.Category);
+            var name = EventTheme.Colored(Fit(statistic.Kind, layout.NameWidth - 1), statistic.Importance, statistic.Category);
 
             var line = new StringBuilder();
-            line.Append(bar).Append(' ');
-            line.Append(Ansi.PadVisibleRight(name, NameWidth));
+            if (layout.Bar)
+            {
+                line.Append(Bar(statistic.Count, busiest, statistic.Importance, statistic.Category)).Append(' ');
+            }
+            line.Append(Ansi.PadVisibleRight(name, layout.NameWidth));
             line.Append(statistic.Count.ToString("N0").PadLeft(NumberWidth));
-            line.Append(statistic.PerGame(report.GamesObserved).ToString("N2").PadLeft(NumberWidth));
-            line.Append(Number(statistic.ValueMean).PadLeft(NumberWidth));
-            line.Append(Number(statistic.Minimum).PadLeft(NumberWidth));
-            line.Append(Number(statistic.Maximum).PadLeft(NumberWidth));
+            if (layout.PerGame)
+            {
+                line.Append(statistic.PerGame(report.GamesObserved).ToString("N2").PadLeft(NumberWidth));
+            }
+            if (layout.Values)
+            {
+                line.Append(Number(statistic.ValueMean).PadLeft(NumberWidth));
+                line.Append(Number(statistic.Minimum).PadLeft(NumberWidth));
+                line.Append(Number(statistic.Maximum).PadLeft(NumberWidth));
+            }
 
             rows.Add(line.ToString());
         }

@@ -135,7 +135,14 @@ public class ConsoleDisplay : IDisplay
             }
 
             int available = Math.Max(Console.WindowWidth - 1, MinBoxWidth);
-            int contentWidth = Math.Clamp(_lastLines.Max(l => l.Length), MinBoxWidth, Math.Min(available - 4, MaxBoxWidth));
+
+            // Deliberately not Math.Clamp, for the same reason as ConsoleBox.Draw:
+            // MinBoxWidth is a preference, and on a console too narrow to honour it
+            // Clamp throws (min > max) rather than picking a side. A terminal under
+            // 39 columns used to take the whole run down here. The narrow terminal
+            // always wins.
+            int ceiling = Math.Min(Math.Max(available - 4, 1), MaxBoxWidth);
+            int contentWidth = Math.Min(Math.Max(_lastLines.Max(l => l.Length), Math.Min(MinBoxWidth, ceiling)), ceiling);
             int inner = contentWidth + 2;
 
             // A drawn frame instead of a row of dashes: it makes the pinned block
