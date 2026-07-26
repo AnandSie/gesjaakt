@@ -16,7 +16,7 @@ public class TakeFiveGameEventCollector(IGameEventHandler gameEventHandler) : IT
     public ITakeFiveGameEventCollector Attach(ITakeFiveGameDealer gamedealer)
     {
         gamedealer.DiverCardIsPlayed += gameEventHandler.HandleEvent;
-        gamedealer.CardPlayedInFullRow += gameEventHandler.HandleEvent;
+        gamedealer.TakeFive += gameEventHandler.HandleEvent;
         return this;
     }
 

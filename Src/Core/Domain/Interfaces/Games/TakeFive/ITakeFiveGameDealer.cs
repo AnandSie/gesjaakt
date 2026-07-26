@@ -5,5 +5,5 @@ namespace Domain.Interfaces.Games.TakeFive;
 public interface ITakeFiveGameDealer : IGameDealer<ITakeFivePlayer>
 {
     event EventHandler<NotableEvent>? DiverCardIsPlayed;
-    event EventHandler<NotableEvent>? CardPlayedInFullRow;
+    event EventHandler<NotableEvent>? TakeFive;
 }

@@ -9,7 +9,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
     private readonly ITakeFiveGameState _gameState;
 
     public event EventHandler<NotableEvent>? DiverCardIsPlayed;
-    public event EventHandler<NotableEvent>? CardPlayedInFullRow;
+    public event EventHandler<NotableEvent>? TakeFive;
 
     public TakeFiveGameDealer(ITakeFiveGameState gameState)
     {
@@ -97,7 +97,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
         if (result)
         {
             var message = $"TAKEFIVE - player {player.Name} played card {card.Value} in row that already is full.";
-            CardPlayedInFullRow?.Invoke(this, new(nameof(CardPlayedInFullRow), message, value: card.Value, actor: player.Name));
+            TakeFive?.Invoke(this, new(nameof(TakeFive), message, value: card.Value, actor: player.Name));
         }
         return result;
     }
