@@ -1,4 +1,5 @@
 using Application.Events;
+using Application.Interfaces;
 using Domain.Entities.Events;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -67,6 +68,15 @@ public class GameEventStatisticsTests
 
         coins.HasValues.Should().BeFalse();
         coins.ValueMean.Should().BeNull();
+    }
+
+    // The one place the pipeline hardcodes an event name. If GameRunner's event is
+    // ever renamed, nothing else breaks - games would silently count 0 and every
+    // "/GAME" column would quietly become a raw total. This is what catches that.
+    [TestMethod]
+    public void GameEndedKind_MatchesTheEventGameRunnerActuallyRaises()
+    {
+        GameEventStatistics.GameEndedKind.Should().Be(nameof(IGameRunner.GameEnded));
     }
 
     // GameRunner raises GameEnded once per finished game; that is what turns raw
