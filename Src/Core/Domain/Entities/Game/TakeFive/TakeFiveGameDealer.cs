@@ -8,7 +8,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
 {
     private readonly ITakeFiveGameState _gameState;
 
-    public event EventHandler<NotableEvent>? DiverCardIsPlayed;
+    public event EventHandler<NotableEvent>? DiverTakesRow;
     public event EventHandler<NotableEvent>? TakeFive;
 
     public TakeFiveGameDealer(ITakeFiveGameState gameState)
@@ -84,8 +84,8 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
         bool result = rowWhereCardCanBePlaced is null;
         if (result)
         {
-            var message = $"Diver Card - player {player.Name} played card {card.Value} that is lower than all rows.";
-            DiverCardIsPlayed?.Invoke(this, new(nameof(DiverCardIsPlayed), message, value: card.Value, actor: player.Name));
+            var message = $"player {player.Name} played card {card.Value}, lower than every row, and has to take a row of their choice.";
+            DiverTakesRow?.Invoke(this, new(nameof(DiverTakesRow), message, value: card.Value, actor: player.Name));
         }
         return result;
     }
@@ -96,7 +96,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
         bool result = _gameState.CardRows.ElementAt(rowIndex).Count() == TakeFiveRules.MaxCardsInRowAllowed;
         if (result)
         {
-            var message = $"TAKEFIVE - player {player.Name} played card {card.Value} in row that already is full.";
+            var message = $"player {player.Name} played card {card.Value} as the sixth in a row and has to take that row.";
             TakeFive?.Invoke(this, new(nameof(TakeFive), message, value: card.Value, actor: player.Name));
         }
         return result;

@@ -183,6 +183,60 @@ public class GameEventStatisticsTests
         statistics.Report().HasPlayerBreakdown.Should().BeFalse();
     }
 
+    // The case the alarm exists for: one raise site passes actor:, another forgets.
+    // The shares then divide by a total nobody accounts for, so every player looks
+    // less responsible than they are.
+    [TestMethod]
+    public void Report_FlagsAKindThatNamesAPlayerAtSomeRaiseSitesButNotAll()
+    {
+        statistics.Record(new NotableEvent("TakeFive", "a", actor: "Anand"));
+        statistics.Record(new NotableEvent("TakeFive", "b", actor: "Barry"));
+        statistics.Record(new NotableEvent("TakeFive", "c"));
+
+        var report = statistics.Report();
+
+        report.HasAttributionGap.Should().BeTrue();
+        report.IncompletelyAttributed.Should().ContainSingle().Which.Kind.Should().Be("TakeFive");
+        report.IncompletelyAttributed.Single().UnattributedCount.Should().Be(1);
+    }
+
+    [TestMethod]
+    public void Report_DoesNotFlagAKindWhereEveryEventNamedAPlayer()
+    {
+        statistics.Record(new NotableEvent("TakeFive", "a", actor: "Anand"));
+        statistics.Record(new NotableEvent("TakeFive", "b", actor: "Barry"));
+
+        var report = statistics.Report();
+
+        report.HasAttributionGap.Should().BeFalse();
+        report.IncompletelyAttributed.Should().BeEmpty();
+    }
+
+    // A card leaving the deck is legitimately about nobody. Only kinds that name a
+    // player *somewhere* can be inconsistent about it.
+    [TestMethod]
+    public void Report_DoesNotFlagKindsThatNeverNameAPlayer()
+    {
+        statistics.Record(new OrdinaryEvent("CardDrawnFromDeck", "a"));
+        statistics.Record(new OrdinaryEvent("CardDrawnFromDeck", "b"));
+
+        statistics.Report().HasAttributionGap.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void Report_CountsHowManyEventsOfAKindNamedNobody()
+    {
+        statistics.Record(new FaultEvent("DecideError", "a", actor: "Anand"));
+        statistics.Record(new FaultEvent("DecideError", "b"));
+        statistics.Record(new FaultEvent("DecideError", "c"));
+
+        var faults = statistics.Report().Statistics.Single();
+
+        faults.AttributedCount.Should().Be(1);
+        faults.UnattributedCount.Should().Be(2);
+        faults.HasUnattributed.Should().BeTrue();
+    }
+
     [TestMethod]
     public void Reset_ClearsThePerPlayerCountsToo()
     {

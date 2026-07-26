@@ -102,7 +102,14 @@ domain/runner raises GameEvent
   or an id is not.
 - **Adding a player to an event**: pass `actor: player.Name` at the raise site and the kind
   automatically joins the per-player table. Do it for anything that happens *to* somebody; leave
-  it off for table-level events (a card leaving the deck, coins being divided).
+  it off for table-level events (a card leaving the deck, coins being divided). Be consistent
+  across a kind's raise sites — a kind that names a player at some and not others triggers the
+  attribution alarm below.
+- **The attribution alarm** (`report.HasAttributionGap`) is the one assert in the summary. Shares
+  divide by every event of the kind, so a half-instrumented kind renders a table that is quietly
+  wrong rather than obviously broken. Both presenters shout — a red box above the table plus a
+  `NOBODY` column in the rich renderer, `LogError` in the plain one. All of it disappears on its
+  own once the raise sites agree; there is nothing to switch off.
 
 ## Conventions
 

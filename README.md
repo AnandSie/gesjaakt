@@ -149,8 +149,25 @@ GESJAAKT in the run** — and Bart finishes last. Jeremy shows `-`, meaning it n
 them once.
 
 Cells are a **share of the row**, not a count, because "simulate all combinations" doesn't put
-every bot in every game — a raw count would mostly measure who got dealt in most often. Rows sum
-to 100%. Events that aren't about anybody (a card leaving the deck) don't appear here.
+every bot in every game — a raw count would mostly measure who got dealt in most often. Events
+that aren't about anybody (a card leaving the deck) don't appear here.
+
+If an event kind names a player at some raise sites but not others, the shares silently understate
+everybody — so the summary refuses to be quiet about it:
+
+```
+╭─ !! INCOMPLETE EVENT ATTRIBUTION ─────────────────────────────────────╮
+│ TakeFive                  3.750 of 7.576 events named nobody (49,5%)  │
+│                                                                       │
+│ Player shares divide by EVERY event of the kind, so the rows below do │
+│ NOT add up to 100% and understate every player. This is a bug in the  │
+│ raise site, not a fact about the game: pass actor: at every ?.Invoke  │
+│ for the kinds listed here.                                            │
+╰───────────────────────────────────────────────────────────────────────╯
+```
+
+A `NOBODY` column also appears in the table for as long as the gap exists. Both disappear once
+every raise site for that kind passes `actor:`.
 
 ---
 

@@ -64,6 +64,29 @@ public class LoggingEventPresenter(ILogger<LoggingEventPresenter> logger) : IGam
         AppendPlayerBreakdown(summary, report);
 
         logger.LogInformation(summary.ToString());
+
+        WarnAboutAttributionGap(report);
+    }
+
+    // Logged separately, and at Error, so it survives whatever the console is
+    // doing to the big informational block above it.
+    private void WarnAboutAttributionGap(EventStatisticsReport report)
+    {
+        if (!report.HasAttributionGap) return;
+
+        var alarm = new StringBuilder();
+        alarm.AppendLine("INCOMPLETE EVENT ATTRIBUTION - the per-player shares above are understated.");
+
+        foreach (var statistic in report.IncompletelyAttributed)
+        {
+            alarm.AppendLine($"\t{statistic.Kind}: {statistic.UnattributedCount} of {statistic.Count} events named nobody"
+                + $" ({(double)statistic.UnattributedCount / statistic.Count * 100:N1}%)");
+        }
+
+        alarm.Append("Player shares divide by EVERY event of the kind, so those rows do not add up to 100%. "
+            + "This is a bug in the raise site: pass actor: at every ?.Invoke for the kinds listed here.");
+
+        logger.LogError(alarm.ToString());
     }
 
     // Shares rather than counts, for the same reason as the rich renderer: not

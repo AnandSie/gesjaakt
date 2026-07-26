@@ -71,6 +71,12 @@ public static class Ansi
         return padding > 0 ? text + new string(' ', padding) : text;
     }
 
+    public static string PadVisibleLeft(string text, int width)
+    {
+        int padding = width - VisibleLength(text);
+        return padding > 0 ? new string(' ', padding) + text : text;
+    }
+
     // Honours the NO_COLOR convention (https://no-color.org) and stands down
     // when output is piped to a file, where escape codes are just noise.
     private static bool DetectSupport()

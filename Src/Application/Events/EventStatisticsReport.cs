@@ -39,4 +39,14 @@ public class EventStatisticsReport(int gamesObserved, IReadOnlyList<EventStatist
 
     public bool IsEmpty => GameStatistics.Count == 0;
     public bool HasPlayerBreakdown => ActorStatistics.Count > 0 && Players.Count > 0;
+
+    // Kinds that name a player at some raise sites but not all. The per-player
+    // shares divide by every event of the kind, so these rows silently add up to
+    // less than 100% - which is why presenters shout about it rather than just
+    // rendering a slightly-wrong table.
+    public IReadOnlyList<EventStatistic> IncompletelyAttributed { get; } = statistics
+        .Where(s => s.Category is EventCategory.Play or EventCategory.Fault && s.HasUnattributed)
+        .ToList();
+
+    public bool HasAttributionGap => IncompletelyAttributed.Count > 0;
 }

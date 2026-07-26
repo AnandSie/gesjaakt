@@ -36,6 +36,15 @@ public class EventStatistic(string kind, EventImportance importance, EventCatego
     public bool HasActors => _countByActor.Count > 0;
     public long CountFor(string actor) => _countByActor.GetValueOrDefault(actor);
 
+    public long AttributedCount => _countByActor.Values.Sum();
+
+    // Events of a kind that names players, that nonetheless named nobody. Always
+    // a bug in the raise site rather than a fact about the game: it means one
+    // `?.Invoke` for this event passes `actor:` and another doesn't, which
+    // silently understates every player's share.
+    public long UnattributedCount => Count - AttributedCount;
+    public bool HasUnattributed => HasActors && UnattributedCount > 0;
+
     public bool HasValues => ValueCount > 0;
     public double? ValueMean => HasValues ? ValueSum / ValueCount : null;
     public double? Minimum => HasValues ? ValueMin : null;

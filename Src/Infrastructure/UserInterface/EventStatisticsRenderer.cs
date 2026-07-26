@@ -60,9 +60,17 @@ public class EventStatisticsRenderer
     {
         if (!report.HasPlayerBreakdown) return;
 
-        int columns = FittingPlayerColumns(report.Players.Count);
+        RenderAttributionGap(report);
+
+        // Only shown when something is actually missing. A column reading "-" on
+        // every row of every correct run is noise, and the banner above guarantees
+        // a real gap can't be scrolled past.
+        bool showUnattributed = report.HasAttributionGap;
+
+        int columns = FittingPlayerColumns(report.Players.Count, showUnattributed);
         var players = report.Players.Take(columns).ToList();
-        int width = 4 + KindWidth + NumberWidth + (players.Count * PlayerWidth);
+        int width = 4 + KindWidth + NumberWidth + (players.Count * PlayerWidth)
+            + (showUnattributed ? PlayerWidth : 0);
 
         var header = new StringBuilder();
         header.Append("EVENT".PadRight(KindWidth));
@@ -70,6 +78,10 @@ public class EventStatisticsRenderer
         foreach (var player in players)
         {
             header.Append(Fit(player, PlayerWidth - 1).PadLeft(PlayerWidth));
+        }
+        if (showUnattributed)
+        {
+            header.Append("NOBODY".PadLeft(PlayerWidth));
         }
 
         Console.WriteLine();
@@ -89,6 +101,12 @@ public class EventStatisticsRenderer
                 line.Append(Share(statistic.CountFor(player), statistic.Count).PadLeft(PlayerWidth));
             }
 
+            if (showUnattributed)
+            {
+                var gap = Share(statistic.UnattributedCount, statistic.Count);
+                line.Append(Ansi.PadVisibleLeft(statistic.HasUnattributed ? Alarm(gap) : gap, PlayerWidth));
+            }
+
             WriteRow(line.ToString(), width);
         }
 
@@ -101,14 +119,61 @@ public class EventStatisticsRenderer
         WriteBottom(width);
     }
 
+    // The assert. An event kind that names a player at one raise site and not at
+    // another produces a table that is quietly wrong rather than obviously broken,
+    // so it gets a red box of its own above the table it corrupts.
+    private static void RenderAttributionGap(EventStatisticsReport report)
+    {
+        if (!report.HasAttributionGap) return;
+
+        var rows = report.IncompletelyAttributed
+            .Select(s => $"{Fit(s.Kind, KindWidth - 1).PadRight(KindWidth)}"
+                       + $"{s.UnattributedCount:N0} of {s.Count:N0} events named nobody"
+                       + $" ({(double)s.UnattributedCount / s.Count * 100:N1}%)")
+            .ToList();
+
+        var explanation = new[]
+        {
+            "Player shares divide by EVERY event of the kind, so the rows below do",
+            "NOT add up to 100% and understate every player. This is a bug in the",
+            "raise site, not a fact about the game: pass actor: at every ?.Invoke",
+            "for the kinds listed here.",
+        };
+
+        int width = Math.Clamp(
+            rows.Concat(explanation).Max(r => r.Length) + 4,
+            MinTableWidth,
+            MaxPlayerTableWidth);
+
+        Console.WriteLine();
+        WriteTop(width, $" {Ansi.Glyph("!!", "!!")} INCOMPLETE EVENT ATTRIBUTION ", Alarm);
+
+        foreach (var row in rows)
+        {
+            WriteRow(Alarm(row), width);
+        }
+
+        WriteRow(string.Empty, width);
+
+        foreach (var line in explanation)
+        {
+            WriteRow(Ansi.Dim(line), width);
+        }
+
+        WriteBottom(width, Alarm);
+    }
+
+    private static string Alarm(string text) => Ansi.Rgb(Ansi.Bold(text), 224, 96, 96);
+
     // A player who never triggered the event shows nothing at all, so the ones who
     // did stand out instead of being buried in a column of 0,0%.
     private static string Share(long forPlayer, long total) =>
         forPlayer == 0 || total == 0 ? "-" : $"{(double)forPlayer / total * 100:N1}%";
 
-    private static int FittingPlayerColumns(int playerCount)
+    private static int FittingPlayerColumns(int playerCount, bool reserveUnattributedColumn)
     {
-        int available = ConsoleWidth() - 4 - KindWidth - NumberWidth;
+        int available = ConsoleWidth() - 4 - KindWidth - NumberWidth
+            - (reserveUnattributedColumn ? PlayerWidth : 0);
         int fits = Math.Max(available / PlayerWidth, 1);
 
         return Math.Min(playerCount, fits);
@@ -183,21 +248,26 @@ public class EventStatisticsRenderer
     private static string Fit(string text, int width) =>
         text.Length <= width ? text : text[..(width - 1)] + Ansi.Glyph("…", ".");
 
-    private static void WriteTop(int width, string title)
+    // style lets a box announce itself - the attribution alarm draws its frame in
+    // red so it doesn't read as just another summary table.
+    private static void WriteTop(int width, string title, Func<string, string>? style = null)
     {
         int inner = width - 2;
         int titleLength = Math.Min(title.Length, inner);
         var padded = title[..titleLength];
+        var rule = string.Concat(Enumerable.Repeat(Ansi.Horizontal, Math.Max(inner - titleLength - 1, 0)));
 
-        Console.WriteLine(Ansi.TopLeft
-            + Ansi.Horizontal
-            + Ansi.Bold(padded)
-            + string.Concat(Enumerable.Repeat(Ansi.Horizontal, Math.Max(inner - titleLength - 1, 0)))
-            + Ansi.TopRight);
+        var frame = Ansi.TopLeft + Ansi.Horizontal + padded + rule + Ansi.TopRight;
+
+        Console.WriteLine(style is null ? Ansi.Bold(frame) : style(frame));
     }
 
-    private static void WriteBottom(int width) =>
-        Console.WriteLine(Ansi.BottomLeft + string.Concat(Enumerable.Repeat(Ansi.Horizontal, width - 2)) + Ansi.BottomRight);
+    private static void WriteBottom(int width, Func<string, string>? style = null)
+    {
+        var frame = Ansi.BottomLeft + string.Concat(Enumerable.Repeat(Ansi.Horizontal, width - 2)) + Ansi.BottomRight;
+
+        Console.WriteLine(style is null ? frame : style(frame));
+    }
 
     private static void WriteRow(string content, int width)
     {
