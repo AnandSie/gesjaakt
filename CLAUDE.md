@@ -21,7 +21,7 @@ The solution lives in `Src/`, not the repo root:
 ```bash
 cd Src
 dotnet build Gesjaakt.sln
-dotnet test  Gesjaakt.sln          # DomainTests (62) + ExtensionsTests (5)
+dotnet test  Gesjaakt.sln          # DomainTests (320). NB: ExtensionsTests is not in the .sln
 dotnet run --project Presentation/ConsoleApp
 dotnet run --project Presentation/ConsoleApp -- --simple-console   # no cursor tricks
 ```

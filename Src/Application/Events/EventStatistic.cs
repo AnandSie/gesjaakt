@@ -24,10 +24,6 @@ public class EventStatistic(string kind, EventImportance importance, EventCatego
     public double ValueMin { get; private set; } = double.MaxValue;
     public double ValueMax { get; private set; } = double.MinValue;
 
-    // Most recent message, so a summary row can show an example of what this
-    // event actually looked like.
-    public string LastMessage { get; private set; } = string.Empty;
-
     // How often this event happened to each player. Empty for events that aren't
     // about anybody in particular, like a card being drawn from the deck.
     private readonly Dictionary<string, long> _countByActor = [];
@@ -53,7 +49,6 @@ public class EventStatistic(string kind, EventImportance importance, EventCatego
     public void Add(GameEvent gameEvent)
     {
         Count++;
-        LastMessage = gameEvent.Message;
 
         if (gameEvent.Actor is string actor)
         {

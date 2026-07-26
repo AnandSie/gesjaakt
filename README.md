@@ -116,14 +116,15 @@ Events are **recorded even when they are filtered out of the display**, so every
 with a summary over all of them:
 
 ```
-╭─ Event summary over 1000 game(s) ───────────────────────────────────────────────╮
-│              EVENT                          COUNT    /GAME     MEAN    MIN  MAX │
-│ ██░░░░░░░░░░ PlayerDecideError                  12     0.01        -      -   - │
-│ ████████████ CardDrawnFromDeck               24,000    24.00    19.04   3.00 35 │
-│ ███░░░░░░░░░ PlayerGesjaakt                   5,913     5.91    21.37   3.00 35 │
-│ ─────────────────────────────────────────────────────────────────────────────── │
-│ 41,925 events across 6 kinds                                                    │
-╰─────────────────────────────────────────────────────────────────────────────────╯
+╭─ Event summary over 1000 game(s) ─────────────────────────────────────────────────────────╮
+│              EVENT                          COUNT     /GAME      MEAN       MIN       MAX │
+│ ████████████ SkippedWithCoin               89.613     89,61      4,09      1,00     16,00 │
+│ ███░░░░░░░░░ CardDrawnFromDeck             24.000     24,00     19,02      3,00     35,00 │
+│ █░░░░░░░░░░░ PlayerGesjaakt                 5.636      5,64     23,10      3,00     35,00 │
+│ █░░░░░░░░░░░ CoinsDivided                   1.000      1,00      9,00      9,00      9,00 │
+│ ───────────────────────────────────────────────────────────────────────────────────────── │
+│ 120.249 events across 4 kinds                                                             │
+╰───────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 - **COUNT** — how often the event happened across the whole run
@@ -132,6 +133,7 @@ with a summary over all of them:
   card taken, the coins on the table, the penalty number). Events with no number show `-`.
 
 Faults sort to the top, so a bot that quietly throws once every few hundred games can't hide.
+(Numbers are formatted for your machine's locale — the examples here are from a Dutch one.)
 
 Only aggregates are kept, not the individual events — a 10.000-game run raises millions of them.
 

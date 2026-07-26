@@ -13,9 +13,6 @@ public static class Ansi
     private static readonly bool _enabled = DetectSupport();
     private static readonly bool _unicode = DetectUnicode();
 
-    public static bool Enabled => _enabled;
-    public static bool Unicode => _unicode;
-
     // Picks the pretty character when the console can render it, and a plain
     // ASCII stand-in when it can't.
     public static string Glyph(string unicode, string ascii) => _unicode ? unicode : ascii;
@@ -34,7 +31,7 @@ public static class Ansi
 
     // 24-bit colour. Every terminal that understands the cursor movement the
     // live display already relies on also understands truecolor; the ones that
-    // don't get plain text through the Enabled check.
+    // don't get plain text, via DetectSupport below.
     public static string Rgb(string text, int r, int g, int b) =>
         _enabled ? $"\u001b[38;2;{r};{g};{b}m{text}{Reset}" : text;
 
