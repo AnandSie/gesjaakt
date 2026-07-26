@@ -13,7 +13,7 @@ public class QwixxPlayer : IQwixxPlayer
     private readonly IQwixxReadOnlyPlayer _readOnlyView;
     private int _penalties;
 
-    public event EventHandler<ErrorEvent>? DecideError;
+    public event EventHandler<FaultEvent>? DecideError;
 
     public QwixxPlayer(IQwixxThinker thinker)
     {
@@ -96,7 +96,7 @@ public class QwixxPlayer : IQwixxPlayer
         catch (Exception e)
         {
             var message = $"Decide Exception - Player {Name} could not decide, so {fallbackDescription}. Error message: {e.Message} ";
-            DecideError?.Invoke(this, new(message));
+            DecideError?.Invoke(this, new(nameof(DecideError), message, actor: Name));
             return fallback;
         }
     }

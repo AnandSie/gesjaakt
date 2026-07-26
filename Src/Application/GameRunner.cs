@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Application.Interfaces;
 using Domain.Entities.Events;
 using Domain.Interfaces;
@@ -16,12 +16,12 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
 
     private Dictionary<string, int> winsByPlayerName;
 
-    public event EventHandler<WarningEvent>? GameEnded;
-    public event EventHandler<ErrorEvent>? SimIterStarting;
-    public event EventHandler<WarningEvent>? SimIterEnded;
-    public event EventHandler<ErrorEvent>? AllSimItersEnded;
-    public event EventHandler<CriticalEvent>? PlayerCombinationIterStarting;
-    public event EventHandler<CriticalEvent>? PlayerCombinationIterEnded;
+    public event EventHandler<NotableEvent>? GameEnded;
+    public event EventHandler<SpecialEvent>? SimIterStarting;
+    public event EventHandler<NotableEvent>? SimIterEnded;
+    public event EventHandler<GameChangingEvent>? AllSimItersEnded;
+    public event EventHandler<GameChangingEvent>? PlayerCombinationIterStarting;
+    public event EventHandler<GameChangingEvent>? PlayerCombinationIterEnded;
 
     public GameRunner(
         IPlayerFactory<TPlayer> playerFactory,
@@ -86,7 +86,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
         {
             stopwatch.IterationHasStarted();
             string startMessage = $"Player Combination Starting #{i}/{numberOfPlayerCombinations} - {(i / numberOfPlayerCombinations) * 100}%";
-            PlayerCombinationIterStarting?.Invoke(this, new(startMessage));
+            PlayerCombinationIterStarting?.Invoke(this, new(nameof(PlayerCombinationIterStarting), startMessage, EventCategory.Progress));
 
             var players = allPlayerFactoryCombinations[i].Select(pf => pf.Invoke()).Shuffle();
 
@@ -102,7 +102,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
             var estimatedRemainingMinutes = stopwatch.RemainingMinutes();
 
             string endMessage = $"Player Combination Ended. It took {stopwatch.IterationDurationSec()} s. Estimated remaining time: {estimatedRemainingMinutes:F2} min";
-            PlayerCombinationIterEnded?.Invoke(this, new(endMessage));
+            PlayerCombinationIterEnded?.Invoke(this, new(nameof(PlayerCombinationIterEnded), endMessage, EventCategory.Progress));
         }
 
         ReportSimulationResults(winsByPlayerName);
@@ -110,26 +110,32 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
 
     private void ShareSimulationEnded()
     {
-        var sb = new StringBuilder();
+        var msg = string.Join(Environment.NewLine, Standings());
+        SimIterEnded?.Invoke(this, new(nameof(SimIterEnded), msg, EventCategory.Progress));
+    }
+
+    // One standings format, used both for the live block during a run and for the
+    // final results, so the numbers don't change shape when the run ends.
+    private IEnumerable<string> Standings()
+    {
         var maxNameLength = winsByPlayerName.Keys.Select(name => name.Length).Max();
-        const int maxWinsLength = 5; // REFACTOR: make dynamic 
+        const int maxWinsLength = 5; // REFACTOR: make dynamic
+        var totalWins = winsByPlayerName.Values.Sum();
 
-        var totalWinsSoFar = winsByPlayerName.Values.Sum();
-        foreach (var kv in winsByPlayerName.OrderByDescending(kvp => kvp.Value))
-        {
-            double percentage = (double)kv.Value / totalWinsSoFar * 100;
-            sb.AppendLine($"{kv.Key.PadRight(maxNameLength)} - {kv.Value,maxWinsLength} wins - {percentage,2:F0}%");
-        }
-
-        var msg = sb.ToString();
-        SimIterEnded?.Invoke(this, new(msg));
+        return winsByPlayerName
+            .OrderByDescending(entry => entry.Value)
+            .Select(entry =>
+            {
+                double percentage = (double)entry.Value / totalWins * 100;
+                return $"{entry.Key.PadRight(maxNameLength)} - {entry.Value,maxWinsLength} wins - {percentage,4:F1}%";
+            });
     }
 
     private void ShareGameSimIterStarting(int numberOfSimulations, int iter)
     {
         double progress = (double)iter / numberOfSimulations * 100;
         string message = $"Game Simulation Starting #{iter}/{numberOfSimulations} -  {progress:F0}%";
-        SimIterStarting?.Invoke(this, new(message));
+        SimIterStarting?.Invoke(this, new(nameof(SimIterStarting), message, EventCategory.Progress));
     }
 
     private void RunGameWith(IEnumerable<TPlayer> players)
@@ -154,35 +160,34 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
     private void ReportGameResults(IOrderedEnumerable<TPlayer> playerResults)
     {
         var message = new StringBuilder();
+
+        // First line is the headline the presenter promotes to the box title.
         message.AppendLine($"Game Winner: {playerResults.First().Name}");
-        message.AppendLine($"Results");
         foreach (var player in playerResults)
         {
-            message.AppendLine($"\t- {player}");
+            message.AppendLine($"{player}");
         }
 
-        GameEnded?.Invoke(this, new(message.ToString()));
+        GameEnded?.Invoke(this, new(nameof(GameEnded), message.ToString(), EventCategory.Result));
     }
 
     private void ReportSimulationResults(Dictionary<string, int> resultPerPlayer)
     {
-        var numberOfGames = resultPerPlayer.Values.Sum();
-
         // REFACTOR - (Game Gesjaakt specific) Don't save wins, save points - or do both
-        var simlationResultsOrdened = resultPerPlayer.OrderByDescending(entry => entry.Value);
-        var winner = simlationResultsOrdened.FirstOrDefault().Key;
+        var winner = resultPerPlayer.OrderByDescending(entry => entry.Value).FirstOrDefault().Key;
+        var gamesPlayed = resultPerPlayer.Values.Sum();
 
         var message = new StringBuilder();
+
+        // First line is the headline the presenter promotes to the box title.
         message.AppendLine($"Simulation Winner: {winner}");
-        message.AppendLine($"Results");
-        foreach (var player in simlationResultsOrdened)
+        foreach (var line in Standings())
         {
-            message.AppendLine($"\t- {player.Key} - {player.Value} wins - {(double)player.Value / numberOfGames * 100}%");
+            message.AppendLine(line);
         }
-        var gamesPlayed = simlationResultsOrdened.Select(p => p.Value).Sum();
         message.AppendLine($"Total Games Played {gamesPlayed}");
 
-        AllSimItersEnded?.Invoke(this, new(message.ToString()));
+        AllSimItersEnded?.Invoke(this, new(nameof(AllSimItersEnded), message.ToString(), EventCategory.Result));
     }
 
     // REFACTOR: add documentation

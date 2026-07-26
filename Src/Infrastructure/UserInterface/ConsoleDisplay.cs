@@ -10,6 +10,10 @@ namespace UserInterface;
 // sequences, no OS-specific windowing.
 public class ConsoleDisplay : IDisplay
 {
+    private const int MinBoxWidth = 34;
+    private const int MaxBoxWidth = 96;
+    private const string Title = " live standings ";
+
     private readonly TextWriter _originalOut;
     private readonly bool _interactive;
     private int _linesPrinted;
@@ -69,6 +73,15 @@ public class ConsoleDisplay : IDisplay
         RenderStatusBlock();
     }
 
+    public void Clear()
+    {
+        _lastLines = [];
+
+        if (!_interactive) return;
+
+        ClearStatusBlock();
+    }
+
     // Moves the cursor up to the start of the block and erases everything from
     // there to the end of the screen, using only cursor movement RELATIVE to the
     // current position (ANSI "cursor previous line" + "erase to end of screen").
@@ -121,27 +134,51 @@ public class ConsoleDisplay : IDisplay
                 _originalOut.WriteLine();
             }
 
-            int maxWidth = Math.Max(Console.WindowWidth - 1, 0);
+            int available = Math.Max(Console.WindowWidth - 1, MinBoxWidth);
 
-            // A visible boundary marker makes it obvious where the pinned block starts,
-            // so it's easy to tell whether it's being redrawn in place or drifting down.
-            _originalOut.Write(new string('-', Math.Min(maxWidth, 40)));
-            _originalOut.Write(Environment.NewLine);
+            // Deliberately not Math.Clamp, for the same reason as ConsoleBox.Draw:
+            // MinBoxWidth is a preference, and on a console too narrow to honour it
+            // Clamp throws (min > max) rather than picking a side. A terminal under
+            // 39 columns used to take the whole run down here. The narrow terminal
+            // always wins.
+            int ceiling = Math.Min(Math.Max(available - 4, 1), MaxBoxWidth);
+            int contentWidth = Math.Min(Math.Max(_lastLines.Max(l => l.Length), Math.Min(MinBoxWidth, ceiling)), ceiling);
+            int inner = contentWidth + 2;
 
-            for (int i = 0; i < _lastLines.Length; i++)
+            // A drawn frame instead of a row of dashes: it makes the pinned block
+            // read as one object, and makes it obvious whether it is being redrawn
+            // in place or drifting down the screen.
+            WriteFrameLine(Ansi.TopLeft, Ansi.TopRight, inner, Title);
+
+            foreach (var line in _lastLines)
             {
-                var line = _lastLines[i];
-                var text = line.Length > maxWidth ? line[..maxWidth] : line;
-                _originalOut.Write(text);
-                if (i < _lastLines.Length - 1)
-                {
-                    _originalOut.Write(Environment.NewLine);
-                }
+                var text = line.Length > contentWidth ? line[..contentWidth] : line.PadRight(contentWidth);
+                _originalOut.Write($"{Ansi.Dim(Ansi.Vertical)} {text} {Ansi.Dim(Ansi.Vertical)}");
+                _originalOut.Write(Environment.NewLine);
             }
-            _linesPrinted = _lastLines.Length + 1;
+
+            WriteFrameLine(Ansi.BottomLeft, Ansi.BottomRight, inner, title: null, newline: false);
+
+            // No trailing newline on the last frame line, so the block occupies
+            // exactly the rows ClearStatusBlock will move back over.
+            _linesPrinted = _lastLines.Length + 2;
         }
         catch (IOException)
         {
+        }
+    }
+
+    // Draws one horizontal edge of the frame, optionally with a label sitting in it.
+    private void WriteFrameLine(string left, string right, int inner, string? title, bool newline = true)
+    {
+        var label = title is null ? string.Empty : title;
+        int rule = Math.Max(inner - label.Length, 0);
+
+        _originalOut.Write(Ansi.Dim(left + label + string.Concat(Enumerable.Repeat(Ansi.Horizontal, rule)) + right));
+
+        if (newline)
+        {
+            _originalOut.Write(Environment.NewLine);
         }
     }
 

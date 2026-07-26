@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Components;
+using Domain.Entities.Components;
 using Domain.Entities.Events;
 using Domain.Entities.Game.BaseGame;
 using Domain.Interfaces.Components;
@@ -15,7 +15,7 @@ public class GesjaaktGameState : IGesjaaktGameState
     private readonly Deck<Card> _deck;
     private ICard? _openCard;
 
-    public event EventHandler<InfoEvent>? CardDrawnFromDeck;
+    public event EventHandler<OrdinaryEvent>? CardDrawnFromDeck;
 
     public GesjaaktGameState()
     {
@@ -45,7 +45,7 @@ public class GesjaaktGameState : IGesjaaktGameState
         _openCard = _deck.DrawCard();
 
         string message = $"Card drawn: {_openCard.Value}. Cards left: {Deck.AmountOfCardsLeft()}";
-        CardDrawnFromDeck?.Invoke(this, new(message));
+        CardDrawnFromDeck?.Invoke(this, new(nameof(CardDrawnFromDeck), message, value: _openCard.Value));
     }
 
     public ICard TakeOpenCard()

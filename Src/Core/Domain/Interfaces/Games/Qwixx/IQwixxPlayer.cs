@@ -8,7 +8,7 @@ public interface IQwixxPlayer : INamed, IScored, IToReadOnly<IQwixxReadOnlyPlaye
 {
     // Raised when the injected thinker throws instead of returning a decision. A thinker is
     // hackathon-participant code, so a broken one must never take the whole game down.
-    event EventHandler<ErrorEvent>? DecideError;
+    event EventHandler<FaultEvent>? DecideError;
 
     // QX-002: one row per color. Returns the same instance on every call for a given color.
     QwixxRow Row(QwixxColor color);

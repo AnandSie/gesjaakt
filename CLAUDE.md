@@ -21,7 +21,7 @@ The solution lives in `Src/`, not the repo root:
 ```bash
 cd Src
 dotnet build Gesjaakt.sln
-dotnet test  Gesjaakt.sln          # DomainTests (62) + ExtensionsTests (5)
+dotnet test  Gesjaakt.sln          # DomainTests (320) + ExtensionsTests (5)
 dotnet run --project Presentation/ConsoleApp
 dotnet run --project Presentation/ConsoleApp -- --simple-console   # no cursor tricks
 ```
@@ -52,14 +52,70 @@ Key patterns to follow:
   implementations plus an `Add<Game>Game` extension in `ServiceCollectionExtensions`, and an
   entry in the `Dictionary<Type, Func<IGameRunner>>` in `AddDynamicBehaviourToChooseGame`.
 - **Events, not direct logging**: domain and application classes raise
-  `EventHandler<InfoEvent|WarningEvent|ErrorEvent|CriticalEvent>`. `*EventCollector` classes
-  subscribe and forward to `IGameEventHandler`, which filters by `EventLevel` and logs.
-  Domain code must never take a logger. Log level is raised per mode in `App.SelectGameMode`
-  (Critical for big simulations = much faster).
+  `EventHandler<OrdinaryEvent|NotableEvent|SpecialEvent|GameChangingEvent|FaultEvent>`.
+  Every event carries a `Kind` (always `nameof(TheEvent)` — it's the aggregation key),
+  a `Message`, an `EventImportance`, an `EventCategory`, and an optional numeric `Value`.
+  `*EventCollector` classes subscribe and forward to `IGameEventHandler` (= `GameEventHub`),
+  which **records first, then filters** by `EventImportance` and hands survivors to an
+  `IGameEventPresenter`. Domain code must never take a logger.
+  Importance is raised per mode in `App.SelectGameMode` (GameChanging for big simulations
+  = much faster). See "Event pipeline" below.
 - **Read-only projections**: thinkers only ever see `IGesjaaktReadOnlyGameState` /
   `ITakeFiveReadOnlyGameState`, produced via `AsReadOnly()`. Never hand a mutable state to a bot.
 - **Thinker isolation**: a throwing thinker is caught by the dealer and defaults to a safe move
   (`SKIPWITHCOIN`). Keep that guarantee — participant code is untrusted.
+
+## Event pipeline
+
+```
+domain/runner raises GameEvent
+  -> *EventCollector.Attach(...)                       Application/*GameEventCollector.cs
+  -> IGameEventHandler = GameEventHub                  Application/Events/GameEventHub.cs
+       |- IGameEventStatistics.Record(...)  ALWAYS      Application/Events/GameEventStatistics.cs
+       '- IGameEventPresenter.Present(...)  if importance >= threshold
+            RichEventPresenter    (default)            Infrastructure/UserInterface/
+            LoggingEventPresenter (--simple-console)   Infrastructure/Logging/
+```
+
+- `EventImportance` (Ordinary → Notable → Special → GameChanging) is the verbosity knob and
+  replaced the old `EventLevel`. `EventCategory` (Play/Progress/Result/Fault) is orthogonal and
+  drives styling; `FaultEvent` is the one to raise when participant code misbehaves.
+- **Record before filter** is deliberate: a quiet 10.000-game run still has to be able to report
+  how often the ordinary things happened. Only aggregates are stored (count, sum, min, max per
+  `Kind`) — never individual events.
+- `App` calls `IGameEventHandler.ShowSummary()` after every mode; `EventStatisticsRenderer` draws
+  two boxed tables. The first shows `Play`/`Fault` kinds only (`report.GameStatistics`) — runner
+  `Progress`/`Result` narration is recorded but not tabulated. The second breaks the kinds that
+  named an `Actor` (`report.ActorStatistics`) down per player.
+- The per-player table shows each player's **share of the row**, not a count: `SimulateAllPossible-
+  PlayerCombis` doesn't put every player in every game, so a count would mostly measure who got
+  dealt in most often. Column count adapts to the console width; overflow players are named as a
+  hidden count rather than silently dropped.
+- Games are counted from the `GameEnded` kind (`GameEventStatistics.GameEndedKind`), which is what
+  makes the `/GAME` column possible without the statistics knowing about `GameRunner`.
+- Everything presented as a finished artifact goes through `ConsoleBox.Draw` so results, the
+  summary tables and the alarm read as the same kind of object. Boxes size to the console;
+  `wrapLongRows` is opt-in because wrapping a table row scatters its columns. `EventCategory.Result`
+  events are boxed rather than narrated, with their first message line promoted to the box title.
+  `IDisplay.Clear()` retires the pinned live standings when `AllSimItersEnded` fires, so a finished
+  run shows each standing once.
+- Rendering helpers live in `Infrastructure/UserInterface`: `Ansi` (colour/box-drawing with
+  `NO_COLOR` + non-UTF8 fallbacks), `EventTheme` (importance/category → colour + glyph),
+  `ConsolePrompt` (menus; these used to be logged at Critical just to clear the log filter).
+  Nothing here takes a package dependency — it's hand-rolled ANSI on purpose.
+- **Adding a numeric to an event**: pass `value:` at the raise site and it automatically gets a
+  mean/min/max column. Only pass a number that is meaningful to average — a progress percentage
+  or an id is not.
+- **Adding a player to an event**: pass `actor: player.Name` at the raise site and the kind
+  automatically joins the per-player table. Do it for anything that happens *to* somebody; leave
+  it off for table-level events (a card leaving the deck, coins being divided). Be consistent
+  across a kind's raise sites — a kind that names a player at some and not others triggers the
+  attribution alarm below.
+- **The attribution alarm** (`report.HasAttributionGap`) is the one assert in the summary. Shares
+  divide by every event of the kind, so a half-instrumented kind renders a table that is quietly
+  wrong rather than obviously broken. Both presenters shout — a red box above the table plus a
+  `NOBODY` column in the rich renderer, `LogError` in the plain one. All of it disappears on its
+  own once the raise sites agree; there is nothing to switch off.
 
 ## Conventions
 
@@ -92,7 +148,8 @@ table. Check which list you actually need before editing.
 
 Useful context before extending; not a to-do list.
 
-- ~44 build warnings (mostly CS8618/CS8622 nullability, some dead fields). Build is otherwise clean.
+- ~81 build warnings (102 CS8618 + 42 CS8622 nullability across the two TFM passes, plus a
+  handful of CS0108/CS8602/dead fields). Build is otherwise clean.
 - No CI workflow and no `dotnet format`/analyzer enforcement.
 - No tests above the Domain layer: `GameRunner`, the factories, and the thinkers are untested.
 - Simulation is single-threaded (`// REFACTOR - parallel`). `EnumerableExtensions.Shuffle` uses a

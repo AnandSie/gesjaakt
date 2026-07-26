@@ -1,11 +1,17 @@
-﻿using Domain.Entities.Events;
+using Domain.Entities.Events;
 
 namespace Application.Interfaces;
 
-// REFACTOR: create game specific levels which are not similar to logging levels. (e.g. levels: gamechanging, special, ordinary)
+// What the *EventCollector classes attach every game event to. Records the
+// event for the end-of-run summary, then hands it to a presenter if it clears
+// the configured importance threshold.
 public interface IGameEventHandler
 {
-    public void HandleEvent(object sender, BaseEvent eventObject);
-    public void SetMinLevel(EventLevel level);
+    void HandleEvent(object sender, GameEvent gameEvent);
 
+    // The granularity knob: Ordinary shows the full narration of a manual game,
+    // GameChanging keeps a 10.000-game simulation quiet (and fast).
+    void SetMinImportance(EventImportance importance);
+
+    void ShowSummary();
 }

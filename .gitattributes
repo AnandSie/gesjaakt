@@ -1,0 +1,37 @@
+# Line endings are decided here rather than per-machine, so a clone behaves the
+# same whatever core.autocrlf happens to be set to on the box that made it. That
+# matters for a repo hackathon participants clone onto machines nobody controls.
+#
+# The rule: LF in the repository, native in the working tree. Windows checkouts
+# still get CRLF, so Visual Studio sees exactly what it saw before.
+#
+# Without this, a handful of files carried CRLF baked into the blob, and any tool
+# that rewrote one turned a two-line edit into a whole-file diff.
+
+* text=auto
+
+# diff=csharp gives hunk headers naming the member that changed instead of a
+# stray brace.
+*.cs            text diff=csharp
+
+*.csproj        text
+*.md            text
+.editorconfig   text
+.gitignore      text
+.gitattributes  text
+
+# Visual Studio rewrites the solution with CRLF on every save regardless of
+# platform. Pin it so it stops reappearing as modified.
+*.sln           text eol=crlf
+
+# Nothing binary is tracked today. These keep a future screenshot, icon or
+# signing key from being corrupted by newline conversion.
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.pdf           binary
+*.snk           binary
+*.dll           binary
+*.exe           binary

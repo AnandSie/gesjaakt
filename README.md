@@ -78,18 +78,102 @@ NOTE: This section currently only applies for the Gesjaakt Game, not for the Tak
 2. Add your `Thinker` there
 3. Run the console and select the **visualize** option
 
-### Logging Configuration
+### Game Events
 
-Configure the log level in `Program.cs` to balance detail vs. performance:
+Everything that happens in a game is raised as a **game event** — not a log record. Each event
+carries how much it matters (`EventImportance`) and what kind of thing it was (`EventCategory`),
+which are two separate questions:
 
-| Log Level     | What it shows                                                                 |
-|---------------|-------------------------------------------------------------------------------|
-| `Debug`       | All internal logs — very detailed; not recommended for large simulations      |
-| `Information` | Key game flow: coin counts, all "GESJAAKT!" moments, and round results        |
-| `Warning`     | Only critical events and round results                                        |
-| `Critical`    | Only the **final aggregated results** — recommended for large simulations     |
+| Importance     | What it covers                                                                    |
+|----------------|-----------------------------------------------------------------------------------|
+| `Ordinary`     | Routine play: a card is drawn, a coin is paid                                      |
+| `Notable`      | Worth pointing out: a row is taken, a penalty is scored                            |
+| `Special`      | Rare and consequential: a player is GESJAAKT, a thinker throws                     |
+| `GameChanging` | Changes the course of the game or the run: a colour locks, a simulation finishes   |
 
-> 💡 Using `Warning` or `Critical` makes the app run **faster** by reducing console output.
+| Category   | What it means                                                    |
+|------------|------------------------------------------------------------------|
+| `Play`     | Something happened inside the rules of the game                   |
+| `Progress` | The runner moved through a simulation                             |
+| `Result`   | A game or a simulation produced a result                          |
+| `Fault`    | **Your thinker misbehaved** — threw, or asked for an illegal move |
+
+Each game mode picks its own minimum importance, so you don't have to configure anything: a manual
+game narrates everything from `Ordinary` up, a set simulation shows `Special` and above, and
+"simulate all combinations" only shows `GameChanging`. Fewer events on screen also means a
+**faster** run.
+
+> 💡 Debugging your bot? Every fault is `Special`, so it stays visible in a set simulation even
+> though the ordinary narration is filtered out.
+
+Results are drawn in the same frame as the tables below them, and the live standings that track a
+run in progress are retired once the real results are in — so a finished run shows each standing
+exactly once.
+
+### Event Summary
+
+Events are **recorded even when they are filtered out of the display**, so every simulation ends
+with a summary over all of them:
+
+```
+╭─ Event summary over 1000 game(s) ─────────────────────────────────────────────────────────╮
+│              EVENT                          COUNT     /GAME      MEAN       MIN       MAX │
+│ ████████████ SkippedWithCoin               89.613     89,61      4,09      1,00     16,00 │
+│ ███░░░░░░░░░ CardDrawnFromDeck             24.000     24,00     19,02      3,00     35,00 │
+│ █░░░░░░░░░░░ PlayerGesjaakt                 5.636      5,64     23,10      3,00     35,00 │
+│ █░░░░░░░░░░░ CoinsDivided                   1.000      1,00      9,00      9,00      9,00 │
+│ ───────────────────────────────────────────────────────────────────────────────────────── │
+│ 120.249 events across 4 kinds                                                             │
+╰───────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
+- **COUNT** — how often the event happened across the whole run
+- **/GAME** — mean occurrences per game
+- **MEAN / MIN / MAX** — over the number the event carries, where it carries one (the value of the
+  card taken, the coins on the table, the penalty number). Events with no number show `-`.
+
+Faults sort to the top, so a bot that quietly throws once every few hundred games can't hide.
+(Numbers are formatted for your machine's locale — the examples here are from a Dutch one.)
+
+Only aggregates are kept, not the individual events — a 10.000-game run raises millions of them.
+
+### Events Per Player
+
+Events that happen *to* a specific player are also broken down per bot — this is usually the most
+directly useful table for tuning a Thinker:
+
+```
+╭─ Events per player (share of each event) ────────────────────────────────────────────────────────╮
+│ EVENT                          TOTAL      Bart    Marijn   Maarten     Barry     Anand    Jeremy │
+│ SkippedWithCoin               89.594     16,7%     16,7%     16,7%     16,7%     16,6%     16,6% │
+│ PlayerGesjaakt                 5.766     46,7%     17,0%     16,2%     15,5%      4,7%         - │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
+Read across a row: everyone pays coins about equally often, but **Bart absorbs 46,7% of every
+GESJAAKT in the run** — and Bart finishes last. Jeremy shows `-`, meaning it never happened to
+them once.
+
+Cells are a **share of the row**, not a count, because "simulate all combinations" doesn't put
+every bot in every game — a raw count would mostly measure who got dealt in most often. Events
+that aren't about anybody (a card leaving the deck) don't appear here.
+
+If an event kind names a player at some raise sites but not others, the shares silently understate
+everybody — so the summary refuses to be quiet about it:
+
+```
+╭─ !! INCOMPLETE EVENT ATTRIBUTION ─────────────────────────────────────╮
+│ TakeFive                  3.750 of 7.576 events named nobody (49,5%)  │
+│                                                                       │
+│ Player shares divide by EVERY event of the kind, so the rows below do │
+│ NOT add up to 100% and understate every player. This is a bug in the  │
+│ raise site, not a fact about the game: pass actor: at every ?.Invoke  │
+│ for the kinds listed here.                                            │
+╰───────────────────────────────────────────────────────────────────────╯
+```
+
+A `NOBODY` column also appears in the table for as long as the gap exists. Both disappear once
+every raise site for that kind passes `actor:`.
 
 ---
 

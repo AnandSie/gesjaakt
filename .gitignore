@@ -134,3 +134,6 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
+
+# Claude Code git worktrees
+.claude/worktrees/

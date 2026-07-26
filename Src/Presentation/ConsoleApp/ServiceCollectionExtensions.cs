@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Application;
+using Application.Events;
 using Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,8 +23,10 @@ internal static class ServiceCollectionExtensions
     public static IServiceCollection AddLoggingInfra(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton(typeof(Application.Interfaces.ILogger<>), typeof(Infrastructure.Logging.Logger<>));
-        // NOTE: A custom GameEventHandler is used to share events (i.e. log) with user. Info is the minimum used. This handler decides which events are logged and not
 
+        // Only the plain LoggingEventPresenter routes game events through here; the
+        // rich presenter writes to the console itself. Logging is still used for
+        // anything that is genuinely a log record.
         serviceCollection.AddLogging(config =>
         {
             config.AddSimpleConsole(options => options.IncludeScopes = true);
@@ -37,7 +40,12 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddTransient<App>();
         serviceCollection.AddSingleton<IPlayerInputProvider, CLIPlayerInputProvider>();
         serviceCollection.AddTransient<IGameRunnerEventCollector, GameRunnerEventCollector>();
-        serviceCollection.AddSingleton<IGameEventHandler, GameEventHandler>();
+
+        // Singletons: both the running totals and the importance threshold are
+        // per-run state that every collector must share.
+        serviceCollection.AddSingleton<IGameEventStatistics, GameEventStatistics>();
+        serviceCollection.AddSingleton<IGameEventHandler, GameEventHub>();
+
         serviceCollection.AddTransient<SimulationConfiguration>();
         return serviceCollection;
     }
@@ -111,6 +119,18 @@ internal static class ServiceCollectionExtensions
     {
         // Singleton because the pinned status line is a single, shared piece of console state
         services.AddSingleton<IDisplay>(_ => new ConsoleDisplay(useLiveDisplay));
+
+        // The rich presenter draws its own coloured, framed output, which needs the
+        // cursor control --simple-console exists to opt out of. In that mode fall
+        // back to plain log lines.
+        if (useLiveDisplay)
+        {
+            services.AddSingleton<IGameEventPresenter, RichEventPresenter>();
+        }
+        else
+        {
+            services.AddSingleton<IGameEventPresenter, LoggingEventPresenter>();
+        }
 
         return services;
     }
