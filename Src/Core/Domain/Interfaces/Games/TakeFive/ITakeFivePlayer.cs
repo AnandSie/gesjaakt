@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Events;
+using Domain.Entities.Events;
 using Domain.Entities.Game.TakeFive;
 using Domain.Interfaces.Games.BaseGame;
 using System.Collections.Immutable;
@@ -18,6 +18,6 @@ public interface ITakeFivePlayer :
 
     public int CardsCount { get; }
 
-    public event EventHandler<ErrorEvent>? DecideError;
-    public event EventHandler<ErrorEvent>? CardNotFound;
+    public event EventHandler<FaultEvent>? DecideError;
+    public event EventHandler<FaultEvent>? CardNotFound;
 }

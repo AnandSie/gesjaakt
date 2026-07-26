@@ -53,17 +53,21 @@ internal class App
         switch (choice)
         {
             case 1:
-                _gameEventHandler.SetMinLevel(EventLevel.Error);
+                // Only the rare stuff is narrated during a simulation; everything
+                // else is still recorded and shows up in the summary afterwards.
+                _gameEventHandler.SetMinImportance(EventImportance.Special);
                 _gameRunner.Simulate(_simulationConfiguration.NumberOfGamesPerSimulation);
+                _gameEventHandler.ShowSummary();
                 break;
 
             case 2:
-                _gameEventHandler.SetMinLevel(EventLevel.Critical);
+                _gameEventHandler.SetMinImportance(EventImportance.GameChanging);
                 _gameRunner.SimulateAllPossiblePlayerCombis();
+                _gameEventHandler.ShowSummary();
                 break;
 
             case 3:
-                _gameEventHandler.SetMinLevel(EventLevel.Info);
+                _gameEventHandler.SetMinImportance(EventImportance.Ordinary);
 
                 string question = $"With how many players do you want to play ({gameOption.MinNumberOfPlayers}-{gameOption.MaxNumberOfPlayers})?";
                 // Range's second argument is a count, not an end value - without the +1 the
@@ -72,10 +76,11 @@ internal class App
                 IEnumerable<int> options = Enumerable.Range(gameOption.MinNumberOfPlayers, gameOption.MaxNumberOfPlayers - gameOption.MinNumberOfPlayers + 1);
                 var playersToAdd = _playerInputProvider.GetPlayerInputAsInt(question, options);
                 _gameRunner.ManualGame(playersToAdd);
+                _gameEventHandler.ShowSummary();
                 break;
 
             case 4:
-                _gameEventHandler.SetMinLevel(EventLevel.Info);
+                _gameEventHandler.SetMinImportance(EventImportance.Ordinary);
 
                 _gameRunner.ShowStatistics();
                 break;

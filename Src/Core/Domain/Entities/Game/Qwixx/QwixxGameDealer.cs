@@ -9,9 +9,9 @@ public class QwixxGameDealer : IQwixxGameDealer
     private readonly IQwixxGameState _gameState;
     private readonly IQwixxDiceRoller _diceRoller;
 
-    public event EventHandler<WarningEvent>? ColorLocked;
-    public event EventHandler<WarningEvent>? PenaltyTaken;
-    public event EventHandler<ErrorEvent>? MarkRejected;
+    public event EventHandler<NotableEvent>? ColorLocked;
+    public event EventHandler<NotableEvent>? PenaltyTaken;
+    public event EventHandler<FaultEvent>? MarkRejected;
 
     public QwixxGameDealer(IQwixxGameState gameState, IQwixxDiceRoller diceRoller)
     {
@@ -75,7 +75,7 @@ public class QwixxGameDealer : IQwixxGameDealer
         {
             activePlayer.AddPenalty();
             var message = $"PENALTY - player {activePlayer.Name} marked nothing this turn and takes penalty {activePlayer.Penalties} of {QwixxRules.MaxPenalties}.";
-            PenaltyTaken?.Invoke(this, new(message));
+            PenaltyTaken?.Invoke(this, new(nameof(PenaltyTaken), message, value: activePlayer.Penalties));
         }
     }
 
@@ -124,7 +124,7 @@ public class QwixxGameDealer : IQwixxGameDealer
         if (!Enum.IsDefined(mark.Color))
         {
             var unknownColorMessage = $"Mark Rejected - player {activePlayer.Name} chose {(int)mark.Color} {mark.Number}, which is not a Qwixx color.";
-            MarkRejected?.Invoke(this, new(unknownColorMessage));
+            MarkRejected?.Invoke(this, new(nameof(MarkRejected), unknownColorMessage));
             return;
         }
 
@@ -133,7 +133,7 @@ public class QwixxGameDealer : IQwixxGameDealer
         if (!roll.ColoredSums(mark.Color).Contains(mark.Number))
         {
             var message = $"Mark Rejected - player {activePlayer.Name} chose {mark.Color} {mark.Number}, which is not one of this roll's candidate sums for {mark.Color}.";
-            MarkRejected?.Invoke(this, new(message));
+            MarkRejected?.Invoke(this, new(nameof(MarkRejected), message));
             return;
         }
 
@@ -151,14 +151,14 @@ public class QwixxGameDealer : IQwixxGameDealer
         if (!Enum.IsDefined(color))
         {
             var unknownColorMessage = $"Mark Rejected - player {player.Name} tried to mark {(int)color} {number}, which is not a Qwixx color.";
-            MarkRejected?.Invoke(this, new(unknownColorMessage));
+            MarkRejected?.Invoke(this, new(nameof(MarkRejected), unknownColorMessage));
             return false;
         }
 
         if (_gameState.IsColorLocked(color))
         {
             var lockedMessage = $"Mark Rejected - player {player.Name} tried to mark {color} {number}, but {color} is already locked for every player.";
-            MarkRejected?.Invoke(this, new(lockedMessage));
+            MarkRejected?.Invoke(this, new(nameof(MarkRejected), lockedMessage));
             return false;
         }
 
@@ -166,7 +166,7 @@ public class QwixxGameDealer : IQwixxGameDealer
         if (!row.CanMark(number))
         {
             var rowMessage = $"Mark Rejected - player {player.Name} tried to mark {color} {number}, which that row does not allow (already marked, or skipped past).";
-            MarkRejected?.Invoke(this, new(rowMessage));
+            MarkRejected?.Invoke(this, new(nameof(MarkRejected), rowMessage));
             return false;
         }
 
@@ -177,7 +177,7 @@ public class QwixxGameDealer : IQwixxGameDealer
             row.Lock();
             _gameState.LockColor(color);
             var lockMessage = $"ROW LOCKED - player {player.Name} locked {color}. That color is now closed for every player.";
-            ColorLocked?.Invoke(this, new(lockMessage));
+            ColorLocked?.Invoke(this, new(nameof(ColorLocked), lockMessage));
         }
 
         return true;

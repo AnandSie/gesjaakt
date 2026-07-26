@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Events;
+using Domain.Entities.Events;
 using Domain.Interfaces.Components;
 using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces.Games.TakeFive;
@@ -12,8 +12,8 @@ public class TakeFiveGameState : ITakeFiveGameState
     private readonly List<List<TakeFiveCard>> _cardRows;
     private bool _isInitialized = false;
 
-    public event EventHandler<InfoEvent>? CardIsPlaced;
-    public event EventHandler<InfoEvent>? RowIsTaken;
+    public event EventHandler<OrdinaryEvent>? CardIsPlaced;
+    public event EventHandler<NotableEvent>? RowIsTaken;
 
     public TakeFiveGameState(IDeckFactory<TakeFiveCard> deckFactory)
     {
@@ -53,7 +53,7 @@ public class TakeFiveGameState : ITakeFiveGameState
     public void PlaceCard(TakeFiveCard card, int rowNumber)
     {
         _cardRows.ElementAt(rowNumber).Add(card);
-        this.CardIsPlaced?.Invoke(this, new($"card with value {card.Value} is placed in row {rowNumber + 1}"));
+        this.CardIsPlaced?.Invoke(this, new(nameof(CardIsPlaced), $"card with value {card.Value} is placed in row {rowNumber + 1}", value: card.Value));
     }
 
     public IEnumerable<TakeFiveCard> GetCards(int rowNumber)
@@ -63,7 +63,10 @@ public class TakeFiveGameState : ITakeFiveGameState
 
         cardRow.Clear();
 
-        this.RowIsTaken?.Invoke(this, new($"Cards of row {rowNumber + 1} are taken"));
+        // The cow heads are what taking a row actually costs, so they ride along
+        // as the event's value and become a mean in the run summary.
+        var cowHeads = result.Sum(c => c.CowHeads);
+        this.RowIsTaken?.Invoke(this, new(nameof(RowIsTaken), $"Cards of row {rowNumber + 1} are taken ({cowHeads} cow heads)", value: cowHeads));
         return result;
     }
 

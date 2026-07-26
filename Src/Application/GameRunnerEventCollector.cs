@@ -17,7 +17,7 @@ public class GameRunnerEventCollector(IGameEventHandler gameEventHandler, IDispl
         return this;
     }
 
-    public void DisplayEvent(object sender, BaseEvent eventObject)
+    public void DisplayEvent(object sender, GameEvent eventObject)
     {
         display.UpdateMessage(eventObject.Message);
         gameEventHandler.HandleEvent(sender, eventObject);

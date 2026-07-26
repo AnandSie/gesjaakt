@@ -27,7 +27,7 @@ public class QwixxGameEventCollectorTests
         var dealerMock = new Mock<IQwixxGameDealer>();
         collector.Attach(dealerMock.Object);
 
-        dealerMock.Raise(d => d.ColorLocked += null, dealerMock.Object, new WarningEvent("a row was locked"));
+        dealerMock.Raise(d => d.ColorLocked += null, dealerMock.Object, new NotableEvent(nameof(IQwixxGameDealer.ColorLocked), "a row was locked"));
 
         VerifyHandled("a row was locked");
     }
@@ -38,7 +38,7 @@ public class QwixxGameEventCollectorTests
         var dealerMock = new Mock<IQwixxGameDealer>();
         collector.Attach(dealerMock.Object);
 
-        dealerMock.Raise(d => d.PenaltyTaken += null, dealerMock.Object, new WarningEvent("a penalty was taken"));
+        dealerMock.Raise(d => d.PenaltyTaken += null, dealerMock.Object, new NotableEvent(nameof(IQwixxGameDealer.PenaltyTaken), "a penalty was taken"));
 
         VerifyHandled("a penalty was taken");
     }
@@ -49,7 +49,7 @@ public class QwixxGameEventCollectorTests
         var dealerMock = new Mock<IQwixxGameDealer>();
         collector.Attach(dealerMock.Object);
 
-        dealerMock.Raise(d => d.MarkRejected += null, dealerMock.Object, new ErrorEvent("a mark was rejected"));
+        dealerMock.Raise(d => d.MarkRejected += null, dealerMock.Object, new FaultEvent(nameof(IQwixxGameDealer.MarkRejected), "a mark was rejected"));
 
         VerifyHandled("a mark was rejected");
     }
@@ -62,8 +62,8 @@ public class QwixxGameEventCollectorTests
         var player2 = new Mock<IQwixxPlayer>();
         collector.Attach(new[] { player1.Object, player2.Object });
 
-        player1.Raise(p => p.DecideError += null, player1.Object, new ErrorEvent("player 1 broke"));
-        player2.Raise(p => p.DecideError += null, player2.Object, new ErrorEvent("player 2 broke"));
+        player1.Raise(p => p.DecideError += null, player1.Object, new FaultEvent(nameof(IQwixxPlayer.DecideError), "player 1 broke"));
+        player2.Raise(p => p.DecideError += null, player2.Object, new FaultEvent(nameof(IQwixxPlayer.DecideError), "player 2 broke"));
 
         VerifyHandled("player 1 broke");
         VerifyHandled("player 2 broke");
@@ -86,13 +86,13 @@ public class QwixxGameEventCollectorTests
     {
         var dealerMock = new Mock<IQwixxGameDealer>();
 
-        dealerMock.Raise(d => d.ColorLocked += null, dealerMock.Object, new WarningEvent("ignored"));
+        dealerMock.Raise(d => d.ColorLocked += null, dealerMock.Object, new NotableEvent(nameof(IQwixxGameDealer.ColorLocked), "ignored"));
 
-        eventHandlerMock.Verify(h => h.HandleEvent(It.IsAny<object>(), It.IsAny<BaseEvent>()), Times.Never);
+        eventHandlerMock.Verify(h => h.HandleEvent(It.IsAny<object>(), It.IsAny<GameEvent>()), Times.Never);
     }
 
     private void VerifyHandled(string expectedMessage)
     {
-        eventHandlerMock.Verify(h => h.HandleEvent(It.IsAny<object>(), It.Is<BaseEvent>(e => e.Message == expectedMessage)), Times.Once);
+        eventHandlerMock.Verify(h => h.HandleEvent(It.IsAny<object>(), It.Is<GameEvent>(e => e.Message == expectedMessage)), Times.Once);
     }
 }

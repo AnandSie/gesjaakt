@@ -78,18 +78,58 @@ NOTE: This section currently only applies for the Gesjaakt Game, not for the Tak
 2. Add your `Thinker` there
 3. Run the console and select the **visualize** option
 
-### Logging Configuration
+### Game Events
 
-Configure the log level in `Program.cs` to balance detail vs. performance:
+Everything that happens in a game is raised as a **game event** — not a log record. Each event
+carries how much it matters (`EventImportance`) and what kind of thing it was (`EventCategory`),
+which are two separate questions:
 
-| Log Level     | What it shows                                                                 |
-|---------------|-------------------------------------------------------------------------------|
-| `Debug`       | All internal logs — very detailed; not recommended for large simulations      |
-| `Information` | Key game flow: coin counts, all "GESJAAKT!" moments, and round results        |
-| `Warning`     | Only critical events and round results                                        |
-| `Critical`    | Only the **final aggregated results** — recommended for large simulations     |
+| Importance     | What it covers                                                                    |
+|----------------|-----------------------------------------------------------------------------------|
+| `Ordinary`     | Routine play: a card is drawn, a coin is paid                                      |
+| `Notable`      | Worth pointing out: a row is taken, a penalty is scored                            |
+| `Special`      | Rare and consequential: a player is GESJAAKT, a thinker throws                     |
+| `GameChanging` | Changes the course of the game or the run: a colour locks, a simulation finishes   |
 
-> 💡 Using `Warning` or `Critical` makes the app run **faster** by reducing console output.
+| Category   | What it means                                                    |
+|------------|------------------------------------------------------------------|
+| `Play`     | Something happened inside the rules of the game                   |
+| `Progress` | The runner moved through a simulation                             |
+| `Result`   | A game or a simulation produced a result                          |
+| `Fault`    | **Your thinker misbehaved** — threw, or asked for an illegal move |
+
+Each game mode picks its own minimum importance, so you don't have to configure anything: a manual
+game narrates everything from `Ordinary` up, a set simulation shows `Special` and above, and
+"simulate all combinations" only shows `GameChanging`. Fewer events on screen also means a
+**faster** run.
+
+> 💡 Debugging your bot? Every fault is `Special`, so it stays visible in a set simulation even
+> though the ordinary narration is filtered out.
+
+### Event Summary
+
+Events are **recorded even when they are filtered out of the display**, so every simulation ends
+with a summary over all of them:
+
+```
+╭─ Event summary over 1000 game(s) ───────────────────────────────────────────────╮
+│              EVENT                          COUNT    /GAME     MEAN    MIN  MAX │
+│ ██░░░░░░░░░░ PlayerDecideError                  12     0.01        -      -   - │
+│ ████████████ CardDrawnFromDeck               24,000    24.00    19.04   3.00 35 │
+│ ███░░░░░░░░░ PlayerGesjaakt                   5,913     5.91    21.37   3.00 35 │
+│ ─────────────────────────────────────────────────────────────────────────────── │
+│ 41,925 events across 6 kinds                                                    │
+╰─────────────────────────────────────────────────────────────────────────────────╯
+```
+
+- **COUNT** — how often the event happened across the whole run
+- **/GAME** — mean occurrences per game
+- **MEAN / MIN / MAX** — over the number the event carries, where it carries one (the value of the
+  card taken, the coins on the table, the penalty number). Events with no number show `-`.
+
+Faults sort to the top, so a bot that quietly throws once every few hundred games can't hide.
+
+Only aggregates are kept, not the individual events — a 10.000-game run raises millions of them.
 
 ---
 

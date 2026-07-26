@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Events;
+using Domain.Entities.Events;
 
 namespace Application.Interfaces;
 
@@ -10,10 +10,10 @@ public interface IGameRunner
     public void ShowStatistics();
 
     // Events
-    public event EventHandler<WarningEvent>? GameEnded;
-    public event EventHandler<ErrorEvent>? SimIterStarting;
-    public event EventHandler<WarningEvent>? SimIterEnded;
-    public event EventHandler<ErrorEvent>? AllSimItersEnded;
-    public event EventHandler<CriticalEvent>? PlayerCombinationIterStarting;
-    public event EventHandler<CriticalEvent>? PlayerCombinationIterEnded;
+    public event EventHandler<NotableEvent>? GameEnded;
+    public event EventHandler<SpecialEvent>? SimIterStarting;
+    public event EventHandler<NotableEvent>? SimIterEnded;
+    public event EventHandler<GameChangingEvent>? AllSimItersEnded;
+    public event EventHandler<GameChangingEvent>? PlayerCombinationIterStarting;
+    public event EventHandler<GameChangingEvent>? PlayerCombinationIterEnded;
 }

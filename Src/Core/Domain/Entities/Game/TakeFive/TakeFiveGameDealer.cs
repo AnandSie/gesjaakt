@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Events;
+using Domain.Entities.Events;
 using Domain.Interfaces.Games.TakeFive;
 using System.Collections.Immutable;
 
@@ -8,8 +8,8 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
 {
     private readonly ITakeFiveGameState _gameState;
 
-    public event EventHandler<WarningEvent>? DiverCardIsPlayed;
-    public event EventHandler<WarningEvent>? CardPlayedInFullRow;
+    public event EventHandler<NotableEvent>? DiverCardIsPlayed;
+    public event EventHandler<NotableEvent>? CardPlayedInFullRow;
 
     public TakeFiveGameDealer(ITakeFiveGameState gameState)
     {
@@ -85,7 +85,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
         if (result)
         {
             var message = $"Diver Card - player {player.Name} played card {card.Value} that is lower than all rows.";
-            DiverCardIsPlayed?.Invoke(this, new(message));
+            DiverCardIsPlayed?.Invoke(this, new(nameof(DiverCardIsPlayed), message, value: card.Value));
         }
         return result;
     }
@@ -97,7 +97,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
         if (result)
         {
             var message = $"TAKEFIVE - player {player.Name} played card {card.Value} in row that already is full.";
-            CardPlayedInFullRow?.Invoke(this, new(message));
+            CardPlayedInFullRow?.Invoke(this, new(nameof(CardPlayedInFullRow), message, value: card.Value));
         }
         return result;
     }

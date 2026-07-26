@@ -7,10 +7,10 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
 {
     private readonly IGesjaaktGameState _gameState;
 
-    public event EventHandler<WarningEvent>? PlayerGesjaakt;
-    public event EventHandler<InfoEvent>? SkippedWithCoin;
-    public event EventHandler<InfoEvent>? CoinsDivided;
-    public event EventHandler<ErrorEvent>? PlayerDecideError;
+    public event EventHandler<SpecialEvent>? PlayerGesjaakt;
+    public event EventHandler<OrdinaryEvent>? SkippedWithCoin;
+    public event EventHandler<OrdinaryEvent>? CoinsDivided;
+    public event EventHandler<FaultEvent>? PlayerDecideError;
 
     public GesjaaktGameDealer(IGesjaaktGameState gameState)
     {
@@ -49,8 +49,8 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
 
         if (player.CoinsAmount == 0)
         {
-            string message = $"!!!!!! GESJAAKT !!!!!! \n\t {player.Name} needs to take card {_gameState.OpenCardValue}";
-            PlayerGesjaakt?.Invoke(this, new(message));
+            string message = $"{player.Name} is GESJAAKT and has to take card {_gameState.OpenCardValue}";
+            PlayerGesjaakt?.Invoke(this, new(nameof(PlayerGesjaakt), message, value: _gameState.OpenCardValue));
             HandleTakeCard(player);
         }
         else
@@ -63,8 +63,8 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
 
                 case GesjaaktTurnOption.SKIPWITHCOIN:
                     _gameState.AddCoinToTable(player.GiveCoin());
-                    string message = $"Amount of coins on table: {_gameState.AmountOfCoinsOnTable}";
-                    SkippedWithCoin?.Invoke(this, new(message));
+                    string message = $"{player.Name} skips with a coin. Amount of coins on table: {_gameState.AmountOfCoinsOnTable}";
+                    SkippedWithCoin?.Invoke(this, new(nameof(SkippedWithCoin), message, value: _gameState.AmountOfCoinsOnTable));
                     break;
             }
         }
@@ -80,7 +80,7 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
         catch (Exception e)
         {
             string message = $"player {player.Name} could not decide. So the he/she skips by playing a coin. The following error occured - {e.Message}";
-            PlayerDecideError?.Invoke(this, new(message));
+            PlayerDecideError?.Invoke(this, new(nameof(PlayerDecideError), message));
             return GesjaaktTurnOption.SKIPWITHCOIN;
         }
 
@@ -102,7 +102,7 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
         };
         _gameState.DivideCoins(coinsPerPlayer);
         string message = $"Every player gets {coinsPerPlayer} coins";
-        CoinsDivided?.Invoke(this, new(message));
+        CoinsDivided?.Invoke(this, new(nameof(CoinsDivided), message, value: coinsPerPlayer));
     }
 
     private void HandleTakeCard(IGesjaaktPlayer player)

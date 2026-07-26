@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Application.Interfaces;
 using Domain.Entities.Events;
 using Domain.Interfaces;
@@ -16,12 +16,12 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
 
     private Dictionary<string, int> winsByPlayerName;
 
-    public event EventHandler<WarningEvent>? GameEnded;
-    public event EventHandler<ErrorEvent>? SimIterStarting;
-    public event EventHandler<WarningEvent>? SimIterEnded;
-    public event EventHandler<ErrorEvent>? AllSimItersEnded;
-    public event EventHandler<CriticalEvent>? PlayerCombinationIterStarting;
-    public event EventHandler<CriticalEvent>? PlayerCombinationIterEnded;
+    public event EventHandler<NotableEvent>? GameEnded;
+    public event EventHandler<SpecialEvent>? SimIterStarting;
+    public event EventHandler<NotableEvent>? SimIterEnded;
+    public event EventHandler<GameChangingEvent>? AllSimItersEnded;
+    public event EventHandler<GameChangingEvent>? PlayerCombinationIterStarting;
+    public event EventHandler<GameChangingEvent>? PlayerCombinationIterEnded;
 
     public GameRunner(
         IPlayerFactory<TPlayer> playerFactory,
@@ -86,7 +86,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
         {
             stopwatch.IterationHasStarted();
             string startMessage = $"Player Combination Starting #{i}/{numberOfPlayerCombinations} - {(i / numberOfPlayerCombinations) * 100}%";
-            PlayerCombinationIterStarting?.Invoke(this, new(startMessage));
+            PlayerCombinationIterStarting?.Invoke(this, new(nameof(PlayerCombinationIterStarting), startMessage, EventCategory.Progress));
 
             var players = allPlayerFactoryCombinations[i].Select(pf => pf.Invoke()).Shuffle();
 
@@ -102,7 +102,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
             var estimatedRemainingMinutes = stopwatch.RemainingMinutes();
 
             string endMessage = $"Player Combination Ended. It took {stopwatch.IterationDurationSec()} s. Estimated remaining time: {estimatedRemainingMinutes:F2} min";
-            PlayerCombinationIterEnded?.Invoke(this, new(endMessage));
+            PlayerCombinationIterEnded?.Invoke(this, new(nameof(PlayerCombinationIterEnded), endMessage, EventCategory.Progress));
         }
 
         ReportSimulationResults(winsByPlayerName);
@@ -122,14 +122,14 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
         }
 
         var msg = sb.ToString();
-        SimIterEnded?.Invoke(this, new(msg));
+        SimIterEnded?.Invoke(this, new(nameof(SimIterEnded), msg, EventCategory.Progress));
     }
 
     private void ShareGameSimIterStarting(int numberOfSimulations, int iter)
     {
         double progress = (double)iter / numberOfSimulations * 100;
         string message = $"Game Simulation Starting #{iter}/{numberOfSimulations} -  {progress:F0}%";
-        SimIterStarting?.Invoke(this, new(message));
+        SimIterStarting?.Invoke(this, new(nameof(SimIterStarting), message, EventCategory.Progress));
     }
 
     private void RunGameWith(IEnumerable<TPlayer> players)
@@ -161,7 +161,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
             message.AppendLine($"\t- {player}");
         }
 
-        GameEnded?.Invoke(this, new(message.ToString()));
+        GameEnded?.Invoke(this, new(nameof(GameEnded), message.ToString(), EventCategory.Result));
     }
 
     private void ReportSimulationResults(Dictionary<string, int> resultPerPlayer)
@@ -182,7 +182,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
         var gamesPlayed = simlationResultsOrdened.Select(p => p.Value).Sum();
         message.AppendLine($"Total Games Played {gamesPlayed}");
 
-        AllSimItersEnded?.Invoke(this, new(message.ToString()));
+        AllSimItersEnded?.Invoke(this, new(nameof(AllSimItersEnded), message.ToString(), EventCategory.Result));
     }
 
     // REFACTOR: add documentation
