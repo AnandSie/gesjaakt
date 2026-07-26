@@ -131,6 +131,27 @@ Faults sort to the top, so a bot that quietly throws once every few hundred game
 
 Only aggregates are kept, not the individual events — a 10.000-game run raises millions of them.
 
+### Events Per Player
+
+Events that happen *to* a specific player are also broken down per bot — this is usually the most
+directly useful table for tuning a Thinker:
+
+```
+╭─ Events per player (share of each event) ────────────────────────────────────────────────────────╮
+│ EVENT                          TOTAL      Bart    Marijn   Maarten     Barry     Anand    Jeremy │
+│ SkippedWithCoin               89.594     16,7%     16,7%     16,7%     16,7%     16,6%     16,6% │
+│ PlayerGesjaakt                 5.766     46,7%     17,0%     16,2%     15,5%      4,7%         - │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
+Read across a row: everyone pays coins about equally often, but **Bart absorbs 46,7% of every
+GESJAAKT in the run** — and Bart finishes last. Jeremy shows `-`, meaning it never happened to
+them once.
+
+Cells are a **share of the row**, not a count, because "simulate all combinations" doesn't put
+every bot in every game — a raw count would mostly measure who got dealt in most often. Rows sum
+to 100%. Events that aren't about anybody (a card leaving the deck) don't appear here.
+
 ---
 
 

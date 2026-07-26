@@ -96,7 +96,7 @@ public class QwixxPlayer : IQwixxPlayer
         catch (Exception e)
         {
             var message = $"Decide Exception - Player {Name} could not decide, so {fallbackDescription}. Error message: {e.Message} ";
-            DecideError?.Invoke(this, new(nameof(DecideError), message));
+            DecideError?.Invoke(this, new(nameof(DecideError), message, actor: Name));
             return fallback;
         }
     }

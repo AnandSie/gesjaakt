@@ -85,7 +85,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
         if (result)
         {
             var message = $"Diver Card - player {player.Name} played card {card.Value} that is lower than all rows.";
-            DiverCardIsPlayed?.Invoke(this, new(nameof(DiverCardIsPlayed), message, value: card.Value));
+            DiverCardIsPlayed?.Invoke(this, new(nameof(DiverCardIsPlayed), message, value: card.Value, actor: player.Name));
         }
         return result;
     }
@@ -97,7 +97,7 @@ public class TakeFiveGameDealer : ITakeFiveGameDealer
         if (result)
         {
             var message = $"TAKEFIVE - player {player.Name} played card {card.Value} in row that already is full.";
-            CardPlayedInFullRow?.Invoke(this, new(nameof(CardPlayedInFullRow), message, value: card.Value));
+            CardPlayedInFullRow?.Invoke(this, new(nameof(CardPlayedInFullRow), message, value: card.Value, actor: player.Name));
         }
         return result;
     }

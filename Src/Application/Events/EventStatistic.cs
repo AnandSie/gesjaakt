@@ -28,6 +28,14 @@ public class EventStatistic(string kind, EventImportance importance, EventCatego
     // event actually looked like.
     public string LastMessage { get; private set; } = string.Empty;
 
+    // How often this event happened to each player. Empty for events that aren't
+    // about anybody in particular, like a card being drawn from the deck.
+    private readonly Dictionary<string, long> _countByActor = [];
+    public IReadOnlyDictionary<string, long> CountByActor => _countByActor;
+
+    public bool HasActors => _countByActor.Count > 0;
+    public long CountFor(string actor) => _countByActor.GetValueOrDefault(actor);
+
     public bool HasValues => ValueCount > 0;
     public double? ValueMean => HasValues ? ValueSum / ValueCount : null;
     public double? Minimum => HasValues ? ValueMin : null;
@@ -37,6 +45,11 @@ public class EventStatistic(string kind, EventImportance importance, EventCatego
     {
         Count++;
         LastMessage = gameEvent.Message;
+
+        if (gameEvent.Actor is string actor)
+        {
+            _countByActor[actor] = _countByActor.GetValueOrDefault(actor) + 1;
+        }
 
         if (gameEvent.Value is not double value) return;
 

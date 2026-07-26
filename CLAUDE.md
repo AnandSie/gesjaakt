@@ -84,8 +84,13 @@ domain/runner raises GameEvent
   how often the ordinary things happened. Only aggregates are stored (count, sum, min, max per
   `Kind`) — never individual events.
 - `App` calls `IGameEventHandler.ShowSummary()` after every mode; `EventStatisticsRenderer` draws
-  the boxed table. The table shows `Play`/`Fault` kinds only (`report.GameStatistics`) — runner
-  `Progress`/`Result` narration is recorded but not tabulated.
+  two boxed tables. The first shows `Play`/`Fault` kinds only (`report.GameStatistics`) — runner
+  `Progress`/`Result` narration is recorded but not tabulated. The second breaks the kinds that
+  named an `Actor` (`report.ActorStatistics`) down per player.
+- The per-player table shows each player's **share of the row**, not a count: `SimulateAllPossible-
+  PlayerCombis` doesn't put every player in every game, so a count would mostly measure who got
+  dealt in most often. Column count adapts to the console width; overflow players are named as a
+  hidden count rather than silently dropped.
 - Games are counted from the `GameEnded` kind (`GameEventStatistics.GameEndedKind`), which is what
   makes the `/GAME` column possible without the statistics knowing about `GameRunner`.
 - Rendering helpers live in `Infrastructure/UserInterface`: `Ansi` (colour/box-drawing with
@@ -95,6 +100,9 @@ domain/runner raises GameEvent
 - **Adding a numeric to an event**: pass `value:` at the raise site and it automatically gets a
   mean/min/max column. Only pass a number that is meaningful to average — a progress percentage
   or an id is not.
+- **Adding a player to an event**: pass `actor: player.Name` at the raise site and the kind
+  automatically joins the per-player table. Do it for anything that happens *to* somebody; leave
+  it off for table-level events (a card leaving the deck, coins being divided).
 
 ## Conventions
 

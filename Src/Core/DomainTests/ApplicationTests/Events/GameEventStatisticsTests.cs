@@ -124,6 +124,65 @@ public class GameEventStatisticsTests
         report.GamesObserved.Should().Be(0);
     }
 
+    [TestMethod]
+    public void Record_CountsEachKindPerPlayerWhenTheEventNamesOne()
+    {
+        statistics.Record(new SpecialEvent("PlayerGesjaakt", "a", actor: "Anand"));
+        statistics.Record(new SpecialEvent("PlayerGesjaakt", "b", actor: "Anand"));
+        statistics.Record(new SpecialEvent("PlayerGesjaakt", "c", actor: "Barry"));
+
+        var gesjaakt = statistics.Report().Statistics.Single();
+
+        gesjaakt.CountFor("Anand").Should().Be(2);
+        gesjaakt.CountFor("Barry").Should().Be(1);
+        gesjaakt.CountFor("NeverPlayed").Should().Be(0);
+    }
+
+    // A card leaving the deck isn't about anybody, so it must not turn up in the
+    // per-player breakdown.
+    [TestMethod]
+    public void Report_ExcludesKindsThatAreNotAboutAPlayerFromTheBreakdown()
+    {
+        statistics.Record(new OrdinaryEvent("CardDrawnFromDeck", "card 12"));
+        statistics.Record(new SpecialEvent("PlayerGesjaakt", "a", actor: "Anand"));
+
+        var report = statistics.Report();
+
+        report.ActorStatistics.Select(s => s.Kind).Should().ContainSingle().Which.Should().Be("PlayerGesjaakt");
+        report.GameStatistics.Should().HaveCount(2);
+    }
+
+    [TestMethod]
+    public void Report_ListsPlayersBusiestFirstAcrossEveryKind()
+    {
+        statistics.Record(new OrdinaryEvent("SkippedWithCoin", "a", actor: "Barry"));
+        statistics.Record(new OrdinaryEvent("SkippedWithCoin", "b", actor: "Barry"));
+        statistics.Record(new OrdinaryEvent("SkippedWithCoin", "c", actor: "Barry"));
+        statistics.Record(new SpecialEvent("PlayerGesjaakt", "d", actor: "Anand"));
+        statistics.Record(new SpecialEvent("PlayerGesjaakt", "e", actor: "Anand"));
+        statistics.Record(new SpecialEvent("PlayerGesjaakt", "f", actor: "Cy"));
+
+        statistics.Report().Players.Should().ContainInOrder("Barry", "Anand", "Cy");
+    }
+
+    [TestMethod]
+    public void Report_HasNoPlayerBreakdownWhenNoEventNamedAPlayer()
+    {
+        statistics.Record(new OrdinaryEvent("CardDrawnFromDeck", "card 12"));
+
+        statistics.Report().HasPlayerBreakdown.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void Reset_ClearsThePerPlayerCountsToo()
+    {
+        statistics.Record(new SpecialEvent("PlayerGesjaakt", "a", actor: "Anand"));
+
+        statistics.Reset();
+
+        statistics.Report().Players.Should().BeEmpty();
+    }
+
     // Nothing observed yet means "per game" has no denominator; falling back to the
     // raw count is more useful than dividing by zero.
     [TestMethod]

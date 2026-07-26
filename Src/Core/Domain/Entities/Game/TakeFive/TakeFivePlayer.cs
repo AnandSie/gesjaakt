@@ -53,7 +53,7 @@ public class TakeFivePlayer : ITakeFivePlayer
         catch (Exception e)
         {
             string message = $"Decide Exception - Player {Name} could not decide. So a random card is played. Error message: {e.Message} ";
-            DecideError?.Invoke(this, new(nameof(DecideError), message));
+            DecideError?.Invoke(this, new(nameof(DecideError), message, actor: Name));
 
             cardValue = _hand.First().Value;
         }
@@ -75,14 +75,14 @@ public class TakeFivePlayer : ITakeFivePlayer
             if (result < minAllowed || result > maxAllowed)
             {
                 string incorrectValueMessage = $"Decide Incorrect Result - Player {this.Name} choice for row to take of {result} is not between {minAllowed} and {maxAllowed}. So a random row is taken";
-                DecideError?.Invoke(this, new(nameof(DecideError), incorrectValueMessage));
+                DecideError?.Invoke(this, new(nameof(DecideError), incorrectValueMessage, actor: Name));
                 result = backupChoice;
             }
         }
         catch (Exception e)
         {
             string excceptionMessage = $"Decide Exception - Player {this.Name} could not decide. So a random row is taken. Error message: {e.Message} ";
-            DecideError?.Invoke(this, new(nameof(DecideError), excceptionMessage));
+            DecideError?.Invoke(this, new(nameof(DecideError), excceptionMessage, actor: Name));
 
             result = backupChoice;
         }
@@ -102,7 +102,7 @@ public class TakeFivePlayer : ITakeFivePlayer
         if (card == null)
         {
             string message = $"Card with value {cardValue} not found. Falling back to first available card.";
-            CardNotFound?.Invoke(this, new(nameof(CardNotFound), message));
+            CardNotFound?.Invoke(this, new(nameof(CardNotFound), message, actor: Name));
             card = _hand.First();
         }
 

@@ -50,7 +50,7 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
         if (player.CoinsAmount == 0)
         {
             string message = $"{player.Name} is GESJAAKT and has to take card {_gameState.OpenCardValue}";
-            PlayerGesjaakt?.Invoke(this, new(nameof(PlayerGesjaakt), message, value: _gameState.OpenCardValue));
+            PlayerGesjaakt?.Invoke(this, new(nameof(PlayerGesjaakt), message, value: _gameState.OpenCardValue, actor: player.Name));
             HandleTakeCard(player);
         }
         else
@@ -64,7 +64,7 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
                 case GesjaaktTurnOption.SKIPWITHCOIN:
                     _gameState.AddCoinToTable(player.GiveCoin());
                     string message = $"{player.Name} skips with a coin. Amount of coins on table: {_gameState.AmountOfCoinsOnTable}";
-                    SkippedWithCoin?.Invoke(this, new(nameof(SkippedWithCoin), message, value: _gameState.AmountOfCoinsOnTable));
+                    SkippedWithCoin?.Invoke(this, new(nameof(SkippedWithCoin), message, value: _gameState.AmountOfCoinsOnTable, actor: player.Name));
                     break;
             }
         }
@@ -80,7 +80,7 @@ public class GesjaaktGameDealer : IGesjaaktGameDealer
         catch (Exception e)
         {
             string message = $"player {player.Name} could not decide. So the he/she skips by playing a coin. The following error occured - {e.Message}";
-            PlayerDecideError?.Invoke(this, new(nameof(PlayerDecideError), message));
+            PlayerDecideError?.Invoke(this, new(nameof(PlayerDecideError), message, actor: player.Name));
             return GesjaaktTurnOption.SKIPWITHCOIN;
         }
 

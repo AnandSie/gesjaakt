@@ -19,8 +19,24 @@ public class EventStatisticsReport(int gamesObserved, IReadOnlyList<EventStatist
         .Where(s => s.Category is EventCategory.Play or EventCategory.Fault)
         .ToList();
 
+    // The kinds that are about a specific player, and can therefore be broken
+    // down per player.
+    public IReadOnlyList<EventStatistic> ActorStatistics { get; } = statistics
+        .Where(s => s.Category is EventCategory.Play or EventCategory.Fault && s.HasActors)
+        .ToList();
+
+    // Every player any event was attributed to, busiest first, so the columns of
+    // a per-player breakdown are stable and the most active bot leads.
+    public IReadOnlyList<string> Players { get; } = statistics
+        .SelectMany(s => s.CountByActor)
+        .GroupBy(entry => entry.Key)
+        .OrderByDescending(group => group.Sum(entry => entry.Value))
+        .Select(group => group.Key)
+        .ToList();
+
     public long TotalEvents => Statistics.Sum(s => s.Count);
     public long TotalGameEvents => GameStatistics.Sum(s => s.Count);
 
     public bool IsEmpty => GameStatistics.Count == 0;
+    public bool HasPlayerBreakdown => ActorStatistics.Count > 0 && Players.Count > 0;
 }

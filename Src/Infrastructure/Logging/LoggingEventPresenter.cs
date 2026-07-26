@@ -61,6 +61,27 @@ public class LoggingEventPresenter(ILogger<LoggingEventPresenter> logger) : IGam
             summary.AppendLine();
         }
 
+        AppendPlayerBreakdown(summary, report);
+
         logger.LogInformation(summary.ToString());
+    }
+
+    // Shares rather than counts, for the same reason as the rich renderer: not
+    // every player is in every game, so a raw count mostly measures who was dealt
+    // in most often.
+    private static void AppendPlayerBreakdown(StringBuilder summary, EventStatisticsReport report)
+    {
+        if (!report.HasPlayerBreakdown) return;
+
+        summary.AppendLine("Events per player (share of each event):");
+
+        foreach (var statistic in report.ActorStatistics)
+        {
+            var shares = report.Players
+                .Where(player => statistic.CountFor(player) > 0)
+                .Select(player => $"{player} {(double)statistic.CountFor(player) / statistic.Count * 100:N1}%");
+
+            summary.AppendLine($"\t{statistic.Kind}: {string.Join(", ", shares)}");
+        }
     }
 }
