@@ -106,6 +106,10 @@ game narrates everything from `Ordinary` up, a set simulation shows `Special` an
 > 💡 Debugging your bot? Every fault is `Special`, so it stays visible in a set simulation even
 > though the ordinary narration is filtered out.
 
+Results are drawn in the same frame as the tables below them, and the live standings that track a
+run in progress are retired once the real results are in — so a finished run shows each standing
+exactly once.
+
 ### Event Summary
 
 Events are **recorded even when they are filtered out of the display**, so every simulation ends

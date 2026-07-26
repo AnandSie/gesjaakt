@@ -73,6 +73,15 @@ public class ConsoleDisplay : IDisplay
         RenderStatusBlock();
     }
 
+    public void Clear()
+    {
+        _lastLines = [];
+
+        if (!_interactive) return;
+
+        ClearStatusBlock();
+    }
+
     // Moves the cursor up to the start of the block and erases everything from
     // there to the end of the screen, using only cursor movement RELATIVE to the
     // current position (ANSI "cursor previous line" + "erase to end of screen").

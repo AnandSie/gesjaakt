@@ -21,6 +21,12 @@ public class RichEventPresenter : IGameEventPresenter
 
     public void Present(GameEvent gameEvent)
     {
+        if (gameEvent.Category == EventCategory.Result)
+        {
+            PresentResult(gameEvent);
+            return;
+        }
+
         var glyph = EventTheme.Colored(EventTheme.GlyphFor(gameEvent), gameEvent);
         var kind = EventTheme.Colored(Truncate(Humanize(gameEvent.Kind), KindColumnWidth), gameEvent);
 
@@ -34,6 +40,24 @@ public class RichEventPresenter : IGameEventPresenter
 
             Console.WriteLine(prefix + line);
         }
+    }
+
+    // A result is a finished artifact, not a line of narration, so it gets the
+    // same frame as the summary tables that follow it rather than a gutter glyph.
+    //
+    // By convention a Result event's first line is its headline ("Simulation
+    // Winner: X") and the rest is the detail, so the headline becomes the box
+    // title. A single-line result has no headline to promote and falls back to
+    // its kind.
+    private static void PresentResult(GameEvent gameEvent)
+    {
+        var lines = gameEvent.Message.Replace("\r\n", "\n").TrimEnd('\n').Split('\n');
+
+        var title = lines.Length > 1 ? lines[0].Trim() : Humanize(gameEvent.Kind);
+        var body = lines.Length > 1 ? lines.Skip(1) : lines;
+
+        Console.WriteLine();
+        ConsoleBox.Draw(title, body.Select(line => line.TrimEnd()), wrapLongRows: true);
     }
 
     public void PresentSummary(EventStatisticsReport report) => _summaryRenderer.Render(report);

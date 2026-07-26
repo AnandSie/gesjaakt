@@ -31,19 +31,12 @@ public class EventStatisticsRenderer
         }
 
         var rows = BuildRows(report);
-        int width = Math.Clamp(rows.Max(r => Ansi.VisibleLength(r)) + 4, MinTableWidth, MaxTableWidth);
+        rows.Add(null);
+        rows.Add(Ansi.Dim($"{report.TotalGameEvents:N0} events across {report.GameStatistics.Count} kinds"));
 
         Console.WriteLine();
-        WriteTop(width, $" Event summary over {report.GamesObserved} game(s) ");
-
-        foreach (var row in rows)
-        {
-            WriteRow(row, width);
-        }
-
-        WriteRow(Ansi.Dim(string.Concat(Enumerable.Repeat(Ansi.Horizontal, width - 4))), width);
-        WriteRow(Ansi.Dim($"{report.TotalGameEvents:N0} events across {report.GameStatistics.Count} kinds"), width);
-        WriteBottom(width);
+        ConsoleBox.Draw($"Event summary over {report.GamesObserved} game(s)", rows,
+            minWidth: MinTableWidth, maxWidth: MaxTableWidth);
 
         RenderPlayerBreakdown(report);
         Console.WriteLine();
@@ -72,6 +65,8 @@ public class EventStatisticsRenderer
         int width = 4 + KindWidth + NumberWidth + (players.Count * PlayerWidth)
             + (showUnattributed ? PlayerWidth : 0);
 
+        var rows = new List<string?>();
+
         var header = new StringBuilder();
         header.Append("EVENT".PadRight(KindWidth));
         header.Append("TOTAL".PadLeft(NumberWidth));
@@ -84,9 +79,7 @@ public class EventStatisticsRenderer
             header.Append("NOBODY".PadLeft(PlayerWidth));
         }
 
-        Console.WriteLine();
-        WriteTop(width, " Events per player (share of each event) ");
-        WriteRow(Ansi.Dim(header.ToString()), width);
+        rows.Add(Ansi.Dim(header.ToString()));
 
         foreach (var statistic in report.ActorStatistics)
         {
@@ -107,16 +100,17 @@ public class EventStatisticsRenderer
                 line.Append(Ansi.PadVisibleLeft(statistic.HasUnattributed ? Alarm(gap) : gap, PlayerWidth));
             }
 
-            WriteRow(line.ToString(), width);
+            rows.Add(line.ToString());
         }
 
         int hidden = report.Players.Count - players.Count;
         if (hidden > 0)
         {
-            WriteRow(Ansi.Dim($"{hidden} more player(s) not shown - the console is too narrow"), width);
+            rows.Add(Ansi.Dim($"{hidden} more player(s) not shown - the console is too narrow"));
         }
 
-        WriteBottom(width);
+        Console.WriteLine();
+        ConsoleBox.Draw("Events per player (share of each event)", rows, minWidth: width, maxWidth: MaxPlayerTableWidth);
     }
 
     // The assert. An event kind that names a player at one raise site and not at
@@ -140,27 +134,14 @@ public class EventStatisticsRenderer
             "for the kinds listed here.",
         };
 
-        int width = Math.Clamp(
-            rows.Concat(explanation).Max(r => r.Length) + 4,
-            MinTableWidth,
-            MaxPlayerTableWidth);
+        var body = new List<string?>();
+        body.AddRange(rows.Select(Alarm));
+        body.Add(string.Empty);
+        body.AddRange(explanation.Select(Ansi.Dim));
 
         Console.WriteLine();
-        WriteTop(width, $" {Ansi.Glyph("!!", "!!")} INCOMPLETE EVENT ATTRIBUTION ", Alarm);
-
-        foreach (var row in rows)
-        {
-            WriteRow(Alarm(row), width);
-        }
-
-        WriteRow(string.Empty, width);
-
-        foreach (var line in explanation)
-        {
-            WriteRow(Ansi.Dim(line), width);
-        }
-
-        WriteBottom(width, Alarm);
+        ConsoleBox.Draw($"{Ansi.Glyph("!!", "!!")} INCOMPLETE EVENT ATTRIBUTION", body,
+            frameStyle: Alarm, minWidth: MinTableWidth, maxWidth: MaxPlayerTableWidth, wrapLongRows: true);
     }
 
     private static string Alarm(string text) => Ansi.Rgb(Ansi.Bold(text), 224, 96, 96);
@@ -193,7 +174,7 @@ public class EventStatisticsRenderer
         }
     }
 
-    private static List<string> BuildRows(EventStatisticsReport report)
+    private static List<string?> BuildRows(EventStatisticsReport report)
     {
         long busiest = report.GameStatistics.Max(s => s.Count);
 
@@ -206,7 +187,7 @@ public class EventStatisticsRenderer
             "MIN".PadLeft(NumberWidth),
             "MAX".PadLeft(NumberWidth));
 
-        var rows = new List<string> { Ansi.Dim(header) };
+        var rows = new List<string?> { Ansi.Dim(header) };
 
         foreach (var statistic in report.GameStatistics)
         {
@@ -248,31 +229,4 @@ public class EventStatisticsRenderer
     private static string Fit(string text, int width) =>
         text.Length <= width ? text : text[..(width - 1)] + Ansi.Glyph("…", ".");
 
-    // style lets a box announce itself - the attribution alarm draws its frame in
-    // red so it doesn't read as just another summary table.
-    private static void WriteTop(int width, string title, Func<string, string>? style = null)
-    {
-        int inner = width - 2;
-        int titleLength = Math.Min(title.Length, inner);
-        var padded = title[..titleLength];
-        var rule = string.Concat(Enumerable.Repeat(Ansi.Horizontal, Math.Max(inner - titleLength - 1, 0)));
-
-        var frame = Ansi.TopLeft + Ansi.Horizontal + padded + rule + Ansi.TopRight;
-
-        Console.WriteLine(style is null ? Ansi.Bold(frame) : style(frame));
-    }
-
-    private static void WriteBottom(int width, Func<string, string>? style = null)
-    {
-        var frame = Ansi.BottomLeft + string.Concat(Enumerable.Repeat(Ansi.Horizontal, width - 2)) + Ansi.BottomRight;
-
-        Console.WriteLine(style is null ? frame : style(frame));
-    }
-
-    private static void WriteRow(string content, int width)
-    {
-        int inner = width - 4;
-        var text = Ansi.VisibleLength(content) > inner ? content : Ansi.PadVisibleRight(content, inner);
-        Console.WriteLine($"{Ansi.Vertical} {text} {Ansi.Vertical}");
-    }
 }

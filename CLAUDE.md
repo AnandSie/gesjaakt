@@ -93,6 +93,12 @@ domain/runner raises GameEvent
   hidden count rather than silently dropped.
 - Games are counted from the `GameEnded` kind (`GameEventStatistics.GameEndedKind`), which is what
   makes the `/GAME` column possible without the statistics knowing about `GameRunner`.
+- Everything presented as a finished artifact goes through `ConsoleBox.Draw` so results, the
+  summary tables and the alarm read as the same kind of object. Boxes size to the console;
+  `wrapLongRows` is opt-in because wrapping a table row scatters its columns. `EventCategory.Result`
+  events are boxed rather than narrated, with their first message line promoted to the box title.
+  `IDisplay.Clear()` retires the pinned live standings when `AllSimItersEnded` fires, so a finished
+  run shows each standing once.
 - Rendering helpers live in `Infrastructure/UserInterface`: `Ansi` (colour/box-drawing with
   `NO_COLOR` + non-UTF8 fallbacks), `EventTheme` (importance/category → colour + glyph),
   `ConsolePrompt` (menus; these used to be logged at Critical just to clear the log filter).
