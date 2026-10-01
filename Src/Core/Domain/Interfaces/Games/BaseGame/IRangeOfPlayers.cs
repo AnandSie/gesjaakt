@@ -1,6 +1,6 @@
 ﻿namespace Domain.Interfaces.Games.BaseGame;
 
-public interface IRangeOfPlayers
+public interface IAmountOfPlayers
 {
     public int MinNumberOfPlayers { get; }
     public int MaxNumberOfPlayers { get; }

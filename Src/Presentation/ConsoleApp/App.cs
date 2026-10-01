@@ -1,4 +1,5 @@
-﻿using Application;
+﻿using System.Reflection;
+using Application;
 using Application.Interfaces;
 using Domain.Entities.Events;
 
@@ -12,6 +13,11 @@ internal class App
     private readonly IGameRunnerEventCollector _gameEventCollector;
     private readonly IGameEventHandler _gameEventHandler;
     private readonly SimulationConfiguration _simulationConfiguration;
+    private readonly IOptionsChooserService _optionsChooserService;
+
+    private IGameRunner _gameRunner;
+    private GameOption _selectedGameOption;
+
 
     public App(
         List<GameOption> gameoptions,
@@ -19,7 +25,8 @@ internal class App
         GameRunnerFactory gameRunnerFactory,
         IGameRunnerEventCollector gameEventCollector,
         IGameEventHandler gameEventHandler,
-        SimulationConfiguration simulationConfiguration)
+        SimulationConfiguration simulationConfiguration,
+        IOptionsChooserService optionsChooserService)
     {
         _gameoptions = gameoptions;
         _playerInputProvider = playerInputProvider;
@@ -27,74 +34,64 @@ internal class App
         _gameEventCollector = gameEventCollector;
         _gameEventHandler = gameEventHandler;
         _simulationConfiguration = simulationConfiguration;
+        _optionsChooserService = optionsChooserService;
     }
 
     public void Start()
     {
-        var gameOption = SelectGame();
-        IGameRunner _gameRunner = _gameRunnerFactory.Create(gameOption.Type);
+        _selectedGameOption = _optionsChooserService.ChoiceFromPlayer("Which game do you want to play?", _gameoptions);
+        _gameRunner = _gameRunnerFactory.Create(_selectedGameOption.Type);
         _gameEventCollector.Attach(_gameRunner);
-        SelectGameMode(gameOption, _gameRunner);
+        SelectedGameMode().Invoke();
     }
 
-    private void SelectGameMode(GameOption gameOption, IGameRunner _gameRunner)
+    private Action SelectedGameMode()
     {
-        // REFACTOR - use class Option to create options
-        const string Message = """
-            LETS PLAY!
-            What do you want?
-            1. Simulated Set Game
-            2. Simulated All GamesS
-            3. Manual Game
-            4. Visualize a thinker
-            """;
-
-        var choice = _playerInputProvider.GetPlayerInputAsInt(Message, [1, 2, 3, 4]);
-        switch (choice)
+        var options = new Action[]
         {
-            case 1:
-                // Only the rare stuff is narrated during a simulation; everything
-                // else is still recorded and shows up in the summary afterwards.
-                _gameEventHandler.SetMinImportance(EventImportance.Special);
-                _gameRunner.Simulate(_simulationConfiguration.NumberOfGamesPerSimulation);
-                _gameEventHandler.ShowSummary();
-                break;
+            SimulateSingleGame,
+            SimulateAllPossibleGames,
+            PlayManualGame,
+            VisualizeThinker
+        }.Select(m => new ActionOption(m.Method.Name, m));
 
-            case 2:
-                _gameEventHandler.SetMinImportance(EventImportance.GameChanging);
-                _gameRunner.SimulateAllPossiblePlayerCombis();
-                _gameEventHandler.ShowSummary();
-                break;
-
-            case 3:
-                _gameEventHandler.SetMinImportance(EventImportance.Ordinary);
-
-                string question = $"With how many players do you want to play ({gameOption.MinNumberOfPlayers}-{gameOption.MaxNumberOfPlayers})?";
-                // Range's second argument is a count, not an end value - without the +1 the
-                // maximum is never offered, so the question above advertised a player count
-                // (e.g. 5 for Qwixx, 7 for Gesjaakt, 10 for Take-5!) that was then rejected.
-                IEnumerable<int> options = Enumerable.Range(gameOption.MinNumberOfPlayers, gameOption.MaxNumberOfPlayers - gameOption.MinNumberOfPlayers + 1);
-                var playersToAdd = _playerInputProvider.GetPlayerInputAsInt(question, options);
-                _gameRunner.ManualGame(playersToAdd);
-                _gameEventHandler.ShowSummary();
-                break;
-
-            case 4:
-                _gameEventHandler.SetMinImportance(EventImportance.Ordinary);
-
-                _gameRunner.ShowStatistics();
-                break;
-        }
+        return _optionsChooserService.ChoiceFromPlayer("What do you want to do?", options).Action;
     }
 
-    private GameOption SelectGame()
+    private void VisualizeThinker()
     {
-        string question = "Which game do you want to play?\n";
-        string options = string.Join("\n", _gameoptions.Select((g, i) => $"{i + 1}. {g.Name}"));
-        var message = question + options;
+        _gameEventHandler.SetMinImportance(EventImportance.Ordinary);
 
-        // REFACTOR - give a IEnumerble<MenuOption> MenuOption(string name, Type option) and print name and return option 
-        int gameChoice = _playerInputProvider.GetPlayerInputAsInt(message, Enumerable.Range(1, _gameoptions.Count).ToArray());
-        return _gameoptions[gameChoice - 1]; // Note: zero-based index
+        _gameRunner.ShowStatistics();
+    }
+
+    private void PlayManualGame()
+    {
+        _gameEventHandler.SetMinImportance(EventImportance.Ordinary);
+
+        string question = $"With how many players do you want to play ({_selectedGameOption.MinNumberOfPlayers}-{_selectedGameOption.MaxNumberOfPlayers})?";
+        // Range's second argument is a count, not an end value - without the +1 the
+        // maximum is never offered, so the question above advertised a player count
+        // (e.g. 5 for Qwixx, 7 for Gesjaakt, 10 for Take-5!) that was then rejected.
+        IEnumerable<int> options = Enumerable.Range(_selectedGameOption.MinNumberOfPlayers, _selectedGameOption.MaxNumberOfPlayers - _selectedGameOption.MinNumberOfPlayers + 1);
+        var playersToAdd = _playerInputProvider.GetPlayerInputAsInt(question, options);
+        _gameRunner.StartManualGame(playersToAdd);
+        _gameEventHandler.ShowSummary();
+    }
+
+    private void SimulateAllPossibleGames()
+    {
+        _gameEventHandler.SetMinImportance(EventImportance.GameChanging);
+        _gameRunner.StartAllPossiblePlayerCombinationSimulation();
+        _gameEventHandler.ShowSummary();
+    }
+
+    private void SimulateSingleGame()
+    {
+        // Only the rare stuff is narrated during a simulation; everything
+        // else is still recorded and shows up in the summary afterwards.
+        _gameEventHandler.SetMinImportance(EventImportance.Special);
+        _gameRunner.StartSingleSimulation(_simulationConfiguration.NumberOfGamesPerSimulation);
+        _gameEventHandler.ShowSummary();
     }
 }

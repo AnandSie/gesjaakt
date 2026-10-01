@@ -14,7 +14,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
     private readonly IStatisticsCreator _visualizer;
     private readonly SimulationConfiguration _config;
 
-    private Dictionary<string, int> winsByPlayerName;
+    private readonly Dictionary<string, int> winsByPlayerName;
 
     public event EventHandler<NotableEvent>? GameEnded;
     public event EventHandler<SpecialEvent>? SimIterStarting;
@@ -39,7 +39,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
         winsByPlayerName = new Dictionary<string, int>();
     }
 
-    public void ManualGame(int numberOfPlayers)
+    public void StartManualGame(int numberOfPlayers)
     {
         var manualPlayers = _playerFactory.CreateManualPlayers(numberOfPlayers);
         RunGameWith(manualPlayers);
@@ -50,7 +50,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
         _visualizer.Show();
     }
 
-    public void Simulate(int numberOfSimulations)
+    public void StartSingleSimulation(int numberOfSimulations)
     {
         var desiredDuration = TimeSpan.FromSeconds(_config.TargetSimulationDurationSeconds);
         var stopwatch = new LoopStopWatch(numberOfSimulations, desiredDuration);
@@ -73,7 +73,7 @@ public class GameRunner<TPlayer> : IGameRunner where TPlayer : INamed, IScored
     }
 
 
-    public void SimulateAllPossiblePlayerCombis()
+    public void StartAllPossiblePlayerCombinationSimulation()
     {
         var allPlayerFactories = _playerFactory.AllPlayerFactories().ToList();
         var allPlayerFactoryCombinations = GetCombinations(allPlayerFactories, _game.MaxNumberOfPlayers).ToList();

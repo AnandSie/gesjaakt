@@ -4,9 +4,9 @@ namespace Application.Interfaces;
 
 public interface IGameRunner
 {
-    public void ManualGame(int numberOfPlayers);
-    public void Simulate(int numberOfSimulations);
-    public void SimulateAllPossiblePlayerCombis();
+    public void StartManualGame(int numberOfPlayers);
+    public void StartSingleSimulation(int numberOfSimulations);
+    public void StartAllPossiblePlayerCombinationSimulation();
     public void ShowStatistics();
 
     // Events
