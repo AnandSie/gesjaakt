@@ -1,7 +1,7 @@
 using Application.Interfaces;
 using UserInterface;
 
-namespace Presentation.ConsoleApp.Helpers;
+namespace ConsoleApp.Helpers;
 
 internal class CLIPlayerInputProvider : IPlayerInputProvider
 {

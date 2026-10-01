@@ -4,7 +4,6 @@ using Application.Events;
 using Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Presentation.ConsoleApp.Helpers;
 using Application.Gesjaakt;
 using Domain.Interfaces.Games.Gesjaakt;
 using Domain.Interfaces.Games.TakeFive;
@@ -15,6 +14,7 @@ using Domain.Interfaces.Games.BaseGame;
 using Domain.Interfaces;
 using Visualization;
 using UserInterface;
+using ConsoleApp.Helpers;
 
 namespace ConsoleApp;
 
@@ -39,6 +39,7 @@ internal static class ServiceCollectionExtensions
     {
         serviceCollection.AddTransient<App>();
         serviceCollection.AddSingleton<IPlayerInputProvider, CLIPlayerInputProvider>();
+        serviceCollection.AddSingleton<IOptionsChooserService, OptionsChooserService>();
         serviceCollection.AddTransient<IGameRunnerEventCollector, GameRunnerEventCollector>();
 
         // Singletons: both the running totals and the importance threshold are
