@@ -2,7 +2,7 @@ using Domain.Interfaces.Games.BaseGame;
 
 namespace Application;
 
-public abstract class GameOption : Option, IAmountOfPlayers
+public abstract class GameOption : Option, IRangeOfPlayers
 {
     public int MinNumberOfPlayers { get; }
     public int MaxNumberOfPlayers { get; }

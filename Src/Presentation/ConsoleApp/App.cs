@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Application;
+﻿using Application;
 using Application.Interfaces;
 using Domain.Entities.Events;
 
@@ -47,13 +46,13 @@ internal class App
 
     private Action SelectedGameMode()
     {
-        var options = new Action[]
+        var options = new[]
         {
-            SimulateSingleGame,
-            SimulateAllPossibleGames,
-            PlayManualGame,
-            VisualizeThinker
-        }.Select(m => new ActionOption(m.Method.Name, m));
+            new ActionOption("Simulate a set of games", SimulateSingleGame),
+            new ActionOption("Simulate all possible player combinations", SimulateAllPossibleGames),
+            new ActionOption("Play a manual game", PlayManualGame),
+            new ActionOption("Visualize a thinker", VisualizeThinker)
+        };
 
         return _optionsChooserService.ChoiceFromPlayer("What do you want to do?", options).Action;
     }
